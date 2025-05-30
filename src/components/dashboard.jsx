@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import { IoIosPeople } from "react-icons/io";
 import { TiShoppingBag } from "react-icons/ti";
@@ -6,8 +6,22 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { MdTask } from "react-icons/md";
 import avatar from '../assets/images/avatar.png'; 
 import AttendanceChart from "./attendanceChart";
+import ResponNav from "./responsiveNav";
 
 const Dashboard = () => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+   
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1025);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const students = [
     { name: "Phạm Văn A", role: "Graphic Design", time: "8:00 AM", status: "Đúng giờ" },
     { name: "Lê Thị B", role: "Business analyst", time: "7:58 AM", status: "Đúng giờ" },
@@ -22,10 +36,10 @@ const Dashboard = () => {
     status === "Đúng giờ" ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100";
 
   return (
-    <div className="p-6 flex-1 space-y-6">
-    <Header/>
+    <div className="lg:p-6 flex-1 space-y-6">
+     {isMobile ? <ResponNav /> : <Header />}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2 lg:p-0">
       <div className="col-span-2">
           {/* Stats */}
               <div className="grid grid-cols-2 gap-4 ">
@@ -48,12 +62,12 @@ const Dashboard = () => {
                 ))}
               </div>
              {/* Table */}
-        <div className="bg-white rounded-xl shadow p-4 mt-10 border border-[#ECECEE]">
+        <div className="w-full overflow-x-auto bg-white rounded-xl shadow p-4 mt-5 lg:mt-10 border border-[#ECECEE]">
               <div className="flex justify-between mb-4">
                 <h4 className="font-semibold text-lg">Tổng quan điểm danh</h4>
                 <button className="text-blue-600 text-sm">Xem Tất Cả</button>
               </div>
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[600px] text-sm">
                 <thead className="text-left text-gray-500 border-b border-b-gray-300">
                   <tr>
                     <th className="py-2">Tên sinh viên</th>
@@ -92,7 +106,7 @@ const Dashboard = () => {
             
       </div>
          {/* Bar Chart placeholder */}
-        <div className="bg-white rounded-xl shadow p-4 border border-[#ECECEE]">
+        <div className="bg-white rounded-xl shadow p-4 border border-[#ECECEE] col-span-2 lg:col-span-1">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-semibold">Tổng quan điểm danh</h4>
             <select className="border rounded px-2 py-1 text-sm">

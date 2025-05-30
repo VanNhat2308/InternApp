@@ -1,0 +1,17 @@
+#navBar{
+     background: rgba(52, 168, 83, 0.1);
+
+
+}
+@media (max-width: 1025px) {
+#navBar{
+  position: fixed;
+  height: 100vh;
+  overflow-y: scroll;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background: white;
+  transform: translateX(-100%);
+}
+}
