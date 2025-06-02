@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { SidebarProvider } from './context/sidebarContext.jsx'
+import { DialogProvider } from './context/dialogContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
    <SidebarProvider>
-  <App />
+  <DialogProvider>
+    <App />
+  </DialogProvider>
 </SidebarProvider>
 </StrictMode>
 )
