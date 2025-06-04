@@ -2,12 +2,13 @@ import avatar from '../assets/images/avatar.png';
 import { FiSearch } from "react-icons/fi";
 import { FaChevronDown } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
-function Header() {
+import { useEffect, useState } from 'react';
+function Header({children}) {
+   
     return (   
       <div className="flex h-12 justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">Xin chào Nguyễn Văn A 👋</h2>
-          <p className="text-gray-500">Chào buổi sáng</p>
+         {children}
         </div>
         <div className="flex h-full gap-4 items-center">
             {/* input search */}

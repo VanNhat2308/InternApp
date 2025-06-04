@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AvatarUpload from "./avatarUpload";
 import { useDialog } from "../context/dialogContext";
 import { useToast } from "../context/toastContext";
 import Toast from "../components/toast";
 import { MdOutlineDone } from "react-icons/md";
+import Header from "./header";
+import { MdChevronRight } from "react-icons/md";
+import ResponNav from "../components/responsiveNav";
 
 
 function AddStudentPanel() {
+     const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+     
+  
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 1025);
+      };
+  
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
     const {toggleDialog} = useDialog()
     const {isToast,setToast} = useToast()
     const handleAdd = () =>{
@@ -29,6 +44,10 @@ function AddStudentPanel() {
       </div>
     </Toast>:""
     }
+       {isMobile ? <ResponNav /> : <Header>
+       <h2 className="text-xl font-semibold">Thêm Sinh Viên</h2>
+          <p className="flex gap-2 items-center">Danh Sách <MdChevronRight  className="text-xl"/> Thêm sinh viên  </p>
+      </Header>}
     
    
    

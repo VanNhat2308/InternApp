@@ -8,7 +8,22 @@ import avatar from "../assets/images/avatar.png";
 import Pagination from "../components/pagination";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
+import { useEffect, useState } from "react";
+import Header from "./header";
+import ResponNav from "../components/responsiveNav";
 function ListStudentPanel() {
+      const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+     
+  
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 1025);
+      };
+  
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
   const students = [
     {
@@ -92,6 +107,11 @@ function ListStudentPanel() {
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
   return (
+    <>
+     {isMobile ? <ResponNav /> : <Header>
+       <h2 className="text-xl font-semibold">Xin chào Nguyễn Văn A 👋</h2>
+          <p className="text-gray-500">Chào buổi sáng</p>
+      </Header>}
     <div className="p-4 w-full h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
       <div className="flex gap-4 h-12">
@@ -171,6 +191,7 @@ function ListStudentPanel() {
       <Pagination totalPages={5} />
 
     </div>
+    </>
   );
 }
 

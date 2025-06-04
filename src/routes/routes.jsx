@@ -13,6 +13,7 @@ import Feedback from "../components/feedback";
 import Settings from "../components/settings";
 import ListStudentPanel from "../components/listStudentPanel";
 import AddStudentPanel from "../components/addStudentPanel";
+import Test from "../components/test"
 const publicRoutes = [
   {
     path: "/",
@@ -89,14 +90,16 @@ const protectedRoutes = [
     ]
   },
 
-  // {
-  //   path: "/dashboard",
-  //   element: (
-  //     <ProtectedRoute>
-  //       <Main />
-  //     </ProtectedRoute>
-  //   )
-  // }
+  {
+    path: "/test",
+    element: 
+       <Test/>
+      // <ProtectedRoute>
+      //   <Main />
+      // </ProtectedRoute>
+
+    
+  }
 ];
 
 export const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);

@@ -6,7 +6,7 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { MdTask } from "react-icons/md";
 import avatar from '../assets/images/avatar.png'; 
 import AttendanceChart from "./attendanceChart";
-import ResponNav from "./responsiveNav";
+import ResponNav from "../components/responsiveNav";
 
 const Dashboard = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -37,7 +37,10 @@ const Dashboard = () => {
 
   return (
     <div className="lg:p-6 flex-1 space-y-6">
-     {isMobile ? <ResponNav /> : <Header />}
+     {isMobile ? <ResponNav /> : <Header>
+       <h2 className="text-xl font-semibold">Xin chào Nguyễn Văn A 👋</h2>
+          <p className="text-gray-500">Chào buổi sáng</p>
+      </Header>}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2 lg:p-0">
       <div className="col-span-2">
