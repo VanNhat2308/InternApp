@@ -112,15 +112,15 @@ function ListStudentPanel() {
        <h2 className="text-xl font-semibold">Xin chào Nguyễn Văn A 👋</h2>
           <p className="text-gray-500">Chào buổi sáng</p>
       </Header>}
-    <div className="p-4 w-full h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
+    <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
-      <div className="flex gap-4 h-12">
+      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
         {/* search */}
         <div className="h-full relative flex-1">
           <input
             type="text"
             placeholder="Tìm kiếm"
-            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-1 rounded-lg transition-all duration-300"
+            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
           />
 
           <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
@@ -137,57 +137,57 @@ function ListStudentPanel() {
         </button>
       </div>
       {/* table */}
-      <div className="w-full overflow-x-auto mt-10">
-        <table className="w-full min-w-[700px] text-sm">
-          <thead className="text-left text-gray-500 border-b border-b-gray-300">
-            <tr>
-              <th className="py-2">Tên sinh viên</th>
-              <th>MSSV</th>
-              <th>Vị trí</th>
-              <th>Trường</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((s, idx) => {
-              return (
-                <tr key={idx} className="border-b border-b-gray-300">
-                  <td className="py-2 flex gap-2 items-center">
-                    <img src={avatar} className="w-7" alt="ava" />
-                    {s.name}
-                  </td>
-                  <td>{s.studentId}</td>
-                  <td>{s.position}</td>
-                  <td>{s.university}</td>
-                  <td>
-                    {" "}
-                    <span
-                      className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                        s.status
-                      )}`}
-                    >
-                      {s.status}
-                    </span>
-                  </td>
-                  <td className="flex gap-2">
-                    <button className="text-xl cursor-pointer">
-                        <RiEyeLine />
-                    </button>
-                    <button className="text-xl cursor-pointer">
-                        <CiEdit />
-                    </button>
-                    <button className="text-xl cursor-pointer">
-                       <RiDeleteBin6Line />
-                    </button>
-
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    
+       <div className="overflow-x-auto mt-10">
+         <table className=" min-w-[800px] text-sm table-auto">
+            <thead className="text-left text-gray-500 border-b border-b-gray-300">
+              <tr>
+                <th className="py-2 ">Tên sinh viên</th>
+                <th>MSSV</th>
+                <th>Vị trí</th>
+                <th>Trường</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((s, idx) => {
+                return (
+                  <tr key={idx} className="border-b border-b-gray-300">
+                    <td className="py-2 flex gap-2 items-center">
+                      <img src={avatar} className="w-7" alt="ava" />
+                      {s.name}
+                    </td>
+                    <td>{s.studentId}</td>
+                    <td>{s.position}</td>
+                    <td>{s.university}</td>
+                    <td>
+                      {" "}
+                      <span
+                        className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
+                          s.status
+                        )}`}
+                      >
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="flex gap-2">
+                      <button className="text-xl cursor-pointer">
+                          <RiEyeLine />
+                      </button>
+                      <button className="text-xl cursor-pointer">
+                          <CiEdit />
+                      </button>
+                      <button className="text-xl cursor-pointer">
+                         <RiDeleteBin6Line />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       <Pagination totalPages={5} />
 
     </div>
