@@ -7,7 +7,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import avatar from "../assets/images/avatar.png";
 import Pagination from "../components/pagination";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useFilter } from "../context/filteContext";
 function ListStudentPanel() {
+
   const students = [
     {
       name: "Nguyễn Văn A",
@@ -80,6 +82,7 @@ function ListStudentPanel() {
       status: "Chờ duyệt",
     },
   ];
+     const {toggleFilter} = useFilter()
   const navigate = useNavigate(); 
   const handleNavigate = ()=>{
     navigate("/admin/list/add-student");
@@ -108,7 +111,7 @@ function ListStudentPanel() {
           Thêm sinh viên
         </button>
         {/* filter btn */}
-        <button className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
+        <button onClick={toggleFilter} className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
           <FaSlidersH />
           Lọc
         </button>

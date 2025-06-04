@@ -1,11 +1,34 @@
 import { useState } from "react";
 import AvatarUpload from "./avatarUpload";
 import { useDialog } from "../context/dialogContext";
+import { useToast } from "../context/toastContext";
+import Toast from "../components/toast";
+import { MdOutlineDone } from "react-icons/md";
+
 
 function AddStudentPanel() {
     const {toggleDialog} = useDialog()
+    const {isToast,setToast} = useToast()
+    const handleAdd = () =>{
+      toggleDialog()
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
    
     return (<>
+    { isToast?
+      <Toast onClose={() => setToast(false)}>
+      <div className="flex items-center gap-3">
+          <div className="w-15 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
+            <MdOutlineDone  className="text-2xl text-green-400"/>
+          </div>
+          <p>Sinh viên mới đã được thêm vào danh sách !</p>
+
+
+
+      </div>
+    </Toast>:""
+    }
     
    
    
@@ -61,7 +84,7 @@ function AddStudentPanel() {
   {/* Buttons */}
   <div className="flex justify-end gap-4 mt-6">
     <button className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
-    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={toggleDialog}>Thêm</button>
+    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={handleAdd}>Thêm</button>
   </div>
 </div>
  </>
