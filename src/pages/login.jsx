@@ -3,30 +3,26 @@ import { useState } from 'react'
 import pizitechLogo from '../assets/images/pizitech.png'; // cập nhật đường dẫn phù hợp
 import manImage from '../assets/images/man.png';
 export default function Login() {
- const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
- 
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-//     const response = await fetch("http://localhost:8000/login", {
-//       method: "POST",
-//       credentials: "include", // BẮT BUỘC để gửi cookie
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: JSON.stringify({ email, password })
-//     });
+   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-//     const data = await response.json();
-//     if (response.ok) {
-//       alert("Login success");
-//       // Chuyển hướng dashboard hoặc gọi getUser
-//     } else {
-//       alert(data.error);
-//     }
-//   };
+  const handleLogin = async (e) => {
+    
+    
+    e.preventDefault();
 
-const handleSubmit = ()=>{}
+    try {
+      const res = await axiosClient.post('/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      alert('Đăng nhập thành công!');
+      
+      // chuyển trang nếu muốn
+    } catch (err) {
+      setError(err.response?.data?.message || 'Lỗi đăng nhập');
+    }
+  };
+
   return (
     <div
       className="w-full h-screen overflow-clip relative"
@@ -73,43 +69,46 @@ const handleSubmit = ()=>{}
         {/* Cột phải - form đăng nhập */}
         <div style={{background:'rgba(238, 238, 238, 0.6)',padding:'50px'}} className="h-[80%] flex flex-col  rounded-3xl shadow-xl lg:w-[35%] min-w-[320px]">
           <h2 className="text-3xl font-bold text-center mb-8">Đăng nhập vào Pizitech</h2>
-
-          {/* Tên đăng nhập */}
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Tên đăng nhập</label>
-            <input
-              type="text"
-              placeholder="Nhập tên đăng nhập"
-              className="w-full bg-white px-4 py-2 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Mật khẩu */}
-          <div className="mb-2">
-            <label className="block font-semibold mb-1">Mật khẩu</label>
-            <div className="relative">
+             {error && <p style={{ color: 'red' }}>{error}</p>}
+          <form onSubmit={handleLogin}>
+            {/* Tên đăng nhập */}
+            <div className="mb-4">
+              <label className="block font-semibold mb-1">Tên đăng nhập</label>
               <input
-                type="password"
-                placeholder="Nhập mật khẩu"
-                className="w-full px-4 py-2 bg-white border-none rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
+              onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="Nhập tên đăng nhập"
+                className="w-full bg-white px-4 py-2 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500">
-                👁️
-              </span>
             </div>
-          </div>
-
-          {/* Quên mật khẩu */}
-          <div className="text-right text-sm mb-10">
-            <a href="#" className="text-black font-semibold">
-              Quên mật khẩu
-            </a>
-          </div>
-
-          {/* Nút đăng nhập */}
-          <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
-            ĐĂNG NHẬP
-          </button>
+            {/* Mật khẩu */}
+            <div className="mb-2">
+              <label className="block font-semibold mb-1">Mật khẩu</label>
+              <div className="relative">
+                <input
+                onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  placeholder="Nhập mật khẩu"
+                  className="w-full px-4 py-2 bg-white border-none rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500">
+                  👁️
+                </span>
+              </div>
+            </div>
+            {/* Quên mật khẩu */}
+            <div className="text-right text-sm mb-10">
+              <a href="#" className="text-black font-semibold">
+                Quên mật khẩu
+              </a>
+            </div>
+            {/* Nút đăng nhập */}
+            <button
+            type='submit'
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
+              ĐĂNG NHẬP
+            </button>
+          </form>
 
           {/* Đăng ký */}
           <p className="text-center text-sm mt-4">

@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import axiosClient from '../service/axiosClient';
 
 function Test() {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-   axiosClient.get('/sinhviens/countSV')
-  .then(res => setData(res.data));
+useEffect(() => {
+    axiosClient.get('/sinhviens/danh-sach-diem-danh')
+      .then(res =>{ setData(res.data) 
+        console.log(res.data);
+             
+      })
+      .catch(err => console.error(err));
   }, []);
 
+
   return (
-    <div>
-      <h1>Danh sách bài viết</h1>
-     {data.total_sv}
-    </div>
+   <>
+   {data.map((item)=>{
+     return <h1> {item.maSV} </h1>
+   })}
+   </>
   );
 }
 
