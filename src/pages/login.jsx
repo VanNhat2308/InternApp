@@ -1,25 +1,42 @@
 // src/pages/Login.jsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import pizitechLogo from '../assets/images/pizitech.png'; // cập nhật đường dẫn phù hợp
 import manImage from '../assets/images/man.png';
+import axiosClient from '../service/axiosClient';
+import { useNavigate } from 'react-router-dom';
 export default function Login() {
-   const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Nếu đã có token, chuyển hướng về dashboard
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
-    
-    
     e.preventDefault();
+
 
     try {
       const res = await axiosClient.post('/login', { email, password });
-      localStorage.setItem('token', res.data.token);
-      alert('Đăng nhập thành công!');
-      
-      // chuyển trang nếu muốn
+
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        alert('Đăng nhập thành công!');
+
+        navigate('/admin/dashboard');
+      } else {
+        throw new Error('Không nhận được token từ server');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Lỗi đăng nhập');
+      const errorMessage = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
+      setError(errorMessage);
+      alert(errorMessage);
     }
   };
 
@@ -43,12 +60,12 @@ export default function Login() {
 
       <div
         className="absolute bottom-0 right-0 w-50 h-50 rounded-full transform -translate-y-[-75%]"
-        style={{ background: 'rgba(255,255,255,0.3)'}}
+        style={{ background: 'rgba(255,255,255,0.3)' }}
       ></div>
 
       <div
         className="absolute bottom-0 right-0 w-50 h-50 rounded-full transform -translate-x-[-50%] -translate-y-[-25%]"
-        style={{ background: 'rgba(255,255,255,0.3)'}}
+        style={{ background: 'rgba(255,255,255,0.3)' }}
       ></div>
 
       {/* Nội dung chính */}
@@ -67,15 +84,15 @@ export default function Login() {
         </div>
 
         {/* Cột phải - form đăng nhập */}
-        <div style={{background:'rgba(238, 238, 238, 0.6)',padding:'50px'}} className="h-[80%] flex flex-col  rounded-3xl shadow-xl lg:w-[35%] min-w-[320px]">
+        <div style={{ background: 'rgba(238, 238, 238, 0.6)', padding: '50px' }} className="h-[80%] flex flex-col  rounded-3xl shadow-xl lg:w-[35%] min-w-[320px]">
           <h2 className="text-3xl font-bold text-center mb-8">Đăng nhập vào Pizitech</h2>
-             {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <form onSubmit={handleLogin}>
             {/* Tên đăng nhập */}
             <div className="mb-4">
               <label className="block font-semibold mb-1">Tên đăng nhập</label>
               <input
-              onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 type="text"
                 placeholder="Nhập tên đăng nhập"
                 className="w-full bg-white px-4 py-2 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -86,7 +103,7 @@ export default function Login() {
               <label className="block font-semibold mb-1">Mật khẩu</label>
               <div className="relative">
                 <input
-                onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   placeholder="Nhập mật khẩu"
                   className="w-full px-4 py-2 bg-white border-none rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -104,8 +121,8 @@ export default function Login() {
             </div>
             {/* Nút đăng nhập */}
             <button
-            type='submit'
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
+              type='submit'
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
               ĐĂNG NHẬP
             </button>
           </form>

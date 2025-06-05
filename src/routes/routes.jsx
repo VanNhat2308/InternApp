@@ -23,83 +23,79 @@ const publicRoutes = [
 
 const protectedRoutes = [
   {
-    path:"/admin",
-    element: <Home/>,
-    children:[
-       {
-        index: true, // Khi vào /admin
-        element: <Navigate to="dashboard" replace />
+    path: "/admin",
+    element: <ProtectedRoute />, // 🔐 Chặn không cho vào nếu chưa có token
+    children: [
+      {
+        path: "",
+        element: <Home />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="dashboard" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "list",
+            element: <List />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="student-list" replace />,
+              },
+              {
+                path: "student-list",
+                element: <ListStudentPanel />,
+              },
+              {
+                path: "add-student",
+                element: <AddStudentPanel />,
+              },
+            ],
+          },
+          {
+            path: "schedule",
+            element: <Schedule />,
+          },
+          {
+            path: "report",
+            element: <Report />,
+          },
+          {
+            path: "approval",
+            element: <Approval />,
+          },
+          {
+            path: "attendance",
+            element: <Attendance />,
+          },
+          {
+            path: "task",
+            element: <Task />,
+          },
+          {
+            path: "feedback",
+            element: <Feedback />,
+          },
+          {
+            path: "settings",
+            element: <Settings />,
+          },
+        ],
       },
-      {
-        path:"dashboard",
-        element:<Dashboard/>
-      },
-      {
-        path:"list",
-        element:<List/>,
-        children:[
-        {
-        index: true,
-        element: <Navigate to="student-list" replace />
-        },
-        {
-        path:"student-list",
-        element:<ListStudentPanel/>
-        },
-        {
-        path:"add-student",
-        element:<AddStudentPanel/>
-        },
-
-      ]
-      },
-      {
-        path:"schedule",
-        element:<Schedule/>
-      }
-      ,
-      {
-        path:"report",
-        element:<Report />
-      }
-      ,
-      {
-        path:"approval",
-        element:<Approval />
-      }
-      ,
-      {
-        path:"attendance",
-        element:<Attendance />
-      }
-      ,
-      {
-        path:"task",
-        element:<Task />
-      }
-      ,
-      {
-        path:"feedback",
-        element:<Feedback />
-      }
-      ,
-      {
-        path:"settings",
-        element:<Settings />
-      }
-    ]
+    ],
   },
-
   {
     path: "/test",
-    element: 
-       <Test/>
-      // <ProtectedRoute>
-      //   <Main />
-      // </ProtectedRoute>
-
-    
-  }
+    element: (
+      <ProtectedRoute>
+        <Test />
+      </ProtectedRoute>
+    ),
+  },
 ];
 
 export const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
