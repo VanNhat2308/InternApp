@@ -11,9 +11,27 @@ import { useFilter } from "../context/filteContext";
 import { useEffect, useState } from "react";
 import ResponNav from "../components/responsiveNav";
 import Header from "../components/header";
+import { useDialog } from "../context/dialogContext";
+import { BsFillPeopleFill } from "react-icons/bs";
 function ListStudentPanel() {
       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
       const navigate = useNavigate()
+      const { showDialog } = useDialog();
+ 
+
+      
+        const handleOpenDialog = () => {
+          showDialog({
+            title: "Xác nhận xóa thông tin",
+            content: "Sau khi bạn xóa thông tin, thông tin của sinh viên thực tập sẽ được xóa khỏi danh sách sinh viên. Hãy kiểm tra kỹ.",
+            icon: <BsFillPeopleFill />, // ✅ Truyền icon tại đây
+            confirmText: "Có, xóa sinh viên",
+            cancelText: "Không, tôi muốn kiểm tra lại",
+            onConfirm: () => {
+              console.log("Đã xóa sinh viên");
+            },
+          });
+        };
       
       useEffect(() => {
       const handleResize = () => {
@@ -103,6 +121,9 @@ function ListStudentPanel() {
   const handleView = (id) => {
   navigate(`/admin/list/student-details/${id}`);
 };
+  const handleEdit = (id) => {
+  navigate(`/admin/list/edit-student/${id}`);
+};
   const statusStyle = (status) =>
     status === "Đang thực tập"
       ? "text-green-600 bg-green-100"
@@ -176,10 +197,16 @@ function ListStudentPanel() {
                       <button onClick={() => handleView(s.studentId)} className="text-xl cursor-pointer">
                           <RiEyeLine />
                       </button>
-                      <button className="text-xl cursor-pointer">
+                      <button
+                      onClick={()=>{
+                        handleEdit(s.studentId)
+                      }}
+                      className="text-xl cursor-pointer">
                           <CiEdit />
                       </button>
-                      <button className="text-xl cursor-pointer">
+                      <button 
+                      onClick={handleOpenDialog}
+                      className="text-xl cursor-pointer">
                          <RiDeleteBin6Line />
                       </button>
                     </td>

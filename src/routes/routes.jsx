@@ -15,6 +15,8 @@ import ListStudentPanel from "../components/listStudentPanel";
 import AddStudentPanel from "../components/addStudentPanel";
 import Test from "../components/test"
 import StudentDetails from "../components/studentDetails";
+import EditStudent from "../components/editStudent";
+import AttendanceDetails from "../components/attendanceDetail";
 const publicRoutes = [
   {
     path: "/",
@@ -56,6 +58,10 @@ const protectedRoutes = [
                 element: <AddStudentPanel />,
               },
               {
+                path: "edit-student/:idSlug",
+                element: <EditStudent />,
+              },
+              {
                 path: "student-details/:idSlug",
                 element: <StudentDetails />,
               },
@@ -76,6 +82,12 @@ const protectedRoutes = [
           {
             path: "attendance",
             element: <Attendance />,
+            children:[
+              {
+                path:"attendance-details/:idSlug",
+                element: <Test/>
+              }
+            ]
           },
           {
             path: "task",
@@ -96,9 +108,8 @@ const protectedRoutes = [
   {
     path: "/test",
     element: (
-      <ProtectedRoute>
+
         <Test />
-      </ProtectedRoute>
     ),
   },
 ];

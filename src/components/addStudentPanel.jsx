@@ -7,10 +7,27 @@ import { MdOutlineDone } from "react-icons/md";
 import Header from "./header";
 import { MdChevronRight } from "react-icons/md";
 import ResponNav from "../components/responsiveNav";
+import { BsFillPeopleFill } from "react-icons/bs";
 
 
 function AddStudentPanel() {
      const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+     const { showDialog } = useDialog();
+     const {isToast,setToast} = useToast()
+     
+       const handleOpenDialog = () => {
+         showDialog({
+           title: "Xác nhận thêm sinh viên",
+           content: "Sau khi bạn thêm sinh viên, sinh viên thực tập mới sẽ được thêm vào danh sách sinh viên. Vui lòng kiểm tra ky thông tin. ",
+           icon: <BsFillPeopleFill />,
+           confirmText: "Có, thêm sinh viên",
+           cancelText: "Không, tôi muốn kiểm tra lại",
+           onConfirm: () => {
+            setToast(true)
+           },
+         });
+       };
+     
      
   
   
@@ -22,12 +39,8 @@ function AddStudentPanel() {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
-    const {toggleDialog} = useDialog()
-    const {isToast,setToast} = useToast()
-    const handleAdd = () =>{
-      toggleDialog()
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+
+  
   
    
     return (<>
@@ -103,7 +116,7 @@ function AddStudentPanel() {
   {/* Buttons */}
   <div className="flex justify-end gap-4 mt-6">
     <button className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
-    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={handleAdd}>Thêm</button>
+    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={handleOpenDialog}>Thêm</button>
   </div>
 </div>
  </>

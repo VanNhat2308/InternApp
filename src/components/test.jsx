@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import axiosClient from '../service/axiosClient';
+import FileUpload from './fileUpload';
 
 function Test() {
-  const [data, setData] = useState([]);
+//   const [data, setData] = useState([]);
 
-useEffect(() => {
-    axiosClient.get('/sinhviens/danh-sach-diem-danh')
-      .then(res =>{ setData(res.data) 
-        console.log(res.data);
+// useEffect(() => {
+//     axiosClient.get('/sinhviens/danh-sach-diem-danh')
+//       .then(res =>{ setData(res.data) 
+//         console.log(res.data);
              
-      })
-      .catch(err => console.error(err));
-  }, []);
+//       })
+//       .catch(err => console.error(err));
+//   }, []);
 
 
   return (
    <>
-   {data.map((item)=>{
-     return <h1> {item.maSV} </h1>
-   })}
+  <FileUpload
+  uploadPath="/upload"
+  onSuccess={(res) => console.log("Tải lên thành công:", res)}
+  onError={(err) => console.error("Lỗi tải lên:", err)}
+/>
+
    </>
   );
 }

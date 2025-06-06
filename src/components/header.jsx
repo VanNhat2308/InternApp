@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 function Header({children}) {
    
     return (   
-      <div className="flex h-12 justify-between items-center">
+      <div className="w-full flex h-12 justify-between items-center">
         <div>
          {children}
         </div>

@@ -10,9 +10,31 @@ import { CiEdit } from "react-icons/ci";
 import { GoPeople } from "react-icons/go";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import ChartDetails from "./ChartDetails";
+import { BsFillPeopleFill } from "react-icons/bs";
+import { useDialog } from "../context/dialogContext";
+import { useNavigate, useParams } from "react-router-dom";
 function StudentDetails() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
   const [chuyenCan, setChuyenCan] = useState(false);
+  const { showDialog } = useDialog();
+  const { idSlug } = useParams();
+  const navigate = useNavigate()
+
+  
+
+  const handleOpenDialog = () => {
+    showDialog({
+      title: "Xác nhận xóa thông tin",
+      content: "Sau khi bạn xóa thông tin, thông tin của sinh viên thực tập sẽ được xóa khỏi danh sách sinh viên. Hãy kiểm tra kỹ.",
+      icon: <BsFillPeopleFill />, 
+      confirmText: "Có, xóa sinh viên",
+      cancelText: "Không, tôi muốn kiểm tra lại",
+      onConfirm: () => {
+        console.log("Đã xóa sinh viên");
+      },
+    });
+  };
+  
 
 
   useEffect(() => {
@@ -23,6 +45,10 @@ function StudentDetails() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+    const handleEdit = (idSlug) => {
+  navigate(`/admin/list/edit-student/${idSlug}`);
+};
   return (
     <div className="flex-1">
       {isMobile ? (
@@ -62,11 +88,15 @@ function StudentDetails() {
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="p-3 flex items-center gap-2 border border-gray-300 rounded-md">
+            <button   
+             onClick={handleOpenDialog}
+             className="cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-md">
               <FaRegTrashCan />
               Xóa
             </button>
-            <button className="p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white">
+            <button
+            onClick={()=>{handleEdit(idSlug)}}
+            className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white">
               <CiEdit />
               Chỉnh Sửa
             </button>
@@ -156,50 +186,50 @@ function StudentDetails() {
               </div>
             </div>
           ) : (
-            <div class="grid grid-cols-2 gap-6 text-sm flex-1">
+            <div className="grid grid-cols-2 gap-6 text-sm flex-1">
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Họ Tên</p>
-                <p class="font-medium text-lg">Phạm Văn A</p>
+                <p className="text-gray-400">Họ Tên</p>
+                <p className="font-medium text-lg">Phạm Văn A</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Thời Gian Thực Tập</p>
-                <p class="font-medium text-lg">3 tháng</p>
+                <p className="text-gray-400">Thời Gian Thực Tập</p>
+                <p className="font-medium text-lg">3 tháng</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Mã Số Sinh Viên</p>
-                <p class="font-medium text-lg">2174802010284</p>
+                <p className="text-gray-400">Mã Số Sinh Viên</p>
+                <p className="font-medium text-lg">2174802010284</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Giáo Viên Hướng Dẫn</p>
-                <p class="font-medium text-lg">Lý Thị Huyền Châu</p>
+                <p className="text-gray-400">Giáo Viên Hướng Dẫn</p>
+                <p className="font-medium text-lg">Lý Thị Huyền Châu</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Trường Đại Học</p>
-                <p class="font-medium text-lg">VanLang University</p>
+                <p className="text-gray-400">Trường Đại Học</p>
+                <p className="font-medium text-lg">VanLang University</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Ngày Sinh</p>
-                <p class="font-medium text-lg">01/01/2003</p>
+                <p className="text-gray-400">Ngày Sinh</p>
+                <p className="font-medium text-lg">01/01/2003</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Chuyên Ngành</p>
-                <p class="font-medium text-lg">Công nghệ phần mềm</p>
+                <p className="text-gray-400">Chuyên Ngành</p>
+                <p className="font-medium text-lg">Công nghệ phần mềm</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Vị Trí Thực Tập</p>
-                <p class="font-medium text-lg">Graphic Designer</p>
+                <p className="text-gray-400">Vị Trí Thực Tập</p>
+                <p className="font-medium text-lg">Graphic Designer</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
-                <p class="text-gray-400">Trạng Thái</p>
-                <p class="font-medium text-lg text-green-500">Đang Thực Tập</p>
+                <p className="text-gray-400">Trạng Thái</p>
+                <p className="font-medium text-lg text-green-500">Đang Thực Tập</p>
               </div>
             </div>
           )}
