@@ -6,17 +6,16 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import avatar from "../assets/images/avatar.png";
 import Pagination from "../components/pagination";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
 import { useEffect, useState } from "react";
-import Header from "./header";
 import ResponNav from "../components/responsiveNav";
+import Header from "../components/header";
 function ListStudentPanel() {
       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
-     
-  
-  
-    useEffect(() => {
+      const navigate = useNavigate()
+      
+      useEffect(() => {
       const handleResize = () => {
         setIsMobile(window.innerWidth < 1025);
       };
@@ -97,11 +96,13 @@ function ListStudentPanel() {
       status: "Chờ duyệt",
     },
   ];
-     const {toggleFilter} = useFilter()
-  const navigate = useNavigate(); 
+  const {toggleFilter} = useFilter()
   const handleNavigate = ()=>{
     navigate("/admin/list/add-student");
   }
+  const handleView = (id) => {
+  navigate(`/admin/list/student-details/${id}`);
+};
   const statusStyle = (status) =>
     status === "Đang thực tập"
       ? "text-green-600 bg-green-100"
@@ -172,7 +173,7 @@ function ListStudentPanel() {
                       </span>
                     </td>
                     <td className="flex gap-2">
-                      <button className="text-xl cursor-pointer">
+                      <button onClick={() => handleView(s.studentId)} className="text-xl cursor-pointer">
                           <RiEyeLine />
                       </button>
                       <button className="text-xl cursor-pointer">

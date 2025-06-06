@@ -14,6 +14,7 @@ import Settings from "../components/settings";
 import ListStudentPanel from "../components/listStudentPanel";
 import AddStudentPanel from "../components/addStudentPanel";
 import Test from "../components/test"
+import StudentDetails from "../components/studentDetails";
 const publicRoutes = [
   {
     path: "/",
@@ -53,6 +54,10 @@ const protectedRoutes = [
               {
                 path: "add-student",
                 element: <AddStudentPanel />,
+              },
+              {
+                path: "student-details/:idSlug",
+                element: <StudentDetails />,
               },
             ],
           },

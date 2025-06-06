@@ -1,0 +1,212 @@
+import ResponNav from "../components/responsiveNav";
+import Header from "../components/header";
+import avatar from "../assets/images/avatar.png";
+import { useEffect, useState } from "react";
+import { MdChevronRight } from "react-icons/md";
+import { RiShoppingBag3Line } from "react-icons/ri";
+import { MdOutlineEmail } from "react-icons/md";
+import { FaRegTrashCan } from "react-icons/fa6";
+import { CiEdit } from "react-icons/ci";
+import { GoPeople } from "react-icons/go";
+import { FaRegCalendarCheck } from "react-icons/fa";
+import ChartDetails from "./ChartDetails";
+function StudentDetails() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+  const [chuyenCan, setChuyenCan] = useState(false);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1025);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return (
+    <div className="flex-1">
+      {isMobile ? (
+        <ResponNav />
+      ) : (
+        <Header>
+          <h2 className="text-xl font-semibold">Thêm Sinh Viên</h2>
+          <p className="flex gap-2 items-center">
+            Danh Sách <MdChevronRight className="text-xl" /> Thêm sinh viên{" "}
+          </p>
+        </Header>
+      )}
+      <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+        <div className="flex flex-col items-center pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
+          {/* avartar */}
+          <div className="flex gap-2 ">
+            <img
+              src={avatar}
+              alt="avartar"
+              className="w-20 aspect-square rounded-md border border-gray-300"
+            />
+            <div>
+              <h1 className="text-xl font-bold">PHAM VAN A</h1>
+              <h4
+                className="flex
+            items-center gap-1 text-lg text-gray-600"
+              >
+                <RiShoppingBag3Line className="text-2xl" /> Graphic Designer
+              </h4>
+              <h4
+                className="flex
+            items-center gap-1 text-lg text-gray-600"
+              >
+                <MdOutlineEmail className="text-2xl" />
+                phamvana123@gmail.com
+              </h4>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button className="p-3 flex items-center gap-2 border border-gray-300 rounded-md">
+              <FaRegTrashCan />
+              Xóa
+            </button>
+            <button className="p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white">
+              <CiEdit />
+              Chỉnh Sửa
+            </button>
+          </div>
+        </div>
+        {/* main ct */}
+        <div className="flex mt-5 gap-10">
+          <div className="flex flex-col">
+            <button
+              onClick={() => setChuyenCan(false)}
+              className={` cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-tr-md rounded-tl-md whitespace-nowrap
+  ${chuyenCan ? "" : "bg-[#34A853] text-white"}`}
+            >
+              <GoPeople /> Thông Tin Cá Nhân
+            </button>
+            <button
+              onClick={() => setChuyenCan(true)}
+              className={`cursor-pointer p-3 flex items-center gap-2 border border-gray-300 border-t-0 rounded-br-md rounded-bl-md ${
+                chuyenCan ? "bg-[#34A853] text-white" : ""
+              }`}
+            >
+              <FaRegCalendarCheck />
+              Chuyên cần
+            </button>
+          </div>
+          {/* grid */}
+          {chuyenCan ? (
+            <div className="w-full">
+              <h1 className="text-2xl font-semibold">
+                Chuyên cần của sinh viên
+              </h1>
+              <h5 className="text-gray-600 text-xl">
+                Mức độ chuyên cần của sinh viên trong tháng này
+              </h5>
+              <div className="flex my-4 flex-col lg:flex-row gap-4">
+                <div className=" flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+                  <div className="flex gap-2 items-center">
+                    <div className="w-5 h-5 rounded-full bg-green-400"></div>
+                    <span>Đi làm đúng giờ</span>
+                  </div>
+                  <div className="text-2xl font-semibold">18</div>
+                </div>
+                <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+                  <div className="flex gap-2 items-center">
+                    <div className="w-5 h-5 rounded-full bg-yellow-500"></div>
+                    <span>Đi làm trễ</span>
+                  </div>
+                  <div className="text-2xl font-semibold">4</div>
+                </div>
+                <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+                  <div className="flex gap-2 items-center">
+                    <div className="w-5 h-5 rounded-full bg-red-500"></div>
+                    <span>Nghỉ học</span>
+                  </div>
+                  <div className="text-2xl font-semibold">3</div>
+                </div>
+              </div>
+              <h1 className="text-xl font-bold">Thống kê chuyên cần</h1>
+              <div className="flex gap-10 mt-5">
+                {/* bar chart */}
+                <div>
+                <ChartDetails/>
+
+                </div>
+               
+                <div className="flex flex-1 flex-col gap-5">
+                    <div className="p-3 border border-gray-300 rounded-xl">
+                        <h1 className="font-bold text-xl">
+                            Mức độ <br /> chuyên cần
+                        </h1>
+                        <h1 className="text-3xl font-bold">88%</h1>
+                        <h6 className="text-lg">22/25 buổi</h6>
+
+                    </div>
+                    <div className="p-3 border border-gray-300 rounded-xl">
+                        <h1 className="font-bold text-xl">
+                            Điểm số tổng hợp
+                        </h1>
+                        <h1 className="text-3xl font-bold">8.5/10</h1>
+                  
+
+                    </div>
+                   
+                </div>
+
+
+              </div>
+            </div>
+          ) : (
+            <div class="grid grid-cols-2 gap-6 text-sm flex-1">
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Họ Tên</p>
+                <p class="font-medium text-lg">Phạm Văn A</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Thời Gian Thực Tập</p>
+                <p class="font-medium text-lg">3 tháng</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Mã Số Sinh Viên</p>
+                <p class="font-medium text-lg">2174802010284</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Giáo Viên Hướng Dẫn</p>
+                <p class="font-medium text-lg">Lý Thị Huyền Châu</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Trường Đại Học</p>
+                <p class="font-medium text-lg">VanLang University</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Ngày Sinh</p>
+                <p class="font-medium text-lg">01/01/2003</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Chuyên Ngành</p>
+                <p class="font-medium text-lg">Công nghệ phần mềm</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Vị Trí Thực Tập</p>
+                <p class="font-medium text-lg">Graphic Designer</p>
+              </div>
+
+              <div className="p-2 border-b border-gray-300">
+                <p class="text-gray-400">Trạng Thái</p>
+                <p class="font-medium text-lg text-green-500">Đang Thực Tập</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default StudentDetails;
