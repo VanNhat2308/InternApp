@@ -17,6 +17,7 @@ import Test from "../components/test"
 import StudentDetails from "../components/studentDetails";
 import EditStudent from "../components/editStudent";
 import AttendanceDetails from "../components/attendanceDetail";
+import AttendancePanel from "../components/attendancePanel";
 const publicRoutes = [
   {
     path: "/",
@@ -83,9 +84,18 @@ const protectedRoutes = [
             path: "attendance",
             element: <Attendance />,
             children:[
+             {
+                index: true,
+                element: <Navigate to="attendance-list" replace />,
+              },
+              {
+                path:'attendance-list',
+                element:<AttendancePanel/>
+              }
+              ,
               {
                 path:"attendance-details/:idSlug",
-                element: <Test/>
+                element: <AttendanceDetails/>
               }
             ]
           },

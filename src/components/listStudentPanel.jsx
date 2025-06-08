@@ -161,7 +161,7 @@ function ListStudentPanel() {
       {/* table */}
     
        <div className="overflow-x-auto mt-10">
-         <table className=" min-w-[800px] text-sm table-auto">
+         <table className="lg:w-full min-w-[800px] text-sm table-auto">
             <thead className="text-left text-gray-500 border-b border-b-gray-300">
               <tr>
                 <th className="py-2 ">Tên sinh viên</th>
