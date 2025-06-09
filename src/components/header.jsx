@@ -2,8 +2,18 @@ import avatar from '../assets/images/avatar.png';
 import { FiSearch } from "react-icons/fi";
 import { FaChevronDown } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
-import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 function Header({children}) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isNotifyActive = location.pathname === '/admin/notify';
+
+  const handleNotify = () => {
+    navigate('/admin/notify');
+  };
+
    
     return (   
       <div className="w-full flex h-12 justify-between items-center">
@@ -22,8 +32,8 @@ function Header({children}) {
               <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2"/>
           </div>
           {/* notify */}
-          <div className="bg-gray-200 aspect-square flex items-center justify-center rounded-md h-full text-2xl">
-<IoNotificationsOutline />
+          <div onClick={handleNotify} className={` cursor-pointer aspect-square flex items-center justify-center rounded-md h-full text-2xl ${isNotifyActive?'bg-green-100':'bg-gray-200'}`}>
+<IoNotificationsOutline className={`${isNotifyActive?'text-green-500':''}`} />
           </div>
           {/* avatar */}
           <div className="flex h-full items-center p-1 gap-2 border border-gray-300 rounded-md">

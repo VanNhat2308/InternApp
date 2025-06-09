@@ -18,6 +18,11 @@ import StudentDetails from "../components/studentDetails";
 import EditStudent from "../components/editStudent";
 import AttendanceDetails from "../components/attendanceDetail";
 import AttendancePanel from "../components/attendancePanel";
+import Notify from "../components/notify";
+import ApprovalPanel from "../components/approvalPanel";
+import ApprovalDetails from "../components/ApprovalDetails";
+import SchedulePanel from "../components/schedulePanel";
+import TaskPanel from "../components/taskPanel";
 const publicRoutes = [
   {
     path: "/",
@@ -28,7 +33,7 @@ const publicRoutes = [
 const protectedRoutes = [
   {
     path: "/admin",
-    element: <ProtectedRoute />, // 🔐 Chặn không cho vào nếu chưa có token
+    element: <ProtectedRoute />, 
     children: [
       {
         path: "",
@@ -37,6 +42,10 @@ const protectedRoutes = [
           {
             index: true,
             element: <Navigate to="dashboard" replace />,
+          },
+          {
+            path: "notify",
+            element: <Notify />,
           },
           {
             path: "dashboard",
@@ -71,6 +80,15 @@ const protectedRoutes = [
           {
             path: "schedule",
             element: <Schedule />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="schedule-list" replace />,
+              },
+              {
+                path: "schedule-list",
+                element: <SchedulePanel />,
+              }]
           },
           {
             path: "report",
@@ -79,6 +97,21 @@ const protectedRoutes = [
           {
             path: "approval",
             element: <Approval />,
+             children:[
+             {
+                index: true,
+                element: <Navigate to="approval-list" replace />,
+              },
+              {
+                path:'approval-list',
+                element:<ApprovalPanel/>
+              }
+              ,
+              {
+                path:'approval-details/:idSlug',
+                element:<ApprovalDetails/>
+              }
+            ]
           },
           {
             path: "attendance",
@@ -102,6 +135,16 @@ const protectedRoutes = [
           {
             path: "task",
             element: <Task />,
+             children:[
+             {
+                index: true,
+                element: <Navigate to="task-list" replace />,
+              },
+              {
+                path:'task-list',
+                element:<TaskPanel/>
+              }
+            ]
           },
           {
             path: "feedback",

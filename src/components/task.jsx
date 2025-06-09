@@ -1,5 +1,28 @@
+import { useEffect, useState } from "react";
+import ResponNav from "./responsiveNav";
+import Header from "./header";
+import { Outlet } from "react-router-dom";
+
 function Task() {
-    return ( <h1>this is task</h1> );
+       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+              useEffect(() => {
+                const handleResize = () => {
+                  setIsMobile(window.innerWidth < 1025);
+                };
+            
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+              }, []);
+      return ( 
+      <div className="flex-1">
+            {isMobile ? <ResponNav /> : <Header>
+         <h2 className="text-xl font-semibold">Quản Lý Lịch Thực Tập</h2>
+            <p className="flex gap-2 items-center text-base">Tất cả task</p>
+        </Header>}
+      <Outlet/>
+  
+         
+      </div> );
 }
 
 export default Task;
