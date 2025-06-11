@@ -11,16 +11,23 @@ function CustomDialog() {
     icon,          
     content,
     customContent,
-    confirmText = "Xác nhận",
+    confirmText,
+    confirmTextV2,
     cancelText,
     onConfirm,
+     onConfirmV2,
     onCancel,
   } = dialog;
 
-  const handleConfirm = () => {
-    onConfirm?.();
-    hideDialog();
-  };
+ const handleConfirm = () => {
+  onConfirm?.();
+  hideDialog();
+};
+
+const handleConfirmV2 = () => {
+  onConfirmV2?.();
+  hideDialog();
+};
 
   const handleCancel = () => {
     onCancel?.();
@@ -50,12 +57,20 @@ function CustomDialog() {
           {customContent && <div className="mb-4 w-full">{customContent}</div>}
 
           <div className="flex flex-col justify-end gap-2 w-full">
-               <button
+               {confirmText && <button
               className="px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer"
               onClick={handleConfirm}
             >
               {confirmText}
-            </button>
+            </button>}
+          {confirmTextV2 && (
+  <button
+    className="px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer"
+    onClick={handleConfirmV2}
+  >
+    {confirmTextV2}
+  </button>
+)}
             {cancelText && (
               <button
                 className="px-4 py-2 border border-gray-300 rounded-3xl w-full cursor-pointer"

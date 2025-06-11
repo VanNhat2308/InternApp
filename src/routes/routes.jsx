@@ -23,6 +23,7 @@ import ApprovalPanel from "../components/approvalPanel";
 import ApprovalDetails from "../components/ApprovalDetails";
 import SchedulePanel from "../components/schedulePanel";
 import TaskPanel from "../components/taskPanel";
+import TaskDetails from "../components/taskDetails";
 const publicRoutes = [
   {
     path: "/",
@@ -143,6 +144,10 @@ const protectedRoutes = [
               {
                 path:'task-list',
                 element:<TaskPanel/>
+              },
+              {
+                path:'task-details/:idSlug',
+                element:<TaskDetails/>
               }
             ]
           },

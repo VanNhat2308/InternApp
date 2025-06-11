@@ -16,7 +16,7 @@ function Task() {
       return ( 
       <div className="flex-1">
             {isMobile ? <ResponNav /> : <Header>
-         <h2 className="text-xl font-semibold">Quản Lý Lịch Thực Tập</h2>
+         <h2 className="text-xl font-semibold">Quản Lý Task</h2>
             <p className="flex gap-2 items-center text-base">Tất cả task</p>
         </Header>}
       <Outlet/>
