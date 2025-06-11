@@ -24,6 +24,11 @@ import ApprovalDetails from "../components/ApprovalDetails";
 import SchedulePanel from "../components/schedulePanel";
 import TaskPanel from "../components/taskPanel";
 import TaskDetails from "../components/taskDetails";
+import FeedbackPanel from "../components/feedbackPanel";
+import ChatDetail from "../components/chatDetails";
+import ChatDetails from "../components/chatDetails";
+import ReportPanel from "../components/reportPanel";
+import ReportDetails from "../components/reportDetails";
 const publicRoutes = [
   {
     path: "/",
@@ -94,6 +99,20 @@ const protectedRoutes = [
           {
             path: "report",
             element: <Report />,
+            children:[
+             {
+                index: true,
+                element: <Navigate to="report-list" replace />,
+              },
+              {
+                path:'report-list',
+                element:<ReportPanel/>
+              }
+              ,
+              {
+                path:'report-details/:idSlug',
+                element:<ReportDetails/>
+              }]
           },
           {
             path: "approval",
@@ -154,6 +173,20 @@ const protectedRoutes = [
           {
             path: "feedback",
             element: <Feedback />,
+             children:[
+             {
+                index: true,
+                element: <Navigate to="feedback-list" replace />,
+              },
+              {
+                path:'feedback-list',
+                element:<FeedbackPanel/>
+              },
+              {
+                path:'conversation/:idSlug',
+                element:<ChatDetails/>
+              }
+            ]
           },
           {
             path: "settings",

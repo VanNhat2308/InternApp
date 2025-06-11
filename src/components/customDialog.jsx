@@ -13,14 +13,27 @@ function CustomDialog() {
     customContent,
     confirmText,
     confirmTextV2,
+    confirmPrintText,
+    onDownload,
+    onPrint,
     cancelText,
     onConfirm,
-     onConfirmV2,
+    onConfirmV2,
     onCancel,
+
+
   } = dialog;
 
  const handleConfirm = () => {
   onConfirm?.();
+  hideDialog();
+};
+ const handleConfirmPrint = () => {
+  onPrint?.();
+  hideDialog();
+};
+ const handleConfirmDownload = () => {
+  onDownload?.();
   hideDialog();
 };
 
@@ -56,6 +69,14 @@ const handleConfirmV2 = () => {
 
           {customContent && <div className="mb-4 w-full">{customContent}</div>}
 
+          {confirmPrintText&&
+          <div className="flex justify-center gap-3 mt-4">
+            <button onClick={handleConfirmPrint} className="cursor-pointer text-white py-2 px-9 rounded-xl bg-[#34a853]">In</button>
+            <button onClick={handleConfirmDownload} className="cursor-pointer text-white py-2 px-5 rounded-xl bg-[#34a853]">Tải PDF</button>
+            <button onClick={handleCancel} className="border border-gray-300 cursor-pointer py-2 px-5 rounded-xl">Hủy bỏ</button>
+
+          </div>
+          }
           <div className="flex flex-col justify-end gap-2 w-full">
                {confirmText && <button
               className="px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer"
