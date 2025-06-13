@@ -13,10 +13,15 @@ import ResponNav from "../components/responsiveNav";
 import Header from "../components/header";
 import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
+import axiosClient from "../service/axiosClient";
 function ListStudentPanel() {
       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
       const navigate = useNavigate()
       const { showDialog } = useDialog();
+      const[students,setStudent] = useState([]);
+      const [currentPage, setCurrentPage] = useState(1);
+      const [totalPages, setTotalPages] = useState(1); 
+      const [loading, setLoading] = useState(false)
  
 
       
@@ -42,78 +47,18 @@ function ListStudentPanel() {
       return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-  const students = [
-    {
-      name: "Nguyễn Văn A",
-      studentId: "2012341",
-      position: "Frontend Developer",
-      university: "Đại học Bách Khoa",
-      status: "Đang thực tập",
-    },
-    {
-      name: "Trần Thị B",
-      studentId: "2012342",
-      position: "Backend Developer",
-      university: "Đại học Khoa học Tự nhiên",
-      status: "Chờ duyệt",
-    },
-    {
-      name: "Lê Văn C",
-      studentId: "2012343",
-      position: "Tester",
-      university: "Đại học Công nghệ Thông tin",
-      status: "Đã hoàn thành",
-    },
-    {
-      name: "Phạm Thị D",
-      studentId: "2012344",
-      position: "UI/UX Designer",
-      university: "Đại học Sư phạm Kỹ thuật",
-      status: "Tạm dừng",
-    },
-    {
-      name: "Hoàng Văn E",
-      studentId: "2012345",
-      position: "Mobile Developer",
-      university: "Đại học FPT",
-      status: "Đang thực tập",
-    },
-    {
-      name: "Đặng Thị F",
-      studentId: "2012346",
-      position: "Data Analyst",
-      university: "Đại học Ngoại thương",
-      status: "Chờ duyệt",
-    },
-    {
-      name: "Võ Minh G",
-      studentId: "2012347",
-      position: "DevOps Engineer",
-      university: "Đại học Bách Khoa",
-      status: "Đã hoàn thành",
-    },
-    {
-      name: "Ngô Thị H",
-      studentId: "2012348",
-      position: "Product Manager",
-      university: "Đại học Kinh tế",
-      status: "Tạm dừng",
-    },
-    {
-      name: "Lý Văn I",
-      studentId: "2012349",
-      position: "Game Developer",
-      university: "Đại học Hoa Sen",
-      status: "Đang thực tập",
-    },
-    {
-      name: "Bùi Thị J",
-      studentId: "2012350",
-      position: "AI Engineer",
-      university: "Đại học Quốc gia TP.HCM",
-      status: "Chờ duyệt",
-    },
-  ];
+useEffect(()=>{
+setLoading(true);
+axiosClient.get(`/sinhviens/lay-danh-sach-sinh-vien?page=${currentPage}&per_page=10`)
+  .then((res) => {
+     setStudent(res.data.data.data)
+     setTotalPages(res.data.data.last_page);
+  }).catch((err)=>{console.log(err)
+  }).finally(() => setLoading(false))
+
+},[currentPage])
+
+ 
   const {toggleFilter} = useFilter()
   const handleNavigate = ()=>{
     navigate("/admin/list/add-student");
@@ -160,7 +105,17 @@ function ListStudentPanel() {
       </div>
       {/* table */}
     
-       <div className="overflow-x-auto mt-10">
+       {loading ? (
+        <div className="flex justify-center items-center py-10">
+        <div role="status">
+    <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    <span class="sr-only">Loading...</span>
+</div>
+        </div>
+      ) : (<div className="overflow-x-auto mt-10">
          <table className="lg:w-full min-w-[800px] text-sm table-auto">
             <thead className="text-left text-gray-500 border-b border-b-gray-300">
               <tr>
@@ -178,19 +133,19 @@ function ListStudentPanel() {
                   <tr key={idx} className="border-b border-b-gray-300">
                     <td className="py-2 flex gap-2 items-center">
                       <img src={avatar} className="w-7" alt="ava" />
-                      {s.name}
+                      {s.tenDangNhap}
                     </td>
-                    <td>{s.studentId}</td>
-                    <td>{s.position}</td>
-                    <td>{s.university}</td>
+                    <td>{s.maSV}</td>
+                    <td>{s.viTri}</td>
+                    <td>{s.truong.tenTruong}</td>
                     <td>
                       {" "}
                       <span
                         className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                          s.status
+                          s.trangThai
                         )}`}
                       >
-                        {s.status}
+                        {s.trangThai}
                       </span>
                     </td>
                     <td className="flex gap-2">
@@ -215,8 +170,8 @@ function ListStudentPanel() {
               })}
             </tbody>
           </table>
-        </div>
-      <Pagination totalPages={5} />
+        </div>)}
+      <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
 
     </div>
     </>

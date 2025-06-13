@@ -17,22 +17,27 @@ const Dashboard = () => {
   const [hoSo,setHoSo] = useState(0)
   const [task,setTask] = useState(0)
   const [diemDanh,setDiemDanh] = useState(0)
+  const [loading, setLoading] = useState(false)
+ 
 
  useEffect(() => {
+  setLoading(true);
   Promise.all([
-    axiosClient.get('/sinhviens/diem-danh-hom-nay'),
+    axiosClient.get('/diem-danh/danh-sach-hom-nay?page=1'),
     axiosClient.get('/hoso/counths'),
     axiosClient.get('/student/tasks/countTask'),
     axiosClient.get('/sinhviens/countSV'),
   ])
     .then(([studentsRes, hoSoRes, taskRes, totalRes]) => {
-      setStudents(studentsRes.data);
+      setStudents(studentsRes.data.data.data);
       setHoSo(hoSoRes.data.total_hs);
       setTask(taskRes.data.total_task);
-      setDiemDanh(studentsRes.data.length); // sửa length
+      setDiemDanh(studentsRes.data.data.total); 
       setTotal(totalRes.data.total_sv);
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error(err))
+    .finally(() => setLoading(false))
+
 }, []);
 
 
@@ -85,9 +90,21 @@ const Dashboard = () => {
   //     status: "Đúng giờ",
   //   },
   // ];
+function getTrangThaiTiengViet(status) {
+  switch (status) {
+    case 'on_time':
+      return 'Đúng giờ';
+    case 'late':
+      return 'Đi trễ';
+    case 'absent':
+      return 'Vắng';
+    default:
+      return 'Không xác định';
+  }
+}
 
   const statusStyle = (status) =>
-    status === "co_mat"
+    status === "on_time"
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
 
@@ -102,6 +119,17 @@ const Dashboard = () => {
         </Header>
       )}
 
+      {loading? (
+ <div className="flex justify-center items-center py-10">
+        <div role="status">
+    <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    <span class="sr-only">Loading...</span>
+</div>
+        </div>
+      ) :(
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2 lg:p-0">
         <div className="col-span-2">
           {/* Stats */}
@@ -158,21 +186,20 @@ const Dashboard = () => {
                 <tr key={idx} className="border-b border-b-gray-300">
                     <td className="py-2 flex gap-2 items-center">
                       <img src={avatar} className="w-7" alt="ava" />
-                      {s.tenDangNhap}
+                      {s.sinh_vien.tenDangNhap}
                     </td>
 
-                    <td>{s.viTri}</td>
-                    <td>{s?.diem_danhs?.[0]?.gio_bat_dau
+                    <td>{s.sinh_vien.viTri}</td>
+                    <td>{s?.gio_bat_dau
 }</td>
                     <td>
                       <span
                         className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                          s?.diem_danhs?.[0]?.trang_thai
-
+                          s?.trang_thai
                         )}`}
                       >
-                        {s?.diem_danhs?.[0]?.trang_thai
-}
+                        {getTrangThaiTiengViet(s?.trang_thai)}
+
                       </span>
                     </td>
                   </tr>
@@ -183,18 +210,12 @@ const Dashboard = () => {
         </div>
         {/* Bar Chart placeholder */}
         <div className="bg-white rounded-xl shadow p-4 border border-[#ECECEE] col-span-2 lg:col-span-1">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="font-semibold">Tổng quan điểm danh</h4>
-            <select className="border rounded px-2 py-1 text-sm">
-              <option>Tuần này</option>
-              <option>Tuần trước</option>
-            </select>
-          </div>
-          <div className="flex items-end gap-3">
+        
+          <div className="flex flex-col gap-3">
             <AttendanceChart />
           </div>
         </div>
-      </div>
+      </div>)}
     </div>
   );
 };
