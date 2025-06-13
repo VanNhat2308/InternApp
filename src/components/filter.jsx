@@ -2,26 +2,26 @@ import { useState } from "react";
 import { useFilter } from "../context/filteContext";
 
 function Filter() {
-  const {setShowFilter} = useFilter()
+  const {setShowFilter,setFilterValues} = useFilter()
   const [positions, setPositions] = useState({
-    Design: true,
-    HR: false,
+    "Graphic Design": false,
+    "HR": false,
     "Front-end": false,
-    "Business Analyst": false,
-    "Back-end": true,
-    Java: true,
-    Python: true,
+    "Business analyst": false,
+    "Back-end": false,
+    "Java": false,
+    "Python": false,
     "React JS": false,
-    Tester: false,
+    "Tester": false,
     "Node JS": false,
   });
 
   const [universities, setUniversities] = useState({
-    VLU: true,
+    VLU: false,
     UEF: false,
     HSU: false,
-    UEH: true,
-    UEL: true,
+    UEH: false,
+    UEL: false,
   });
 
   const [term, setTerm] = useState("Tất cả");
@@ -34,11 +34,16 @@ function Filter() {
     }
   };
 
-  const handleApply = () => {
-    console.log("Positions:", positions);
-    console.log("Universities:", universities);
-    console.log("Term:", term);
+  const handleApply = () => {    
+  setFilterValues({
+    positions,
+    universities,
+    term,
+  });
+  setShowFilter(false); // Ẩn filter sau khi áp dụng
   };
+
+  
   return (
     <div
       style={{

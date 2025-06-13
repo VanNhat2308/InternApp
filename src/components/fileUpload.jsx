@@ -1,7 +1,15 @@
 import { useState } from "react";
-import axiosClient from "../service/axiosClient"; // hoặc đúng đường dẫn bạn lưu axiosClient
+import axiosClient from "../service/axiosClient";
 
-function FileUpload({ uploadPath = "/upload", onSuccess, onError }) {
+function FileUpload({
+  uploadPath = "/upload",
+  onSuccess,
+  onError,
+  renderInput,       // Custom input field
+  renderPreview,     // Custom preview
+  renderButton,      // Custom button
+  renderMessage      // Custom message
+}) {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [message, setMessage] = useState("");
@@ -17,7 +25,9 @@ function FileUpload({ uploadPath = "/upload", onSuccess, onError }) {
 
   const handleUpload = async () => {
     if (!file) {
-      setMessage("Vui lòng chọn một file.");
+      const msg = "Vui lòng chọn một file.";
+      setMessage(msg);
+      onError?.(msg);
       return;
     }
 
@@ -31,54 +41,43 @@ function FileUpload({ uploadPath = "/upload", onSuccess, onError }) {
         },
       });
 
-      setMessage("Tải lên thành công!");
+      const msg = "Tải lên thành công!";
+      setMessage(msg);
       onSuccess?.(response.data);
     } catch (error) {
-      console.error(error);
-      setMessage("Tải lên thất bại.");
+      const msg = "Tải lên thất bại.";
+      setMessage(msg);
       onError?.(error);
     }
   };
 
   return (
-    <div className="p-4 border rounded w-full max-w-md">
-      {/* Ô chọn file cải tiến */}
-      <label className="block mb-2 text-sm font-medium text-gray-700">
-        Chọn tệp để tải lên
-      </label>
-      <div className="flex items-center space-x-2 mb-3">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-blue-50 file:text-blue-700
-            hover:file:bg-blue-100"
-        />
-      </div>
-
-      {file && (
-        <p className="text-sm text-gray-600 mb-2">
-          Tệp đã chọn: <span className="font-medium">{file.name}</span>
-        </p>
+    <div className="w-full">
+      {/* Custom file input */}
+      {renderInput ? (
+        renderInput({ handleFileChange })
+      ) : (
+        <input type="file" onChange={handleFileChange} />
       )}
 
-      {previewUrl && (
-        <div className="mb-3">
-          <p className="text-sm text-gray-600">Xem trước:</p>
-          <img src={previewUrl} alt="preview" className="max-h-40 rounded" />
-        </div>
+      {/* Preview nếu có */}
+      {previewUrl &&
+        (renderPreview ? renderPreview({ previewUrl }) : (
+          <img src={previewUrl} alt="Preview" className="mt-2 max-h-40" />
+        ))}
+
+      {/* Nút gửi */}
+      {renderButton ? (
+        renderButton({ handleUpload })
+      ) : (
+        <button onClick={handleUpload}>Tải lên</button>
       )}
 
-      <button
-        onClick={handleUpload}
-        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-      >
-        Gửi lên server
-      </button>
-
-      {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
+      {/* Message */}
+      {message &&
+        (renderMessage ? renderMessage({ message }) : (
+          <p className="text-sm mt-2">{message}</p>
+        ))}
     </div>
   );
 }
