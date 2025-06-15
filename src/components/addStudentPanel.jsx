@@ -18,6 +18,21 @@ function AddStudentPanel() {
   const { isToast, setToast } = useToast();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarFilePreview, setAvatarFilePreview] = useState(null);
+  const [form, setForm] = useState({
+  hoTen: "",
+  tenDangNhap:"",
+  password:"pwd123",
+  maTruong: "",
+  maSV: "",
+  diaChi: "",
+  soDienThoai: "",
+  ngaySinh: "",
+  viTri: "",
+  nganh: "",
+  email: "",
+  cV: "",              // ← Sẽ được gán sau khi upload
+  duLieuKhuonMat: "",  // ← Sẽ được gán sau khi upload
+});
 
   //  avatar logic
   const handleChangeAvatar = (e) => {
@@ -107,7 +122,7 @@ function AddStudentPanel() {
 
   const handleSubmitForm = async () => {
   try {
-    const res = await axiosClient.post("/sinhViens", form); // API bạn cần
+    const res = await axiosClient.post("/sinhviens", form); // API bạn cần
 
     console.log("Gửi thành công:", res.data);
     setToast(true);
@@ -115,7 +130,15 @@ function AddStudentPanel() {
     console.error("Gửi form lỗi:", err);
   }
 };
-
+const handleConfirmAddStudent = async () => {
+  try {
+    await handleUpload();
+    await handleSubmitForm();
+    setToast(true);
+  } catch (error) {
+    console.error("Có lỗi khi upload hoặc gửi:", error);
+  }
+};
 
     //  dialog
   const handleOpenDialog = () => {
@@ -126,36 +149,22 @@ function AddStudentPanel() {
       icon: <BsFillPeopleFill />,
       confirmText: "Có, thêm sinh viên",
       cancelText: "Không, tôi muốn kiểm tra lại",
-      onConfirm: async () => {
-    try {
-    await handleUpload();
-    await handleSubmitForm();
-    setToast(true);
-  } catch (error) {
-    console.error("Có lỗi khi upload hoặc gửi:", error);
-  }
-  }})
-  // form submit
-  const [form, setForm] = useState({
-  hoTen: "",
-  maTruong: "",
-  maSV: "",
-  diaChi: "",
-  soDienThoai: "",
-  ngaySinh: "",
-  viTri: "",
-  nganh: "",
-  email: "",
-  cV: "",              // ← Sẽ được gán sau khi upload
-  duLieuKhuonMat: "",  // ← Sẽ được gán sau khi upload
-});
+      onConfirm: handleConfirmAddStudent
+  })}
+
 const handleInputForm = (e) => {
   const { name, value } = e.target;
-  setForm(prev => ({ ...prev, [name]: value }));
+  setForm((prev) => ({
+    ...prev,
+    [name]: value,
+    ...(name === "email" ? { tenDangNhap: value } : {}),
+  }));
 };
 
 
+
   return (
+
     <>
       {isToast ? (
         <Toast onClose={() => setToast(false)}>
@@ -210,67 +219,85 @@ const handleInputForm = (e) => {
         {/* Grid form fields */}
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
-            value={form.hoTen}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Nhập Họ Tên"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.maTruong}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Nhập Tên Trường"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.maSV}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Mã Số Sinh Viên"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.diaChi}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Quê Quán"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.soDienThoai}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Nhập Số Điện Thoại"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.ngaySinh}
-            onChange={handleInputForm}
-            type="date"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.viTri}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Vị Trí Thực tập"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.nganh}
-            onChange={handleInputForm}
-            type="text"
-            placeholder="Chuyên Ngành"
-            className="input border border-gray-200 rounded-md p-4"
-          />
-          <input
-            value={form.email}
-            onChange={handleInputForm}
-            type="email"
-            placeholder="Thêm Email"
-            className="input border border-gray-200 rounded-md p-4 col-span-1"
-          />
+  name="hoTen"  // thêm dòng này
+  value={form.hoTen}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Nhập Họ Tên"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="maTruong"
+  value={form.maTruong}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Nhập Tên Trường"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="maSV"
+  value={form.maSV}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Mã Số Sinh Viên"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="diaChi"
+  value={form.diaChi}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Quê Quán"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="soDienThoai"
+  value={form.soDienThoai}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Nhập Số Điện Thoại"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="ngaySinh"
+  value={form.ngaySinh}
+  onChange={handleInputForm}
+  type="date"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="viTri"
+  value={form.viTri}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Vị Trí Thực tập"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="nganh"
+  value={form.nganh}
+  onChange={handleInputForm}
+  type="text"
+  placeholder="Chuyên Ngành"
+  className="input border border-gray-200 rounded-md p-4"
+/>
+
+<input
+  name="email"
+  value={form.email}
+  onChange={handleInputForm}
+  type="email"
+  placeholder="Thêm Email"
+  className="input border border-gray-200 rounded-md p-4 col-span-1"
+/>
+
         </form>
 
         {/* Upload CV */}
@@ -353,6 +380,7 @@ const handleInputForm = (e) => {
     </>
   );
 }
-}
+
+// }
 
 export default AddStudentPanel;
