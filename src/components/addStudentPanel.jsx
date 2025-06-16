@@ -116,8 +116,17 @@ function AddStudentPanel() {
 
     console.log("Gán xong path vào form")
     } catch (error) {
-      console.error("Upload failed:", error);
-    }
+  
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.errors?.avatar?.[0] ||
+      error.response?.data?.errors?.cv?.[0] ||
+      error.message ||
+      "Đã xảy ra lỗi không xác định.";
+
+    alert("Lỗi upload: " + message);
+    throw error; 
+  }
   };
 
   const handleSubmitForm = async () => {
@@ -126,9 +135,19 @@ function AddStudentPanel() {
 
     console.log("Gửi thành công:", res.data);
     setToast(true);
-  } catch (err) {
-    console.error("Gửi form lỗi:", err);
+  } catch (error) {
+    // ✅ Alert lỗi rõ ràng từ response
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.errors?.avatar?.[0] ||
+      error.response?.data?.errors?.cv?.[0] ||
+      error.message ||
+      "Đã xảy ra lỗi không xác định.";
+
+    alert("Lỗi upload: " + message);
+    throw error; // để xử lý tiếp ở hàm cha nếu cần
   }
+  
 };
 const handleConfirmAddStudent = async () => {
   try {
@@ -136,7 +155,7 @@ const handleConfirmAddStudent = async () => {
     await handleSubmitForm();
     setToast(true);
   } catch (error) {
-    console.error("Có lỗi khi upload hoặc gửi:", error);
+     alert(`Lỗi: ${error.message}`);
   }
 };
 
@@ -267,6 +286,7 @@ const handleInputForm = (e) => {
   name="ngaySinh"
   value={form.ngaySinh}
   onChange={handleInputForm}
+  onKeyDown={(e) => e.preventDefault()} 
   type="date"
   className="input border border-gray-200 rounded-md p-4"
 />

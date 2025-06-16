@@ -4,26 +4,27 @@ import {
 } from "recharts";
 
 // Dữ liệu mẫu
-const attendanceData = {
-  week: [
-    { name: "Đúng giờ", value: 4, color: "#00cc00" },
-    { name: "Trễ", value: 2, color: "#fbc02d" },
-    { name: "Nghỉ làm", value: 1, color: "#f44336" },
-  ],
-  month: [
-    { name: "Đúng giờ", value: 18, color: "#00cc00" },
-    { name: "Trễ", value: 4, color: "#fbc02d" },
-    { name: "Nghỉ làm", value: 3, color: "#f44336" },
-  ],
-  semester: [
-    { name: "Đúng giờ", value: 52, color: "#00cc00" },
-    { name: "Trễ", value: 7, color: "#fbc02d" },
-    { name: "Nghỉ làm", value: 5, color: "#f44336" },
-  ],
-};
+// const attendanceData = {
+//   week: [
+//     { name: "Đúng giờ", value: 4, color: "#00cc00" },
+//     { name: "Trễ", value: 2, color: "#fbc02d" },
+//     { name: "Nghỉ làm", value: 1, color: "#f44336" },
+//   ],
+//   month: [
+//     { name: "Đúng giờ", value: 18, color: "#00cc00" },
+//     { name: "Trễ", value: 4, color: "#fbc02d" },
+//     { name: "Nghỉ làm", value: 3, color: "#f44336" },
+//   ],
+//   semester: [
+//     { name: "Đúng giờ", value: 52, color: "#00cc00" },
+//     { name: "Trễ", value: 7, color: "#fbc02d" },
+//     { name: "Nghỉ làm", value: 5, color: "#f44336" },
+//   ],
+// };
 
-export default function ChartDetails() {
+export default function ChartDetails({attendanceData}) {
   const [selectedTab, setSelectedTab] = useState("week");
+
 
   const tabs = [
     { key: "week", label: "Tuần" },

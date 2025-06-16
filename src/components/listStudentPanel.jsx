@@ -30,20 +30,52 @@ function ListStudentPanel() {
         Truong:'',
         KyThucTap:''
       })
+      const fetchStudents = () => {
+  setLoading(true);
+  axiosClient
+    .get(`/sinhviens/lay-danh-sach-sinh-vien`, {
+      params: {
+        page: currentPage,
+        per_page: 10,
+        search: searchTerm,
+        vi_tri: filters.viTri,
+        truong: filters.Truong,
+        ky_thuc_tap: filters.KyThucTap,
+      },
+    })
+    .then((res) => {
+      setStudent(res.data.data.data);
+      setTotalPages(res.data.data.last_page);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => setLoading(false));
+};
+
+
+
+
+       const handleDelete = (id) => {
+        axiosClient.delete(`/sinhviens/${id}`)
+          .then(res => {
+            alert("Xóa thành công!");
+            fetchStudents(); //
+          })
+          .catch(err => {
+            alert("Xóa thất bại: " + (err?.response?.data?.message || err.message));
+          });
+      };
       
  
 
       
-        const handleOpenDialog = () => {
+        const handleOpenDialog = (id) => {
           showDialog({
             title: "Xác nhận xóa thông tin",
             content: "Sau khi bạn xóa thông tin, thông tin của sinh viên thực tập sẽ được xóa khỏi danh sách sinh viên. Hãy kiểm tra kỹ.",
-            icon: <BsFillPeopleFill />, // ✅ Truyền icon tại đây
+            icon: <BsFillPeopleFill />, 
             confirmText: "Có, xóa sinh viên",
             cancelText: "Không, tôi muốn kiểm tra lại",
-            onConfirm: () => {
-              console.log("Đã xóa sinh viên");
-            },
+            onConfirm: () => handleDelete(id),
           });
         };
       
@@ -73,24 +105,7 @@ useEffect(() => {
 
 useEffect(() => {
   const delayDebounce = setTimeout(() => {
-    setLoading(true);    
-    axiosClient
-      .get(`/sinhviens/lay-danh-sach-sinh-vien`, {
-        params: {
-          page: currentPage,
-          per_page: 10,
-          search: searchTerm,
-       vi_tri: filters.viTri,
-    truong: filters.Truong,
-    ky_thuc_tap: filters.KyThucTap,
-        },
-      })
-      .then((res) => {
-        setStudent(res.data.data.data);
-        setTotalPages(res.data.data.last_page);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    fetchStudents();
   }, 500); // debounce 500ms
 
   return () => clearTimeout(delayDebounce);
@@ -106,6 +121,8 @@ useEffect(() => {
   navigate(`/admin/list/student-details/${id}`);
 };
   const handleEdit = (id) => {
+  console.log(id);
+  
   navigate(`/admin/list/edit-student/${id}`);
 };
   const statusStyle = (status) =>
@@ -190,18 +207,18 @@ useEffect(() => {
                       </span>
                     </td>
                     <td className="flex gap-2">
-                      <button onClick={() => handleView(s.studentId)} className="text-xl cursor-pointer">
+                      <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
                           <RiEyeLine />
                       </button>
                       <button
                       onClick={()=>{
-                        handleEdit(s.studentId)
+                        handleEdit(s.maSV)
                       }}
                       className="text-xl cursor-pointer">
                           <CiEdit />
                       </button>
                       <button 
-                      onClick={handleOpenDialog}
+                      onClick={() => handleOpenDialog(s.maSV)}
                       className="text-xl cursor-pointer">
                          <RiDeleteBin6Line />
                       </button>

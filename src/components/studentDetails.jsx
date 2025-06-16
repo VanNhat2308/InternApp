@@ -13,14 +13,51 @@ import ChartDetails from "./ChartDetails";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { useDialog } from "../context/dialogContext";
 import { useNavigate, useParams } from "react-router-dom";
+import axiosClient from "../service/axiosClient";
 function StudentDetails() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
-  const [chuyenCan, setChuyenCan] = useState(false);
-  const { showDialog } = useDialog();
-  const { idSlug } = useParams();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1025)
+  const [chuyenCan, setChuyenCan] = useState(false)
+  const { showDialog } = useDialog()
+  const { idSlug } = useParams()
   const navigate = useNavigate()
+  const [students,setStudent] = useState([])
+  const [attendanceData,setAttendanceData] = useState()
+  const semesterData = attendanceData?.semester || [];
 
-  
+  const dungGio = semesterData.find(item => item.name === "Đúng giờ")?.value || 0;
+  const tongBuoi = semesterData.reduce((sum, item) => sum + item.value, 0);
+  const DiemchuyenCan = tongBuoi ? ((dungGio / tongBuoi) * 100).toFixed(0) : 0;
+
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [studentRes, attendanceRes] = await Promise.all([
+          axiosClient.get(`sinhviens/${idSlug}`),
+          axiosClient.get(`diem-danh/thong-ke/${idSlug}`)
+        ]);
+
+        setStudent(studentRes.data.data);
+        setAttendanceData(attendanceRes.data.data);
+      } catch (err) {
+        console.log("Lỗi khi fetch dữ liệu:", err);
+      }
+    };
+
+    if (idSlug) fetchData();
+  }, [idSlug]);
+
+ const handleDelete = () => {
+  axiosClient.delete(`/sinhviens/${idSlug}`)
+    .then(res => {
+      alert("Xóa thành công!");
+      navigate('/admin/list');
+    })
+    .catch(err => {
+      alert("Xóa thất bại: " + (err?.response?.data?.message || err.message));
+    });
+};
+
 
   const handleOpenDialog = () => {
     showDialog({
@@ -30,7 +67,7 @@ function StudentDetails() {
       confirmText: "Có, xóa sinh viên",
       cancelText: "Không, tôi muốn kiểm tra lại",
       onConfirm: () => {
-        console.log("Đã xóa sinh viên");
+       handleDelete()
       },
     });
   };
@@ -49,6 +86,18 @@ function StudentDetails() {
     const handleEdit = (idSlug) => {
   navigate(`/admin/list/edit-student/${idSlug}`);
 };
+const getStatusColor = (status) => {
+  if (!status) return 'text-gray-500';
+
+  const normalized = status.trim().toLowerCase();
+
+  if (normalized === 'đang thực tập') {
+    return 'text-green-500'; 
+  }
+
+  return 'text-red-500';
+};
+
   return (
     <div className="flex-1">
       {isMobile ? (
@@ -71,19 +120,19 @@ function StudentDetails() {
               className="w-20 aspect-square rounded-md border border-gray-300"
             />
             <div>
-              <h1 className="text-xl font-bold">PHAM VAN A</h1>
+              <h1 className="text-xl font-bold">{students?.hoTen}</h1>
               <h4
                 className="flex
             items-center gap-1 text-lg text-gray-600"
               >
-                <RiShoppingBag3Line className="text-2xl" /> Graphic Designer
+                <RiShoppingBag3Line className="text-2xl" /> {students?.viTri}
               </h4>
               <h4
                 className="flex
             items-center gap-1 text-lg text-gray-600"
               >
                 <MdOutlineEmail className="text-2xl" />
-                phamvana123@gmail.com
+               {students?.email}
               </h4>
             </div>
           </div>
@@ -137,28 +186,28 @@ function StudentDetails() {
                     <div className="w-5 h-5 rounded-full bg-green-400"></div>
                     <span>Đi làm đúng giờ</span>
                   </div>
-                  <div className="text-2xl font-semibold">18</div>
+                  <div className="text-2xl font-semibold">{attendanceData?.month[0]?.value}</div>
                 </div>
                 <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
                   <div className="flex gap-2 items-center">
                     <div className="w-5 h-5 rounded-full bg-yellow-500"></div>
                     <span>Đi làm trễ</span>
                   </div>
-                  <div className="text-2xl font-semibold">4</div>
+                  <div className="text-2xl font-semibold">{attendanceData?.month[1]?.value}</div>
                 </div>
                 <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
                   <div className="flex gap-2 items-center">
                     <div className="w-5 h-5 rounded-full bg-red-500"></div>
                     <span>Nghỉ học</span>
                   </div>
-                  <div className="text-2xl font-semibold">3</div>
+                  <div className="text-2xl font-semibold">{attendanceData?.month[2]?.value}</div>
                 </div>
               </div>
               <h1 className="text-xl font-bold">Thống kê chuyên cần</h1>
               <div className="flex gap-10 mt-5">
                 {/* bar chart */}
                 <div>
-                <ChartDetails/>
+                <ChartDetails attendanceData={attendanceData}/>
 
                 </div>
                
@@ -167,15 +216,15 @@ function StudentDetails() {
                         <h1 className="font-bold text-xl">
                             Mức độ <br /> chuyên cần
                         </h1>
-                        <h1 className="text-3xl font-bold">88%</h1>
-                        <h6 className="text-lg">22/25 buổi</h6>
+                        <h1 className="text-3xl font-bold">{DiemchuyenCan}%</h1>
+                        <h6 className="text-lg">{dungGio}/{tongBuoi} buổi</h6>
 
                     </div>
                     <div className="p-3 border border-gray-300 rounded-xl">
                         <h1 className="font-bold text-xl">
                             Điểm số tổng hợp
                         </h1>
-                        <h1 className="text-3xl font-bold">8.5/10</h1>
+                        <h1 className="text-3xl font-bold">{(DiemchuyenCan / 10).toFixed(1)}/10</h1>
                   
 
                     </div>
@@ -189,47 +238,50 @@ function StudentDetails() {
             <div className="grid grid-cols-2 gap-6 text-sm flex-1">
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Họ Tên</p>
-                <p className="font-medium text-lg">Phạm Văn A</p>
+                <p className="font-medium text-lg">{students?.hoTen}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Thời Gian Thực Tập</p>
-                <p className="font-medium text-lg">3 tháng</p>
+                <p className="font-medium text-lg">{students?.thoiGianTT}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Mã Số Sinh Viên</p>
-                <p className="font-medium text-lg">2174802010284</p>
+                <p className="font-medium text-lg">{students?.maSV}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Giáo Viên Hướng Dẫn</p>
-                <p className="font-medium text-lg">Lý Thị Huyền Châu</p>
+                <p className="font-medium text-lg">{students?.tenGiangVien}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Trường Đại Học</p>
-                <p className="font-medium text-lg">VanLang University</p>
+                <p className="font-medium text-lg">{students?.truong?.tenTruong}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Ngày Sinh</p>
-                <p className="font-medium text-lg">01/01/2003</p>
+                <p className="font-medium text-lg">{students?.ngaySinh}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Chuyên Ngành</p>
-                <p className="font-medium text-lg">Công nghệ phần mềm</p>
+                <p className="font-medium text-lg">{students?.nganh}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Vị Trí Thực Tập</p>
-                <p className="font-medium text-lg">Graphic Designer</p>
+                <p className="font-medium text-lg">{students?.viTri}</p>
               </div>
 
               <div className="p-2 border-b border-gray-300">
                 <p className="text-gray-400">Trạng Thái</p>
-                <p className="font-medium text-lg text-green-500">Đang Thực Tập</p>
+                <p className={`font-medium text-lg ${getStatusColor(students?.trangThai)}`}>
+  {students?.trangThai || 'Không rõ'}
+</p>
+
               </div>
             </div>
           )}
