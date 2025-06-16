@@ -6,7 +6,7 @@ import { MdOutlineDone } from "react-icons/md";
 import Header from "./header";
 import { MdChevronRight } from "react-icons/md";
 import ResponNav from "../components/responsiveNav";
-import { BsFillPeopleFill } from "react-icons/bs";
+import { BsEyeFill, BsFillPeopleFill } from "react-icons/bs";
 import { FaTrashCan } from "react-icons/fa6";
 import { FaFileAlt, FaFilePdf } from "react-icons/fa";
 import { IoCamera } from "react-icons/io5";
@@ -82,41 +82,27 @@ function AddStudentPanel() {
   //
   // handle upload file
 
-  const handleUpload = async () => {
-    const formData = new FormData();
+ const handleUpload = async () => {
+  const formData = new FormData();
 
-    if (avatarFile) {
-      formData.append("avatar", avatarFile);
-    }
+  if (avatarFile) formData.append("avatar", avatarFile);
+  if (CVfile) formData.append("cv", CVfile);
 
-    if (CVfile) {
-      formData.append("cv", CVfile);
-    }
+  try {
+    const res = await axiosClient.post("/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (e) => {
+        const percent = Math.round((e.loaded * 100) / e.total);
+        setProgress(percent);
+      },
+    });
 
-    try {
-      const res = await axiosClient.post("/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: (progressEvent) => {
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setProgress(percent);
-        },
-      });
-          const { avatar, cv } = res.data.paths;
+    console.log("Response data upload:", res.data);
 
-    // Gán path vào form:
-    setForm(prev => ({
-      ...prev,
-      duLieuKhuonMat: avatar,
-      cV: cv,
-    }));
+    const { avatar, cv } = res.data.paths || res.data;
 
-    console.log("Gán xong path vào form")
-    } catch (error) {
-  
+    return { avatar, cv };
+  } catch (error) {
     const message =
       error.response?.data?.message ||
       error.response?.data?.errors?.avatar?.[0] ||
@@ -125,11 +111,12 @@ function AddStudentPanel() {
       "Đã xảy ra lỗi không xác định.";
 
     alert("Lỗi upload: " + message);
-    throw error; 
+    throw error;
   }
-  };
+};
 
-  const handleSubmitForm = async () => {
+
+const handleSubmitForm = async () => {
   try {
     const res = await axiosClient.post("/sinhviens", form); // API bạn cần
 
@@ -151,13 +138,24 @@ function AddStudentPanel() {
 };
 const handleConfirmAddStudent = async () => {
   try {
-    await handleUpload();
-    await handleSubmitForm();
+    const { avatar, cv } = await handleUpload(); // lấy path từ server trả về
+
+    const formToSend = {
+      ...form,
+      duLieuKhuonMat: avatar,
+      cV: cv,
+    };
+
+    console.log("Form chuẩn bị gửi:", formToSend); // kiểm tra
+
+    await axiosClient.post("/sinhviens", formToSend);
+
     setToast(true);
   } catch (error) {
-     alert(`Lỗi: ${error.message}`);
+    alert(`Lỗi: ${error.message}`);
   }
 };
+
 
     //  dialog
   const handleOpenDialog = () => {
@@ -363,13 +361,21 @@ const handleInputForm = (e) => {
                     />
                   </div>
                 </div>
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  onClick={handleRemove}
-                  aria-label="Xóa file"
-                >
-                  <FaTrashCan className="w-5 h-5" />
-                </button>
+                 <div className="flex gap-1 items-center">
+                                <button
+                                          className="cursor-pointer text-green-500"
+                                          onClick={() => window.open(URL.createObjectURL(CVfile), '_blank')}
+                                        >
+                                         <BsEyeFill className="text-2xl"/>
+                                        </button>
+                                <button
+                                  className="text-red-500 hover:text-red-700 cursor-pointer"
+                                  onClick={handleRemove}
+                                  aria-label="Xóa file"
+                                >
+                                  <FaTrashCan className="w-5 h-5" />
+                                </button>
+                              </div>
               </div>
             </div>
           )}

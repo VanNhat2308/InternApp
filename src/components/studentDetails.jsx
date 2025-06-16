@@ -22,6 +22,8 @@ function StudentDetails() {
   const navigate = useNavigate()
   const [students,setStudent] = useState([])
   const [attendanceData,setAttendanceData] = useState()
+  const apiBaseURL = import.meta.env.VITE_API_BASE_URL
+
   const semesterData = attendanceData?.semester || [];
 
   const dungGio = semesterData.find(item => item.name === "Đúng giờ")?.value || 0;
@@ -115,7 +117,7 @@ const getStatusColor = (status) => {
           {/* avartar */}
           <div className="flex gap-2 ">
             <img
-              src={avatar}
+              src={students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}`:avatar}
               alt="avartar"
               className="w-20 aspect-square rounded-md border border-gray-300"
             />

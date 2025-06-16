@@ -8,11 +8,25 @@ import Pagination from "./pagination";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { useDialog } from "../context/dialogContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axiosClient from "../service/axiosClient";
 
 function ApprovalPanel() {
       const {toggleFilter} = useFilter()
       const { showDialog } = useDialog();
       const navigate = useNavigate()
+      const[students,setStudent] = useState([]);
+      const [currentPage, setCurrentPage] = useState(1);
+      const [totalPages, setTotalPages] = useState(1); 
+      const [loading, setLoading] = useState(false)
+      const [searchTerm, setSearchTerm] = useState('');
+      const { filterValues } = useFilter();
+      // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
+      const [filters,setFilters] = useState({
+              viTri:'',
+              Truong:'',
+              KyThucTap:''
+            })
       const applications = [
   {
     avatar: avatar,
@@ -114,6 +128,48 @@ function ApprovalPanel() {
     status: 'Đã Duyệt'
   },
 ];
+     const fetchStudents = () => {
+  setLoading(true);
+  axiosClient
+    .get(`/hoso/lay-danh-sach-ho-so`, {
+      params: {
+        page: currentPage,
+        per_page: 10,
+        search: searchTerm,
+        vi_tri: filters.viTri,
+        truong: filters.Truong,
+        ky_thuc_tap: filters.KyThucTap,
+      },
+    })
+    .then((res) => {
+      setStudent(res.data.data.data);
+      setTotalPages(res.data.data.last_page);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => setLoading(false));
+};
+// Đồng bộ mỗi khi filterValues thay đổi
+useEffect(() => {
+  const selectedPositions = Object.keys(filterValues.positions || {}).filter(key => filterValues.positions[key]);
+  const selectedUniversities = Object.keys(filterValues.universities || {}).filter(key => filterValues.universities[key]);
+  const term = filterValues.term !== "Tất cả" ? filterValues.term : '';
+
+  
+  setFilters({
+    viTri: selectedPositions.join(','),
+    Truong: selectedUniversities.join(','),
+    KyThucTap: term
+  });
+}, [filterValues]);
+
+useEffect(() => {
+  const delayDebounce = setTimeout(() => {
+    fetchStudents();
+  }, 500); // debounce 500ms
+
+  return () => clearTimeout(delayDebounce);
+}, [searchTerm, currentPage, filters]);
+
   
         const handleOpenDialog = () => {
           showDialog({
@@ -131,7 +187,7 @@ function ApprovalPanel() {
   navigate(`/admin/approval/approval-details/${id}`);
 };
   const statusStyle = (status) =>
-    status === "Đã Duyệt"
+    status === "Đã duyệt"
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
 
@@ -143,6 +199,8 @@ function ApprovalPanel() {
                 {/* search */}
                 <div className="h-full relative flex-1">
                   <input
+                   value={searchTerm}
+                   onChange={(e) => setSearchTerm(e.target.value)}
                     type="text"
                     placeholder="Tìm kiếm"
                     className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
@@ -159,7 +217,18 @@ function ApprovalPanel() {
               </div>
               {/* table */}
             
-               <div className="overflow-x-auto mt-10">
+               {loading? (
+                 <div className="flex justify-center items-center py-10">
+        <div role="status">
+    <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    <span className="sr-only">Loading...</span>
+</div>
+        </div>
+               ):
+                (<div className="overflow-x-auto mt-10">
                  <table className="lg:w-full min-w-[800px] text-sm table-auto">
                     <thead className="text-left text-gray-500 border-b border-b-gray-300">
                       <tr>
@@ -172,28 +241,28 @@ function ApprovalPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {applications.map((a, idx) => {
+                      {students.map((s, idx) => {
                         return (
                           <tr key={idx} className="border-b border-b-gray-300">
                             <td className="py-2 flex gap-2 items-center">
                               <img src={avatar} className="w-7" alt="ava" />
-                              {a.name}
+                              {s?.sinh_vien?.hoTen}
                             </td>
-                            <td>{a.date}</td>
-                            <td>{a.position}</td>
-                            <td>{a.university}</td>
+                            <td>{s.ngayNop}</td>
+                            <td>{s?.sinh_vien?.viTri}</td>
+                            <td>{s?.sinh_vien?.truong?.tenTruong}</td>
                             <td>
                               {" "}
                               <span
                                 className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                                  a.status
+                                  s.trangThai
                                 )}`}
                               >
-                                {a.status}
+                                {s.trangThai}
                               </span>
                             </td>
                             <td className="flex gap-2">
-                              <button onClick={() => handleView(a.mssv)} className="text-xl cursor-pointer">
+                              <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
                                   <RiEyeLine />
                               </button>
     
@@ -208,8 +277,8 @@ function ApprovalPanel() {
                       })}
                     </tbody>
                   </table>
-                </div>
-              <Pagination totalPages={5} />
+                </div>)}
+             <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
         
             </div>
      );

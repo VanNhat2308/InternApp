@@ -25,6 +25,7 @@ function ListStudentPanel() {
       const [loading, setLoading] = useState(false)
       const [searchTerm, setSearchTerm] = useState('');
       const { filterValues } = useFilter();
+      const apiBaseURL = import.meta.env.VITE_API_BASE_URL
       const [filters,setFilters] = useState({
         viTri:'',
         Truong:'',
@@ -120,9 +121,7 @@ useEffect(() => {
   const handleView = (id) => {
   navigate(`/admin/list/student-details/${id}`);
 };
-  const handleEdit = (id) => {
-  console.log(id);
-  
+  const handleEdit = (id) => {  
   navigate(`/admin/list/edit-student/${id}`);
 };
   const statusStyle = (status) =>
@@ -190,7 +189,10 @@ useEffect(() => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
                     <td className="py-2 flex gap-2 items-center">
-                      <img src={avatar} className="w-7" alt="ava" />
+                      <img 
+                      src={avatar}
+                      // src={s.duLieuKhuonMat ? `${apiBaseURL}/${s.duLieuKhuonMat}`:avatar}
+                      className="w-7" alt="ava" />
                       {s.hoTen}
                     </td>
                     <td>{s.maSV}</td>

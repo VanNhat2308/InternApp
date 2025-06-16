@@ -2,15 +2,22 @@ import { MdOutlineDone, MdOutlineEmail } from "react-icons/md";
 import { RiShoppingBag3Line } from "react-icons/ri";
 import avatar from '../assets/images/avatar.png'
 import { MdOutlineCancel } from "react-icons/md";
-import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { useDialog } from "../context/dialogContext";
-import { BsFillPeopleFill } from "react-icons/bs";
+import { BsEyeFill, BsFillPeopleFill } from "react-icons/bs";
 import { useToast } from "../context/toastContext";
 import Toast from "./toast";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axiosClient from "../service/axiosClient";
+import { FaFileAlt } from "react-icons/fa";
+
 function ApprovalDetails() {
 
     const { showDialog } = useDialog();
-      const {isToast,setToast} = useToast()
+    const {isToast,setToast} = useToast()
+    const { idSlug } = useParams()
+    const [students,setStudent] = useState([])
+    const apiBaseURL = import.meta.env.VITE_API_BASE_URL
  const handleOpenDialog = () => {
           showDialog({
             title: "Duyệt hồ sơ sinh viên",
@@ -23,6 +30,31 @@ function ApprovalDetails() {
             },
           });
         };
+          useEffect(() => {
+            const fetchData = async () => {
+              try {
+                const studentRes = await axiosClient.get(`sinhviens/${idSlug}`)
+                setStudent(studentRes.data.data);
+              } catch (err) {
+                console.log("Lỗi khi fetch dữ liệu:", err);
+              }
+            };
+        
+            if (idSlug) fetchData();
+          }, [idSlug]);
+
+          const getStatusColor = (status) => {
+  if (!status) return 'text-gray-500';
+
+  const normalized = status.trim().toLowerCase();
+
+  if (normalized === 'đang thực tập') {
+    return 'text-green-500'; 
+  }
+
+  return 'text-red-500';
+};
+
 
     return (
         <>
@@ -46,24 +78,24 @@ function ApprovalDetails() {
               {/* avartar */}
               <div className="flex gap-2 ">
                 <img
-                  src={avatar}
+                  src={students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}`:avatar}
                   alt="avartar"
-                  className="w-20 aspect-square rounded-md border border-gray-300"
+                  className="w-20 aspect-square rounded-md border border-gray-300 object-cover"
                 />
                 <div>
-                  <h1 className="text-xl font-bold">PHAM VAN A</h1>
+                  <h1 className="text-xl font-bold">{students?.hoTen}</h1>
                   <h4
                     className="flex
                 items-center gap-1 text-lg text-gray-600"
                   >
-                    <RiShoppingBag3Line className="text-2xl" /> Graphic Designer
+                    <RiShoppingBag3Line className="text-2xl" /> {students?.viTri}
                   </h4>
                   <h4
                     className="flex
                 items-center gap-1 text-lg text-gray-600"
                   >
                     <MdOutlineEmail className="text-2xl" />
-                    phamvana123@gmail.com
+                    {students?.email}
                   </h4>
                 </div>
               </div>
@@ -89,52 +121,81 @@ function ApprovalDetails() {
                 <div className="grid grid-cols-2 gap-6 text-sm flex-1">
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Họ Tên</p>
-                    <p className="font-medium text-lg">Phạm Văn A</p>
+                    <p className="font-medium text-lg">{students?.hoTen}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Thời Gian Thực Tập</p>
-                    <p className="font-medium text-lg">3 tháng</p>
+                    <p className="font-medium text-lg">{students?.thoiGianTT}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Mã Số Sinh Viên</p>
-                    <p className="font-medium text-lg">2174802010284</p>
+                    <p className="font-medium text-lg">{students?.maSV}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Giáo Viên Hướng Dẫn</p>
-                    <p className="font-medium text-lg">Lý Thị Huyền Châu</p>
+                    <p className="font-medium text-lg">{students?.tenGiangVien}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Trường Đại Học</p>
-                    <p className="font-medium text-lg">VanLang University</p>
+                    <p className="font-medium text-lg">{students?.truong?.tenTruong}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Ngày Sinh</p>
-                    <p className="font-medium text-lg">01/01/2003</p>
+                    <p className="font-medium text-lg">{students?.ngaySinh}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Chuyên Ngành</p>
-                    <p className="font-medium text-lg">Công nghệ phần mềm</p>
+                    <p className="font-medium text-lg">{students?.nganh}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Vị Trí Ứng Tuyển</p>
-                    <p className="font-medium text-lg">Graphic Designer</p>
+                    <p className="font-medium text-lg">{students?.viTri}</p>
                   </div>
     
                   <div className="p-2 border-b border-gray-300">
                     <p className="text-gray-400">Trạng Thái</p>
-                    <p className="font-medium text-lg text-green-500">Đang Thực Tập</p>
+      <p className={`font-medium text-lg ${getStatusColor(students?.trangThai)}`}>
+  {students?.trangThai || 'Không rõ'}</p>
                   </div>
                 </div>
                 <div className="mt-7">
                     <h2 className="text-lg font-semibold">CV Của Ứng Viên</h2>
                     {/* cv here */}
+                    {students.cV ? (
+    <div className="w-full lg:w-[60%] lg:mx-auto border border-green-400 rounded-lg p-4 relative bg-green-50">
+      <div className="flex items-center space-x-4">
+        <FaFileAlt className="text-orange-400" />
+        <div className="flex-1">
+          <p className="font-medium text-sm">
+            {students.cV.split("/").pop()}
+          </p>
+        </div>
+        <div className="flex gap-1 items-center">
+          <button
+            className="cursor-pointer text-green-500"
+            onClick={() => {
+              window.open(`${apiBaseURL}/${students.cV}`, "_blank");
+            }}
+            aria-label="Xem file"
+          >
+            <BsEyeFill className="text-2xl" />
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="text-center text-gray-500 italic mt-4">
+      Không có CV
+    </div>
+  )}
+
                 </div>
             
             </div>
