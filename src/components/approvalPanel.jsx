@@ -27,107 +27,7 @@ function ApprovalPanel() {
               Truong:'',
               KyThucTap:''
             })
-      const applications = [
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Phạm Văn A',
-    date: '05/05/2025',
-    position: 'Graphic Designer',
-    university: 'VLU',
-    status: 'Đã Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Lê Thị B',
-    date: '05/05/2025',
-    position: 'Business Analyst',
-    university: 'UEF',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Trần Văn C',
-    date: '05/05/2025',
-    position: 'Tester',
-    university: 'UEF',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Lê Văn D',
-    date: '04/04/2025',
-    position: 'Front-end Developer',
-    university: 'VLU',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Nguyễn Văn Z',
-    date: '04/04/2025',
-    position: 'Back-end Developer',
-    university: 'UEH',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Trần Văn Q',
-    date: '04/04/2025',
-    position: 'Back-end Developer',
-    university: 'UEH',
-    status: 'Đã Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Trần Văn B',
-    date: '02/02/2025',
-    position: 'Digital Marketing',
-    university: 'VLU',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Phạm Văn ABC',
-    date: '02/02/2025',
-    position: 'Graphic Designer',
-    university: 'UEL',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Phạm Văn A',
-    date: '28/04/2025',
-    position: 'Graphic Designer',
-    university: 'VLU',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Phạm Văn A',
-    date: '28/04/2025',
-    position: 'Graphic Designer',
-    university: 'VLU',
-    status: 'Chưa Duyệt'
-  },
-  {
-    avatar: avatar,
-    mssv:21117081,
-    name: 'Phạm Văn A',
-    date: '28/04/2025',
-    position: 'Graphic Designer',
-    university: 'VLU',
-    status: 'Đã Duyệt'
-  },
-];
+
      const fetchStudents = () => {
   setLoading(true);
   axiosClient
@@ -170,17 +70,25 @@ useEffect(() => {
   return () => clearTimeout(delayDebounce);
 }, [searchTerm, currentPage, filters]);
 
-  
-        const handleOpenDialog = () => {
+
+const handleReject = async (maSV) => {
+  try {
+    await axiosClient.delete(`sinhviens/${maSV}`);
+    fetchStudents();
+    alert("Đã xóa sinh viên");
+  } catch (error) {
+    console.error("Lỗi khi từ chối (xoá sinh viên):", error);
+  }
+};
+
+        const handleOpenDialog = (maSV) => {
           showDialog({
             title: "Xác nhận xóa thông tin",
             content: "Sau khi bạn xóa thông tin, thông tin của sinh viên thực tập sẽ được xóa khỏi danh sách sinh viên. Hãy kiểm tra kỹ.",
             icon: <BsFillPeopleFill />, // ✅ Truyền icon tại đây
             confirmText: "Có, xóa sinh viên",
             cancelText: "Không, tôi muốn kiểm tra lại",
-            onConfirm: () => {
-              console.log("Đã xóa sinh viên");
-            },
+            onConfirm: () => handleReject(maSV),
           });
         };
           const handleView = (id) => {
@@ -267,7 +175,7 @@ useEffect(() => {
                               </button>
     
                               <button 
-                              onClick={handleOpenDialog}
+                              onClick={()=>handleOpenDialog(s?.sinh_vien?.maSV)}
                               className="text-xl cursor-pointer">
                                  <RiDeleteBin6Line />
                               </button>
