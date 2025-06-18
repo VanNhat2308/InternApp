@@ -8,48 +8,35 @@ import Toast from "./toast";
 import { MdOutlineDone } from "react-icons/md";
 import { BsListTask } from "react-icons/bs";
 import TaskCard from "./taskCard";
+import { useEffect, useState } from "react";
+import axiosClient from "../service/axiosClient";
+import Pagination from "./pagination";
 function TaskPanel() {
     const { showDialog,hideDialog } = useDialog()
     const {isToast,setToast} = useToast()
-    const tasks = [
-  {
-    id: 1,
-    status: "Chưa nộp",
-    statusColor: "#FCBE12",
-    title: "Làm báo cáo lần 2",
-    commentCount: 2,
-    tagBg: "#FCBE12",
-    tagText: "Chưa nộp",
-    priority: "Cao",
-    date: "18 April",
-    avatars: [taskAva, taskAva, taskAva],
-  },
-  {
-    id: 2,
-    status: "Nộp trễ",
-    statusColor: "#f87171",
-    title: "Làm báo cáo lần 2",
-    commentCount: 2,
-    tagBg: "#fb2c36",
-    tagText: "Nộp trễ",
-    priority: "Cao",
-    date: "18 April",
-    avatars: [taskAva, taskAva, taskAva],
-  },
-  {
-    id: 3,
-    status: "Đã nộp",
-    statusColor: "#4ade80",
-    title: "Làm báo cáo lần 2",
-    commentCount: 2,
-    tagBg: "#f3f4f6",
-    tagText: "xong",
-    tagTextColor: "text-green-400 font-semibold",
-    priority: "Cao",
-    date: "18 April",
-    avatars: [taskAva, taskAva, taskAva],
-  },
-];
+    const [tasks, setTasks] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [loading, setLoading] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('')
+
+ const fetchStudents = () => {
+      setLoading(true);
+      axiosClient.get('student/tasks',{
+        params:{
+            page: currentPage,
+            search: searchTerm
+        }
+      }).then((res)=>{
+        setTasks(res.data.data)
+        setTotalPages(res.data.last_page);
+        
+      }).catch((err) => console.log(err))
+    .finally(() => setLoading(false))
+    }
+
+
+
           const handleOpenDialog = () => {
              showDialog({
                title: "Tạo Task",
@@ -77,6 +64,14 @@ function TaskPanel() {
                      },
                    });
                  };
+            
+useEffect(() => {
+  const delayDebounce = setTimeout(() => {
+    fetchStudents();
+  }, 500); // debounce 500ms
+
+  return () => clearTimeout(delayDebounce);
+}, [searchTerm, currentPage]);
                
     return ( 
         <div>
@@ -93,12 +88,13 @@ function TaskPanel() {
                   </div>
                 </Toast>:""
                 }
-         <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
+         <div className="p-4 w-full max-w-screen h-fit  mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
         {/* search */}
         <div className="h-full relative flex-1">
           <input
+            onChange={(e)=>setSearchTerm(e.target.value)}
             type="text"
             placeholder="Tìm kiếm"
             className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
@@ -114,11 +110,12 @@ function TaskPanel() {
    
       
       </div>
-         <div className="flex gap-2 mt-5">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4 mt-5">
       {tasks.map((task) => (
         <TaskCard key={task.id} task={task} />
       ))}
     </div>
+        <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
    
     
        

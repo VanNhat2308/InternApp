@@ -40,7 +40,6 @@ function ReportPanel() {
       },
     })
     .then((res) => {
-      console.log("Response data:", res.data);
       setStudent(res.data.baoCaos.data); // ✅ Sửa đúng path
       setTotalPages(res.data.baoCaos.last_page || 1); // nếu backend có `last_page`, còn không giữ 1
     })

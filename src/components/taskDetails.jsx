@@ -4,11 +4,73 @@ import { FiSend } from "react-icons/fi";
 import avatar from "../assets/images/avatar.png"; // ảnh đại diện
 
 import { FaRegTrashCan } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import axiosClient from "../service/axiosClient";
+import { useNavigate, useParams } from "react-router-dom";
 
 function TaskDetails() {
  const [isScore,SetScore] = useState(false)
-const handleScore = () => SetScore(prev => !prev);
+ const newScore = useRef(null)
+ const navigate = useNavigate()
+ const handleScore = () =>{ 
+  axiosClient.put(`/tasks/diem-so/${idSlug}`, {
+  diemSo: newScore.current.value
+})
+.then(
+  alert("Cập nhật điểm số thành công")
+)
+.catch(err => console.error(err));
+
+  SetScore(prev => !prev)
+}
+ const {idSlug} = useParams()
+ const [task,setTask] = useState({})
+ useEffect(()=>{
+  axiosClient.get(`tasks/${idSlug}`)
+  .then((res)=>{
+    setTask(res.data.data)
+    if(res.data.data.diemSo!==null){
+      SetScore(true)
+    }
+  })
+  .catch((err)=>{
+    console.log(err);
+  })
+ },[])
+ const getStatusColor = (trangThai) => {
+  switch (trangThai) {
+    case "Chưa nộp":
+      return "#FCBE12"; // vàng nhạt
+    case "Đã nộp":
+      return "#3FC28A"; // xanh nhạt
+    case "Nộp trễ" :
+      return "#F45B69"; // đỏ nhạt
+    default:
+      return "#E5E7EB"; // xám nhạt
+  }
+};
+const getPriorityColor = (p) => {
+  switch (p) {
+    case "Trung bình":
+      return "#FCBE12"; // vàng nhạt
+    case "Thấp":
+      return "#3FC28A"; // xanh nhạt
+    case "Cao":
+      return "#F45B69"; // đỏ nhạt
+    default:
+      return "#E5E7EB"; // xám nhạt
+  }
+};
+const handleDel = (idSlug)=>{
+  axiosClient.delete(`/tasks/${idSlug}`)
+  .then(res => {
+    alert("Xóa task thành công")
+    navigate('/admin/task')
+    // có thể setToast hoặc gọi lại danh sách
+  })
+  .catch(err => console.error(err));
+
+}
 
   return (
     <div className="mt-8 p-4 border border-gray-300 bg-white rounded-xl shadow">
@@ -19,20 +81,24 @@ const handleScore = () => SetScore(prev => !prev);
             <LuShoppingBag className="text-3xl" />
           </div>
           <div>
-            <h2 className="text-xl font-bold">Thiết kế giao diện app</h2>
+            <h2 className="text-xl font-bold">{task.tieuDe}</h2>
             <div className="flex flex-col gap-2 text-sm text-gray-500 mt-1">
               <div className="flex items-center gap-1">
                   <FaRegCalendarAlt />
-                  <span>26 April</span>
+                  <span>{new Date(task.hanHoanThanh).toLocaleDateString("vi-VN")}</span>
               </div>
               <div>
-                  <span className="px-3 py-1 bg-yellow-400 text-white rounded-full text-xs mr-2">Chưa nộp</span>
-                  <span className="inline-block px-3 py-1 bg-red-500 text-white rounded-full text-xs"><div className="flex items-center gap-1"><FaFlag/>Cao</div></span>
+                  <span 
+                   style={{ backgroundColor: getStatusColor(task.trangThai) }}
+                  className="px-3 py-1 text-white rounded-full text-xs mr-2">{task.trangThai}</span>
+                  <span 
+                   style={{background:`${getPriorityColor(task.doUuTien)}`}}
+                  className="inline-block px-3 py-1 text-white rounded-full text-xs"><div className="flex items-center gap-1"><FaFlag/>{task.doUuTien}</div></span>
               </div>
             </div>
           </div>
         </div>
-        <button className="py-2 px-4 border border-gray-300 rounded-md text-lg cursor-pointer flex items-center gap-2 hover:text-red-700">
+        <button onClick={()=>handleDel(idSlug)} className="py-2 px-4 border border-gray-300 rounded-md text-lg cursor-pointer flex items-center gap-2 hover:text-red-700">
           <FaRegTrashCan /> Xóa
         </button>
       </div>
@@ -40,7 +106,7 @@ const handleScore = () => SetScore(prev => !prev);
       {/* Mô tả */}
       <div className="mb-4 pb-5 border-b border-gray-300">
         <h3 className="font-bold text-lg">Mô tả</h3>
-        <p className="text-gray-600 text-base">Tạo và thiết kế giao diện cho ứng dụng quản lý thực tập sinh</p>
+        <p className="text-gray-600 text-base">{task.noiDung}</p>
       </div>
 
       {/* Thực hiện */}
@@ -49,8 +115,8 @@ const handleScore = () => SetScore(prev => !prev);
         <div className="flex items-center gap-3">
           <img src={avatar} alt="avatar" className="w-10 h-10 border rounded-full object-cover" />
           <div>
-            <div className="font-semibold text-lg">Phạm Văn A</div>
-            <div className="text-green-500 text-sm font-semibold">Graphic Designer Intern</div>
+            <div className="font-semibold text-lg">{task?.sinh_vien?.hoTen}</div>
+            <div className="text-green-500 text-sm font-semibold">{task?.sinh_vien?.viTri}</div>
           </div>
         </div>
       </div>
@@ -60,6 +126,7 @@ const handleScore = () => SetScore(prev => !prev);
         <h3 className="font-bold text-xl mb-1">Chấm Điểm</h3>
        {isScore ?( <h1>Đã chấm điểm</h1> ): (<><input
           type="text"
+          ref={newScore}
           placeholder="Nhập điểm số"
           className="w-full lg:w-lg border rounded-md p-2 text-sm mb-1"
         />
