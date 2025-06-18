@@ -9,27 +9,40 @@ import { useDialog } from "../context/dialogContext";
 import { useNavigate, useParams } from "react-router-dom";
 import DateInput from "./datePicker";
 import Pagination from "./pagination";
+import axiosClient from "../service/axiosClient";
+import { format } from "date-fns";
 function AttendanceDetails() {
    const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
   const { showDialog } = useDialog();
   const { idSlug } = useParams();
   const navigate = useNavigate()
-  const workLogs = [
-  { date: '2025-04-26', workDuration: '8h09', startTime: '8:00 AM', checkInTime: '7:30 AM' },
-  { date: '2025-04-25', workDuration: '7h55', startTime: '8:00 AM', checkInTime: '8:07 AM' },
-  { date: '2025-04-23', workDuration: '8h01', startTime: '8:00 AM', checkInTime: '8:07 AM' },
-  { date: '2025-04-22', workDuration: '8h00', startTime: '8:00 AM', checkInTime: '8:00 AM' },
-  { date: '2025-04-21', workDuration: '8h15', startTime: '8:00 AM', checkInTime: '7:50 AM' },
-  { date: '2025-04-20', workDuration: '7h45', startTime: '8:00 AM', checkInTime: '8:05 AM' },
-  { date: '2025-04-19', workDuration: '8h10', startTime: '8:00 AM', checkInTime: '7:55 AM' },
-  { date: '2025-04-18', workDuration: '7h50', startTime: '8:00 AM', checkInTime: '8:10 AM' },
-  { date: '2025-04-17', workDuration: '8h05', startTime: '8:00 AM', checkInTime: '7:58 AM' },
-  { date: '2025-04-16', workDuration: '8h12', startTime: '8:00 AM', checkInTime: '7:48 AM' },
-  { date: '2025-04-15', workDuration: '7h59', startTime: '8:00 AM', checkInTime: '8:01 AM' },
-  { date: '2025-04-14', workDuration: '8h00', startTime: '8:00 AM', checkInTime: '8:00 AM' },
-  { date: '2025-04-13', workDuration: '8h08', startTime: '8:00 AM', checkInTime: '7:52 AM' },
-];
+  const [diemdanh,setDiemDanh] = useState([])
+  const [date,setDate] = useState()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); 
+  const [loading, setLoading] = useState(false)
+   useEffect(()=>{
+    setLoading(true);
+      axiosClient
+        .get(`/diem-danh/sinh-vien/${idSlug}`, {
+          params: {
+            date: date ? format(date,'yyyy-MM-dd') : null,
+            page: currentPage,
+            per_page: 10,
+          },
+        })
+        .then((res) => {
+          setDiemDanh(res.data.data.data);
+          setTotalPages(res.data.data.last_page);
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setLoading(false));
 
+   },[date])
+  
+  
+  
+ 
 
   
 
@@ -81,6 +94,22 @@ function AttendanceDetails() {
   if (meridiem === 'AM' && hours === 12) hours = 0;
   return hours * 60 + minutes;
 };
+const formatTo12Hour = (timeStr) => {
+  if (!timeStr || typeof timeStr !== 'string') return '';
+
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return '';
+
+  let hour = parseInt(parts[0], 10);
+  const minute = parts[1] || '00';
+
+  const meridiem = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour === 0 ? 12 : hour;
+
+  return `${hour}:${minute.padStart(2, '0')} ${meridiem}`;
+};
+
 
 const getStatus = (checkingTime) => {
   const totalMinutes = parseTimeToMinutes(checkingTime);
@@ -111,23 +140,24 @@ const statusStyle = (checkInTime) => {
                   className="w-20 aspect-square rounded-md border border-gray-300"
                 />
                 <div>
-                  <h1 className="text-xl font-bold">PHAM VAN A</h1>
+                  <h1 className="text-xl font-bold">{diemdanh[0]?.sinh_vien?.hoTen}</h1>
                   <h4
                     className="flex
                 items-center gap-1 text-lg text-gray-600"
                   >
-                    <RiShoppingBag3Line className="text-2xl" /> Graphic Designer
+                    <RiShoppingBag3Line className="text-2xl" /> {diemdanh[0]?.sinh_vien?.viTri}
                   </h4>
                   <h4
                     className="flex
                 items-center gap-1 text-lg text-gray-600"
                   >
                     <MdOutlineEmail className="text-2xl" />
-                    phamvana123@gmail.com
+                    {diemdanh[0]?.sinh_vien?.email}
                   </h4>
                 </div>
               </div>
-             <DateInput/>
+           <DateInput value={date} onChange={setDate} />
+
   </div>
   {/* table */}
         <div className="overflow-x-auto mt-10">
@@ -143,23 +173,23 @@ const statusStyle = (checkInTime) => {
               </tr>
             </thead>
             <tbody>
-              {workLogs.map((item, idx) => {
+              {diemdanh.map((item, idx) => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
                     <td className="py-2">
-                      {item.date}
+                   {new Date(item.ngay_diem_danh).toLocaleDateString("vi-VN")}
                     </td>
-                    <td>{item.workDuration}</td>
-                    <td>{item.startTime}</td>
-                    <td>{item.checkInTime}</td>
+                    <td>{formatTo12Hour(item.gio_bat_dau)}</td>
+                    <td>8:00 AM</td>
+                    <td>{formatTo12Hour(item.gio_bat_dau)}</td>
                     <td>
                       {" "}
                       <span
                         className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                          item.checkInTime
+                          item.gio_bat_dau
                         )}`}
                       >
-                        {getStatus(item.checkInTime)}
+                        {getStatus(item.gio_bat_dau)}
                       </span>
                     </td>
                     <td className="">
@@ -173,7 +203,7 @@ const statusStyle = (checkInTime) => {
             </tbody>
           </table>
         </div>
-      <Pagination totalPages={5} />
+       <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
 
 </div>
 

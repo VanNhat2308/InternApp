@@ -4,20 +4,17 @@ import 'react-day-picker/dist/style.css';
 import { format, setDate } from 'date-fns';
 import { BiCalendar } from 'react-icons/bi';
 
-export default function DateInput() {
-  const [selected, setSelected] = useState(null);
+export default function DateInput({ value, onChange }) {
   const [showPicker, setShowPicker] = useState(false);
   const ref = useRef(null);
 
   const handleSelect = (date) => {
-    setSelected(date);
+    onChange(date);        // Gửi ngày đã chọn lên component cha
     setShowPicker(false);
-    console.log(selected);
-    
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block',marginTop:'10px' }}>
+    <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
       <div
         onClick={() => setShowPicker(!showPicker)}
         style={{
@@ -34,7 +31,7 @@ export default function DateInput() {
           type="text"
           readOnly
           placeholder="Chọn ngày"
-          value={selected ? format(selected, 'dd/MM/yyyy') : ''}
+          value={value ? format(value, 'dd/MM/yyyy') : ''}
           style={{
             border: 'none',
             outline: 'none',
@@ -43,7 +40,7 @@ export default function DateInput() {
             fontSize: '14px'
           }}
         />
-        <span role="img" aria-label="calendar"><BiCalendar/></span>
+        <span role="img" aria-label="calendar"><BiCalendar /></span>
       </div>
 
       {showPicker && (
@@ -51,22 +48,24 @@ export default function DateInput() {
           ref={ref}
           style={{
             position: 'absolute',
-            right:'-40%',
+            right: '-40%',
             zIndex: 10,
             backgroundColor: 'white',
             border: '1px solid #ddd',
             borderRadius: '8px',
-            padding:'10px',
+            padding: '10px',
             marginTop: '4px',
             boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
         >
-          <DayPicker 
-          mode='single'
-
-          selected={selected} onSelect={handleSelect} />
+          <DayPicker
+            mode="single"
+            selected={value}
+            onSelect={handleSelect}
+          />
         </div>
       )}
     </div>
   );
 }
+

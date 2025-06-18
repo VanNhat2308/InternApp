@@ -1,10 +1,5 @@
-import { LuShoppingBag } from "react-icons/lu";
 import { FiSearch } from "react-icons/fi";
 import { GoPlusCircle } from "react-icons/go";
-import { AiOutlineMessage } from "react-icons/ai";
-import { TfiTimer } from "react-icons/tfi";
-import { FaFlag } from "react-icons/fa";
-import { FaRegCalendarAlt } from "react-icons/fa";
 import taskAva from '../assets/images/taskAvatar.jpg'
 import { useDialog } from "../context/dialogContext";
 import { useToast } from "../context/toastContext";
