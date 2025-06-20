@@ -1,6 +1,7 @@
-import React, { useState } from "react";
 import { BiTimer, BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import axiosClient from "../../service/axiosClient";
 
 const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const hours = Array.from(
@@ -9,11 +10,9 @@ const hours = Array.from(
 );
 
 const initialEvents = [
-
   { id: 1, day: "Tue", time: "08:00", duration: 4, week: 0 },
   { id: 2, day: "Tue", time: "13:00", duration: 4, week: 0 },
   { id: 3, day: "Mon", time: "13:00", duration: 4, week: 0 },
-
 ];
 
 const getWeekDates = (weekOffset = 0) => {
@@ -40,26 +39,29 @@ const ScheduleCard = ({ event, onDelete }) => (
     <div className="text-base font-medium">
       {event.time} - {parseInt(event.time) + event.duration}:00
     </div>
-    <div className="text-sm text-gray-500 mt-1 flex gap-1"><MdTimer className="text-lg"/> {event.duration}h</div>
+    <div className="text-sm text-gray-500 mt-1 flex gap-1">
+      <MdTimer className="text-lg" /> {event.duration}h
+    </div>
     <button
       onClick={() => onDelete(event.id)}
       className="absolute bottom-2 right-2 text-2xl cursor-pointer text-orange-500 hover:text-red-600"
     >
-      <BiTrash/>
+      <BiTrash />
     </button>
   </div>
 );
 
-const ScheduleGrid = ({currentWeek}) => {
-  const [events, setEvents] = useState(initialEvents);
+const ScheduleGrid = ({ currentWeek, events,loading,onDeleteById }) => {
  
 
-  const handleDelete = (id) => {
-    setEvents(events.filter((event) => event.id !== id));
-  };
+
+
+
+
 
   const weekDays = getWeekDates(currentWeek);
-  const filteredEvents = events.filter((event) => event.week === currentWeek);
+  const filteredEvents = events;
+
 
   const today = new Date();
   const todayIndex = weekDays.findIndex(
@@ -74,85 +76,92 @@ const ScheduleGrid = ({currentWeek}) => {
   return (
     <div className="p-4">
       {/* Table Layout */}
-      <table className="w-full border-collapse table-fixed">
-        <thead>
-          <tr>
-            {/* Empty top-left corner */}
-            <th className="border border-gray-300 p-2 bg-gray-100 font-bold"></th>
-            {/* Day headers */}
-            {weekDays.map((day, i) => (
-              <th
-                key={i}
-                className={`border border-gray-300 p-2 pb-10 text-left ${
-                  i === todayIndex ? "bg-green-500" : "bg-gray-100"
-                }`}
-              >
-                <div className="flex flex-col justify-start">
-                  <span className="text-base font-bold">{day.thu}</span>
-                  <span className="text-3xl font-bold">{day.date}</span>
-                  <span className="text-gray-500">4h</span>
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {hours.map((hour) => (
-            <tr key={hour}>
-              {/* Hour column */}
-              <td className="text-base font-bold flex items-end justify-end px-2 bg-gray-50 border border-gray-300 h-20">
-                {hour}
-              </td>
-              {/* Day cells */}
-              {weekDays.map((day, colIndex) => {
-                const isToday = colIndex === todayIndex;
-                const cellKey = `${day.thu}-${hour}`;
+      {loading ? (
+        <p className="text-center p-4">Đang tải dữ liệu...</p>
+      ) : events.length === 0 ? (
+        <p className="text-center p-4">Không có lịch trong tuần này.</p>
+      ) : (
+        <table className="w-full border-collapse table-fixed">
+          <thead>
+            <tr>
+              {/* Empty top-left corner */}
+              <th className="border border-gray-300 p-2 bg-gray-100 font-bold"></th>
+              {/* Day headers */}
+              {weekDays.map((day, i) => (
+                <th
+                  key={i}
+                  className={`border border-gray-300 p-2 pb-10 text-left ${
+                    i === todayIndex ? "bg-green-500" : "bg-gray-100"
+                  }`}
+                >
+                  <div className="flex flex-col justify-start">
+                    <span className="text-base font-bold">{day.thu}</span>
+                    <span className="text-3xl font-bold">{day.date}</span>
+                    <span className="text-gray-500">4h</span>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {hours.map((hour) => (
+              <tr key={hour}>
+                {/* Hour column */}
+                <td className="text-base font-bold flex items-end justify-end px-2 bg-gray-50 border border-gray-300 h-20">
+                  {hour}
+                </td>
+                {/* Day cells */}
+                {weekDays.map((day, colIndex) => {
+                  const isToday = colIndex === todayIndex;
+                  const cellKey = `${day.thu}-${hour}`;
 
-                if (occupiedCells.has(cellKey)) {
-                  return null;
-                }
+                  if (occupiedCells.has(cellKey)) {
+                    return null;
+                  }
 
-                const hourIndex = hours.indexOf(hour);
-                const previousHour = hours[hourIndex - 1];
-                const event = filteredEvents.find(
-                  (e) => e.day === day.thu && e.time === previousHour
-                );
-
-                if (event) {
                   const hourIndex = hours.indexOf(hour);
-                  for (let i = 0; i < event.duration; i++) {
-                    const nextHour = hours[hourIndex + i];
-                    if (nextHour) {
-                      occupiedCells.add(`${day.thu}-${nextHour}`);
+                  const previousHour = hours[hourIndex - 1];
+               const event = filteredEvents.find(
+  (e) => e.day === day.thu && e.time === hour
+);
+
+
+                  if (event) {
+                    const hourIndex = hours.indexOf(hour);
+                    for (let i = 0; i < event.duration; i++) {
+                      const nextHour = hours[hourIndex + i];
+                      if (nextHour) {
+                        occupiedCells.add(`${day.thu}-${nextHour}`);
+                      }
                     }
+
+                    return (
+                      <td
+                        key={cellKey}
+                        rowSpan={event.duration}
+                        className={`border border-gray-200 relative overflow-hidden h-20 p-1 ${
+                          isToday ? "bg-green-50" : ""
+                        }`}
+                      >
+                        <ScheduleCard event={event} onDelete={onDeleteById} />
+                      </td>
+                    );
                   }
 
                   return (
                     <td
                       key={cellKey}
-                      rowSpan={event.duration}
-                      className={`border border-gray-200 relative overflow-hidden h-20 p-1 ${
+                      className={`border border-gray-200 h-20 ${
                         isToday ? "bg-green-50" : ""
                       }`}
-                    >
-                      <ScheduleCard event={event} onDelete={handleDelete} />
-                    </td>
+                    ></td>
                   );
-                }
-
-                return (
-                  <td
-                    key={cellKey}
-                    className={`border border-gray-200 h-20 ${
-                      isToday ? "bg-green-50" : ""
-                    }`}
-                  ></td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

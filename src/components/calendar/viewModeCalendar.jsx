@@ -1,12 +1,15 @@
 import { useState } from "react";
 import ScheduleGrid from "./scheduleGrid";
 import ScheduleMonthGrid from "./scheduleMonthGrid";
+import { useParams } from "react-router-dom";
 
 function ViewModeCalendar() {
     const [viewMode, setViewMode] = useState("week");
     const [currentWeek, setCurrentWeek] = useState(0);
+    const {idSlug} = useParams()
 
-    return ( <div>
+    return ( 
+    <div>
 <div className="bg-green-100 p-1 rounded-2xl inline-flex mt-4">
       <button
         onClick={() => setViewMode("week")}
@@ -45,7 +48,7 @@ function ViewModeCalendar() {
         
       {/* Hiển thị theo chế độ */}
       {viewMode === "week" ? (
-        <ScheduleGrid currentWeek={currentWeek} />
+        <ScheduleGrid currentWeek={currentWeek} maSV={idSlug}/>
       ) : (
         <ScheduleMonthGrid/>
       )}

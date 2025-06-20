@@ -18,7 +18,7 @@ function Schedule() {
     <div className="flex-1">
           {isMobile ? <ResponNav /> : <Header>
        <h2 className="text-xl font-semibold">Quản Lý Lịch Thực Tập</h2>
-          <p className="flex gap-2 items-center text-sm">Danh Sách Lịch Thực Tập Của Sinh Viên <MdChevronRight  className="text-base"/>Phạm Văn A </p>
+          <p className="flex gap-2 items-center text-sm">Danh Sách Lịch Thực Tập Của Sinh Viên </p>
       </Header>}
     <Outlet/>
 

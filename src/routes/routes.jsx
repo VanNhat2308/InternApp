@@ -29,6 +29,7 @@ import ChatDetail from "../components/chatDetails";
 import ChatDetails from "../components/chatDetails";
 import ReportPanel from "../components/reportPanel";
 import ReportDetails from "../components/reportDetails";
+import ScheduleDetails from "../components/scheduleDetails";
 const publicRoutes = [
   {
     path: "/",
@@ -94,7 +95,13 @@ const protectedRoutes = [
               {
                 path: "schedule-list",
                 element: <SchedulePanel />,
-              }]
+              },
+               {
+                path: "schedule-details/:idSlug",
+                element: <ScheduleDetails />,
+              }
+            
+            ]
           },
           {
             path: "report",

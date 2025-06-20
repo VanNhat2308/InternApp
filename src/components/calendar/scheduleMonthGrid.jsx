@@ -7,17 +7,16 @@ const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // Dữ liệu mẫu
 const initialEvents = [
   { id: 1, day: "Tue", time: "08:00", duration: 4, week: 1 },
-  { id: 2, day: "Fri", time: "13:00", duration: 4, week: 2 },
+  { id: 2, day: "Tue", time: "13:00", duration: 4, week: 1 },
   { id: 3, day: "Mon", time: "13:00", duration: 4, week: 3 },
 ];
 
-// Card hiển thị mỗi event
 const ScheduleCard = ({ event, onDelete }) => {
   const startHour = parseInt(event.time);
   const endHour = startHour + event.duration;
 
   return (
-    <div className="bg-white border border-gray-300 border-l-4 border-l-green-600 rounded-md p-2 shadow-sm relative h-full text-sm">
+    <div className="bg-white border border-gray-300 border-l-4 border-l-green-600 rounded-md p-2 shadow-sm relative h-full text-sm mb-1">
       <div className="font-semibold">
         {event.time} - {endHour}:00
       </div>
@@ -35,9 +34,7 @@ const ScheduleCard = ({ event, onDelete }) => {
   );
 };
 
-// Lịch dạng tháng: trục X là ngày, Y là tuần
-const ScheduleMonthGrid = () => {
-  const [events, setEvents] = useState(initialEvents);
+const ScheduleMonthGrid = ({events,onDeleteById,loading}) => {
   const weeks = [1, 2, 3, 4];
 
   const handleDelete = (id) => {
@@ -46,7 +43,11 @@ const ScheduleMonthGrid = () => {
 
   return (
     <div className="p-4">
-      <table className="w-full border-collapse table-fixed">
+      {loading ? (
+        <p className="text-center p-4">Đang tải dữ liệu...</p>
+      ) : events.length === 0 ? (
+        <p className="text-center p-4">Không có lịch trong tháng này.</p>
+      ) : (<table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
             <th className="w-20 border border-gray-300 bg-gray-100 text-center font-bold">
@@ -69,25 +70,33 @@ const ScheduleMonthGrid = () => {
                 Tuần {week}
               </td>
               {daysShort.map((day) => {
-                const event = events.find(
+                const eventsInCell = events.filter(
                   (e) => e.day === day && e.week === week
                 );
 
                 return (
                   <td
                     key={`${day}-${week}`}
-                    className="border border-gray-200 h-24 p-1 align-top"
+                    className="border border-gray-200 h-28 p-1 align-top"
                   >
-                    {event && (
-                      <ScheduleCard event={event} onDelete={handleDelete} />
-                    )}
+                    {eventsInCell.length > 0 ? (
+                      <div className="space-y-2">
+                        {eventsInCell.map((event) => (
+                          <ScheduleCard
+                            key={event.id}
+                            event={event}
+                            onDelete={onDeleteById}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
                   </td>
                 );
               })}
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>)}
     </div>
   );
 };
