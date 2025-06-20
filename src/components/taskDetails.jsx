@@ -12,17 +12,31 @@ function TaskDetails() {
  const [isScore,SetScore] = useState(false)
  const newScore = useRef(null)
  const navigate = useNavigate()
- const handleScore = () =>{ 
-  axiosClient.put(`/tasks/diem-so/${idSlug}`, {
-  diemSo: newScore.current.value
-})
-.then(
-  alert("Cập nhật điểm số thành công")
-)
-.catch(err => console.error(err));
+ const handleScore = () => {
+  const value = newScore.current?.value?.trim();
 
-  SetScore(prev => !prev)
-}
+  if (!value) {
+    alert("Vui lòng nhập điểm số!");
+    return;
+  }
+
+  const parsed = parseFloat(value);
+  if (isNaN(parsed) || parsed < 0 || parsed > 10) {
+    alert("Điểm số phải là số từ 0 đến 10!");
+    return;
+  }
+
+  axiosClient
+    .put(`/tasks/diem-so/${idSlug}`, {
+      diemSo: parsed
+    })
+    .then(() => {
+      alert("Cập nhật điểm số thành công");
+      SetScore(true);
+    })
+    .catch((err) => console.error(err));
+};
+
  const {idSlug} = useParams()
  const [task,setTask] = useState({})
  useEffect(()=>{

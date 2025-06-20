@@ -19,6 +19,7 @@ function ScheduleDetails() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("week");
   const [currentWeek, setCurrentWeek] = useState(0);
+  const [student,setStudent] = useState({})
   const { idSlug } = useParams();
   
 
@@ -29,9 +30,10 @@ const currentYear = now.getFullYear();
 // Tính tuần trong tháng
 const getWeekOfMonth = (date) => {
   const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-  const dayOfWeek = firstDay.getDay() || 7;
-  return Math.ceil((date.getDate() + dayOfWeek - 1) / 7);
+  const firstMondayOffset = (firstDay.getDay() + 6) % 7; // Mon = 0
+  return Math.floor((date.getDate() + firstMondayOffset - 1) / 7) + 1;
 };
+
 
 const currentWeek_ = getWeekOfMonth(now);
 
@@ -81,6 +83,14 @@ const currentWeek_ = getWeekOfMonth(now);
       alert("Không thể xóa toàn bộ lịch.");
     }
   };
+  useEffect(()=>{
+    axiosClient.get(`/sinhviens/${idSlug}`)
+    .then((res)=>{
+      setStudent(res.data.data)
+      console.log(res.data.data);
+      
+    })
+  },[idSlug])
 
   useEffect(() => {
     fetchSchedule();
@@ -147,7 +157,7 @@ const handleOpenDialog = () => {
           ca: selectedCa,
           month: currentMonth, // ví dụ tháng hiện tại (1-12)
           year: currentYear,
-          week: currentWeek,
+          week: currentWeek_,
         });
 
         alert(res.data.message);
@@ -188,19 +198,19 @@ const handleOpenDialog = () => {
               className="w-20 aspect-square rounded-md border border-gray-300"
             />
             <div>
-              <h1 className="text-xl font-bold">PHAM VAN A</h1>
+              <h1 className="text-xl font-bold">{student.hoTen}</h1>
               <h4
                 className="flex
                       items-center gap-1 text-lg text-gray-600"
               >
-                <RiShoppingBag3Line className="text-2xl" /> Graphic Designer
+                <RiShoppingBag3Line className="text-2xl" /> {student.viTri}
               </h4>
               <h4
                 className="flex
                       items-center gap-1 text-lg text-gray-600"
               >
                 <MdOutlineEmail className="text-2xl" />
-                phamvana123@gmail.com
+                {student.email}
               </h4>
             </div>
           </div>
