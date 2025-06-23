@@ -1,5 +1,5 @@
-import pizitechLogo from "../assets/images/pizitech.png";
-
+// src/components/Navbar.jsx
+import pizitechLogo from "../../assets/images/pizitech.png";
 import {
   FaTh,
   FaList,
@@ -14,8 +14,8 @@ import {
 import { useState, useEffect } from "react";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import { TbDotsVertical } from "react-icons/tb";
-import "./css/navbar.css";
-import { useSidebar } from "../context/sidebarContext";
+import ".././css/navbar.css";
+import { useSidebar } from "../../context/sidebarContext";
 import { useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
 const navItems = [

@@ -4,7 +4,7 @@ import pizitechLogo from '../assets/images/pizitech.png'; // cập nhật đư�
 import manImage from '../assets/images/man.png';
 import axiosClient from '../service/axiosClient';
 import { useNavigate } from 'react-router-dom';
-export default function Login() {
+export default function LoginStudent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,8 +12,7 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Nếu đã có token, chuyển hướng về dashboard
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/student/dashboard', { replace: true });
     }
   }, [navigate]);
 
@@ -22,13 +21,13 @@ export default function Login() {
 
 
     try {
-      const res = await axiosClient.post('/login/admin', { email, password });
+      const res = await axiosClient.post('/login/sinhvien', { tenDangNhap:email, password });
 
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('role', 'admin');
+        localStorage.setItem('role', 'sinhvien');
         alert('Đăng nhập thành công!');
-        navigate('/admin/dashboard');
+        navigate('/student/dashboard');
       } else {
         throw new Error('Không nhận được token từ server');
       }

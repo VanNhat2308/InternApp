@@ -3,6 +3,7 @@ import ProtectedRoute from "./protectedRoute";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Home from "../pages/home";
 import Dashboard from "../components/dashboard";
+import DashboardStudent from "../components/student/dashboard";
 import List from "../components/list";
 import Schedule from "../components/schedule";
 import Report from "../components/report";
@@ -25,17 +26,28 @@ import SchedulePanel from "../components/schedulePanel";
 import TaskPanel from "../components/taskPanel";
 import TaskDetails from "../components/taskDetails";
 import FeedbackPanel from "../components/feedbackPanel";
-import ChatDetail from "../components/chatDetails";
 import ChatDetails from "../components/chatDetails";
 import ReportPanel from "../components/reportPanel";
 import ReportDetails from "../components/reportDetails";
 import ScheduleDetails from "../components/scheduleDetails";
+import Register from "../components/student/register";
+import Student from "../pages/student";
+import ChooseLogin from "../pages/ChooseLogin";
+import LoginStudent from "../pages/LoginStudent";
 const publicRoutes = [
   {
     path: "/",
-    element: <Login />
+    element: <ChooseLogin /> // Trang chọn đăng nhập
+  },
+  {
+    path: "/login-admin",
+    element: <Login /> // Trang đăng nhập Admin
+  },
+  {
+    path: "/login-sinhvien",
+    element: <LoginStudent /> // Trang đăng nhập Sinh viên
   }
-];
+]
 
 const protectedRoutes = [
   {
@@ -202,6 +214,31 @@ const protectedRoutes = [
         ],
       },
     ],
+  },
+
+  {
+  path:"/student",
+  element:<ProtectedRoute />,
+ children: [
+      {
+        path: "",
+        element: <Student />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="dashboard" replace />,
+          },
+          {
+            path:'dashboard'
+            ,element:<DashboardStudent/>
+          },
+          {
+            path:'register',
+            element:<Register/>
+          }
+        ]
+      }
+]
   },
   {
     path: "/test",
