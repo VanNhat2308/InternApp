@@ -14,6 +14,7 @@ import Header from "../components/header";
 import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
+import { useUser } from "../context/userContext";
 
 function ListStudentPanel() {
       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -128,38 +129,61 @@ useEffect(() => {
     status === "Đang thực tập"
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
+  
+            function getGreetingTime() {
+  const hour = new Date().getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return "Chào buổi sáng";
+  } else if (hour >= 12 && hour < 14) {
+    return "Chào buổi trưa";
+  } else if (hour >= 14 && hour < 18) {
+    return "Chào buổi chiều";
+  } else {
+    return "Chào buổi tối";
+  }
+}
+ const {User} = useUser()
   return (
     <>
      {isMobile ? <ResponNav /> : <Header>
-       <h2 className="text-xl font-semibold">Xin chào Nguyễn Văn A 👋</h2>
-          <p className="text-gray-500">Chào buổi sáng</p>
+       <h2 className="text-xl font-semibold">Xin chào {User?.hoTen} 👋</h2>
+          <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
     <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
-      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
-        {/* search */}
-        <div className="h-full relative flex-1">
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            type="text"
-            placeholder="Tìm kiếm"
-            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
-          />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+  {/* Search */}
+  <div className="relative flex-1">
+    <input
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      type="text"
+      placeholder="Tìm kiếm"
+      className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+    />
+    <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+  </div>
 
-          <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
-        </div>
-        {/* add btn */}
-        <button onClick={handleNavigate} className="rounded-xl p-5 flex items-center gap-2 bg-green-600 text-white cursor-pointer">
-          <GoPlusCircle className="text-xl" />
-          Thêm sinh viên
-        </button>
-        {/* filter btn */}
-        <button onClick={toggleFilter} className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
-          <FaSlidersH />
-          Lọc
-        </button>
-      </div>
+  {/* Nút Thêm sinh viên */}
+  <button
+    onClick={handleNavigate}
+    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+  >
+    <GoPlusCircle className="text-lg" />
+    <span className="text-sm font-medium">Thêm sinh viên</span>
+  </button>
+
+  {/* Nút Lọc */}
+  <button
+    onClick={toggleFilter}
+    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+  >
+    <FaSlidersH className="text-base" />
+    <span className="text-sm font-medium">Lọc</span>
+  </button>
+</div>
+
       {/* table */}
     
        {loading ? (

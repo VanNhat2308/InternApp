@@ -112,183 +112,169 @@ const getStatusColor = (status) => {
           </p>
         </Header>
       )}
-      <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
-        <div className="flex flex-col items-center pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
-          {/* avartar */}
-          <div className="flex gap-2 ">
-            <img
-              src={students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}`:avatar}
-              alt="avartar"
-              className="w-20 aspect-square rounded-md border border-gray-300"
-            />
-            <div>
-              <h1 className="text-xl font-bold">{students?.hoTen}</h1>
-              <h4
-                className="flex
-            items-center gap-1 text-lg text-gray-600"
-              >
-                <RiShoppingBag3Line className="text-2xl" /> {students?.viTri}
-              </h4>
-              <h4
-                className="flex
-            items-center gap-1 text-lg text-gray-600"
-              >
-                <MdOutlineEmail className="text-2xl" />
-               {students?.email}
-              </h4>
+     <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+  <div className="flex flex-col items-center gap-4 pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
+    {/* avatar + info */}
+    <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-start">
+      <img
+        src={students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}` : avatar}
+        alt="avartar"
+        className="w-24 sm:w-20 aspect-square rounded-md border border-gray-300"
+      />
+      <div className="text-center sm:text-left">
+        <h1 className="text-xl font-bold">{students?.hoTen}</h1>
+        <h4 className="flex items-center gap-1 text-lg text-gray-600 justify-center sm:justify-start">
+          <RiShoppingBag3Line className="text-2xl" />
+          {students?.viTri}
+        </h4>
+        <h4 className="flex items-center gap-1 text-lg text-gray-600 justify-center sm:justify-start">
+          <MdOutlineEmail className="text-2xl" />
+          {students?.email}
+        </h4>
+      </div>
+    </div>
+
+    {/* buttons */}
+    <div className="flex flex-col sm:flex-row gap-2">
+      <button
+        onClick={handleOpenDialog}
+        className="cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-md justify-center"
+      >
+        <FaRegTrashCan />
+        Xóa
+      </button>
+      <button
+        onClick={() => {
+          handleEdit(idSlug);
+        }}
+        className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white justify-center"
+      >
+        <CiEdit />
+        Chỉnh Sửa
+      </button>
+    </div>
+  </div>
+
+  {/* Main content */}
+  <div className="flex flex-col lg:flex-row mt-5 gap-5">
+    {/* Tabs */}
+    <div className="flex flex-col">
+      <button
+        onClick={() => setChuyenCan(false)}
+        className={`cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-t-md whitespace-nowrap ${
+          chuyenCan ? "" : "bg-[#34A853] text-white"
+        }`}
+      >
+        <GoPeople /> Thông Tin Cá Nhân
+      </button>
+      <button
+        onClick={() => setChuyenCan(true)}
+        className={`cursor-pointer p-3 flex items-center gap-2 border border-gray-300 border-t-0 rounded-b-md whitespace-nowrap ${
+          chuyenCan ? "bg-[#34A853] text-white" : ""
+        }`}
+      >
+        <FaRegCalendarCheck />
+        Chuyên cần
+      </button>
+    </div>
+
+    {/* Nội dung */}
+    {chuyenCan ? (
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold">Chuyên cần của sinh viên</h1>
+        <h5 className="text-gray-600 text-base sm:text-lg">
+          Mức độ chuyên cần của sinh viên trong tháng này
+        </h5>
+
+        <div className="flex flex-col lg:flex-row gap-4 my-4">
+          {/** Mỗi ô thống kê */}
+          <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+            <div className="flex gap-2 items-center">
+              <div className="w-5 h-5 rounded-full bg-green-400"></div>
+              <span>Đi làm đúng giờ</span>
+            </div>
+            <div className="text-2xl font-semibold">
+              {attendanceData?.month[0]?.value}
             </div>
           </div>
-          <div className="flex gap-2">
-            <button   
-             onClick={handleOpenDialog}
-             className="cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-md">
-              <FaRegTrashCan />
-              Xóa
-            </button>
-            <button
-            onClick={()=>{handleEdit(idSlug)}}
-            className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white">
-              <CiEdit />
-              Chỉnh Sửa
-            </button>
+          <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+            <div className="flex gap-2 items-center">
+              <div className="w-5 h-5 rounded-full bg-yellow-500"></div>
+              <span>Đi làm trễ</span>
+            </div>
+            <div className="text-2xl font-semibold">
+              {attendanceData?.month[1]?.value}
+            </div>
+          </div>
+          <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
+            <div className="flex gap-2 items-center">
+              <div className="w-5 h-5 rounded-full bg-red-500"></div>
+              <span>Nghỉ học</span>
+            </div>
+            <div className="text-2xl font-semibold">
+              {attendanceData?.month[2]?.value}
+            </div>
           </div>
         </div>
-        {/* main ct */}
-        <div className="flex mt-5 gap-10">
-          <div className="flex flex-col">
-            <button
-              onClick={() => setChuyenCan(false)}
-              className={` cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-tr-md rounded-tl-md whitespace-nowrap
-  ${chuyenCan ? "" : "bg-[#34A853] text-white"}`}
-            >
-              <GoPeople /> Thông Tin Cá Nhân
-            </button>
-            <button
-              onClick={() => setChuyenCan(true)}
-              className={`cursor-pointer p-3 flex items-center gap-2 border border-gray-300 border-t-0 rounded-br-md rounded-bl-md ${
-                chuyenCan ? "bg-[#34A853] text-white" : ""
-              }`}
-            >
-              <FaRegCalendarCheck />
-              Chuyên cần
-            </button>
+
+        {/* Thống kê tổng */}
+        <h1 className="text-xl font-bold">Thống kê chuyên cần</h1>
+        <div className="flex flex-col lg:flex-row gap-6 mt-5">
+          {/* Chart */}
+          <div className="w-full lg:w-2/3">
+            <ChartDetails attendanceData={attendanceData} />
           </div>
-          {/* grid */}
-          {chuyenCan ? (
-            <div className="w-full">
-              <h1 className="text-2xl font-semibold">
-                Chuyên cần của sinh viên
+
+          {/* Tổng kết */}
+          <div className="flex flex-col gap-5 w-full lg:w-1/3">
+            <div className="p-4 border border-gray-300 rounded-xl">
+              <h1 className="font-bold text-xl">Mức độ chuyên cần</h1>
+              <h1 className="text-3xl font-bold">{DiemchuyenCan}%</h1>
+              <h6 className="text-lg">
+                {dungGio}/{tongBuoi} buổi
+              </h6>
+            </div>
+            <div className="p-4 border border-gray-300 rounded-xl">
+              <h1 className="font-bold text-xl">Điểm số tổng hợp</h1>
+              <h1 className="text-3xl font-bold">
+                {(DiemchuyenCan / 10).toFixed(1)}/10
               </h1>
-              <h5 className="text-gray-600 text-xl">
-                Mức độ chuyên cần của sinh viên trong tháng này
-              </h5>
-              <div className="flex my-4 flex-col lg:flex-row gap-4">
-                <div className=" flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
-                  <div className="flex gap-2 items-center">
-                    <div className="w-5 h-5 rounded-full bg-green-400"></div>
-                    <span>Đi làm đúng giờ</span>
-                  </div>
-                  <div className="text-2xl font-semibold">{attendanceData?.month[0]?.value}</div>
-                </div>
-                <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
-                  <div className="flex gap-2 items-center">
-                    <div className="w-5 h-5 rounded-full bg-yellow-500"></div>
-                    <span>Đi làm trễ</span>
-                  </div>
-                  <div className="text-2xl font-semibold">{attendanceData?.month[1]?.value}</div>
-                </div>
-                <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-100">
-                  <div className="flex gap-2 items-center">
-                    <div className="w-5 h-5 rounded-full bg-red-500"></div>
-                    <span>Nghỉ học</span>
-                  </div>
-                  <div className="text-2xl font-semibold">{attendanceData?.month[2]?.value}</div>
-                </div>
-              </div>
-              <h1 className="text-xl font-bold">Thống kê chuyên cần</h1>
-              <div className="flex gap-10 mt-5">
-                {/* bar chart */}
-                <div>
-                <ChartDetails attendanceData={attendanceData}/>
-
-                </div>
-               
-                <div className="flex flex-1 flex-col gap-5">
-                    <div className="p-3 border border-gray-300 rounded-xl">
-                        <h1 className="font-bold text-xl">
-                            Mức độ <br /> chuyên cần
-                        </h1>
-                        <h1 className="text-3xl font-bold">{DiemchuyenCan}%</h1>
-                        <h6 className="text-lg">{dungGio}/{tongBuoi} buổi</h6>
-
-                    </div>
-                    <div className="p-3 border border-gray-300 rounded-xl">
-                        <h1 className="font-bold text-xl">
-                            Điểm số tổng hợp
-                        </h1>
-                        <h1 className="text-3xl font-bold">{(DiemchuyenCan / 10).toFixed(1)}/10</h1>
-                  
-
-                    </div>
-                   
-                </div>
-
-
-              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 text-sm flex-1">
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Họ Tên</p>
-                <p className="font-medium text-lg">{students?.hoTen}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Thời Gian Thực Tập</p>
-                <p className="font-medium text-lg">{students?.thoiGianTT}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Mã Số Sinh Viên</p>
-                <p className="font-medium text-lg">{students?.maSV}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Giáo Viên Hướng Dẫn</p>
-                <p className="font-medium text-lg">{students?.tenGiangVien}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Trường Đại Học</p>
-                <p className="font-medium text-lg">{students?.truong?.tenTruong}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Ngày Sinh</p>
-                <p className="font-medium text-lg">{students?.ngaySinh}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Chuyên Ngành</p>
-                <p className="font-medium text-lg">{students?.nganh}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Vị Trí Thực Tập</p>
-                <p className="font-medium text-lg">{students?.viTri}</p>
-              </div>
-
-              <div className="p-2 border-b border-gray-300">
-                <p className="text-gray-400">Trạng Thái</p>
-                <p className={`font-medium text-lg ${getStatusColor(students?.trangThai)}`}>
-  {students?.trangThai || 'Không rõ'}
-</p>
-
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm flex-1">
+        {[
+          ["Họ Tên", students?.hoTen],
+          ["Thời Gian Thực Tập", students?.thoiGianTT],
+          ["Mã Số Sinh Viên", students?.maSV],
+          ["Giáo Viên Hướng Dẫn", students?.tenGiangVien],
+          ["Trường Đại Học", students?.truong?.tenTruong],
+          ["Ngày Sinh", students?.ngaySinh],
+          ["Chuyên Ngành", students?.nganh],
+          ["Vị Trí Thực Tập", students?.viTri],
+          [
+            "Trạng Thái",
+            <span
+              className={`font-medium text-lg ${getStatusColor(
+                students?.trangThai
+              )}`}
+            >
+              {students?.trangThai || "Không rõ"}
+            </span>,
+          ],
+        ].map(([label, value], idx) => (
+          <div key={idx} className="p-2 border-b border-gray-300">
+            <p className="text-gray-400">{label}</p>
+            <p className="font-medium text-lg">{value}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
     </div>
   );
 }

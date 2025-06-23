@@ -42,61 +42,64 @@ const ScheduleMonthGrid = ({events,onDeleteById,loading}) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[90vw]">
       {loading ? (
         <p className="text-center p-4">Đang tải dữ liệu...</p>
       ) : events.length === 0 ? (
         <p className="text-center p-4">Không có lịch trong tháng này.</p>
-      ) : (<table className="w-full border-collapse table-fixed">
-        <thead>
-          <tr>
-            <th className="w-20 border border-gray-300 bg-gray-100 text-center font-bold">
-              Tuần
-            </th>
-            {daysShort.map((day) => (
-              <th
-                key={day}
-                className="border border-gray-300 bg-gray-100 text-center font-bold"
-              >
-                {day}
+      ) : (
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[800px] table-fixed">
+          <thead>
+            <tr>
+              <th className="w-20 border border-gray-300 bg-gray-100 text-center font-bold">
+                Tuần
               </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week) => (
-            <tr key={week}>
-              <td className="text-center font-bold bg-gray-50 border border-gray-300">
-                Tuần {week}
-              </td>
-              {daysShort.map((day) => {
-                const eventsInCell = events.filter(
-                  (e) => e.day === day && e.week === week
-                );
-
-                return (
-                  <td
-                    key={`${day}-${week}`}
-                    className="border border-gray-200 h-28 p-1 align-top"
-                  >
-                    {eventsInCell.length > 0 ? (
-                      <div className="space-y-2">
-                        {eventsInCell.map((event) => (
-                          <ScheduleCard
-                            key={event.id}
-                            event={event}
-                            onDelete={onDeleteById}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
-                  </td>
-                );
-              })}
+              {daysShort.map((day) => (
+                <th
+                  key={day}
+                  className="border border-gray-300 bg-gray-100 text-center font-bold"
+                >
+                  {day}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>)}
+          </thead>
+          <tbody>
+            {weeks.map((week) => (
+              <tr key={week}>
+                <td className="text-center font-bold bg-gray-50 border border-gray-300">
+                  Tuần {week}
+                </td>
+                {daysShort.map((day) => {
+                  const eventsInCell = events.filter(
+                    (e) => e.day === day && e.week === week
+                  );
+                  return (
+                    <td
+                      key={`${day}-${week}`}
+                      className="border border-gray-200 h-28 p-1 align-top"
+                    >
+                      {eventsInCell.length > 0 ? (
+                        <div className="space-y-2">
+                          {eventsInCell.map((event) => (
+                            <ScheduleCard
+                              key={event.id}
+                              event={event}
+                              onDelete={onDeleteById}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
     </div>
   );
 };

@@ -130,82 +130,90 @@ const statusStyle = (checkInTime) => {
           <h2 className="text-xl font-semibold">Quản Lý Điểm Danh</h2>
           <p className="text-gray-500">Xem Thời Gian Điểm Danh Của Sinh Viên</p>
 </Header>}
-<div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
-  <div>
-        {/* avartar */}
-              <div className="flex gap-2 ">
-                <img
-                  src={avatar}
-                  alt="avartar"
-                  className="w-20 aspect-square rounded-md border border-gray-300"
-                />
-                <div>
-                  <h1 className="text-xl font-bold">{diemdanh[0]?.sinh_vien?.hoTen}</h1>
-                  <h4
-                    className="flex
-                items-center gap-1 text-lg text-gray-600"
-                  >
-                    <RiShoppingBag3Line className="text-2xl" /> {diemdanh[0]?.sinh_vien?.viTri}
-                  </h4>
-                  <h4
-                    className="flex
-                items-center gap-1 text-lg text-gray-600"
-                  >
-                    <MdOutlineEmail className="text-2xl" />
-                    {diemdanh[0]?.sinh_vien?.email}
-                  </h4>
-                </div>
-              </div>
-           <DateInput value={date} onChange={setDate} />
+<div className="border border-gray-300 p-4 mt-10 rounded-md shadow w-full max-w-screen">
+  {/* Header info */}
+  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    {/* Avatar + Info */}
+    <div className="flex items-center gap-4">
+      <img
+        src={avatar}
+        alt="avatar"
+        className="w-20 aspect-square rounded-md border border-gray-300 object-cover"
+      />
+      <div>
+        <h1 className="text-xl font-bold">{diemdanh[0]?.sinh_vien?.hoTen}</h1>
+        <h4 className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+          <RiShoppingBag3Line className="text-lg" />
+          {diemdanh[0]?.sinh_vien?.viTri}
+        </h4>
+        <h4 className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+          <MdOutlineEmail className="text-lg" />
+          {diemdanh[0]?.sinh_vien?.email}
+        </h4>
+      </div>
+    </div>
 
+    {/* Date Picker */}
+    <div className="mt-2 lg:mt-0 w-full lg:w-auto">
+      <DateInput value={date} onChange={setDate} />
+    </div>
   </div>
-  {/* table */}
-        <div className="overflow-x-auto mt-10">
-         <table className=" min-w-[800px] w-full text-sm table-auto">
-            <thead className="text-left text-gray-500 border-b border-b-gray-300">
-              <tr>
-                <th className="py-2 ">Ngày</th>
-                <th>Thời gian làm việc</th>
-                <th>Giờ bắt đầu</th>
-                <th>Giờ điểm danh</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {diemdanh.map((item, idx) => {
-                return (
-                  <tr key={idx} className="border-b border-b-gray-300">
-                    <td className="py-2">
-                   {new Date(item.ngay_diem_danh).toLocaleDateString("vi-VN")}
-                    </td>
-                    <td>{formatTo12Hour(item.gio_bat_dau)}</td>
-                    <td>8:00 AM</td>
-                    <td>{formatTo12Hour(item.gio_bat_dau)}</td>
-                    <td>
-                      {" "}
-                      <span
-                        className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                          item.gio_bat_dau
-                        )}`}
-                      >
-                        {getStatus(item.gio_bat_dau)}
-                      </span>
-                    </td>
-                    <td className="">
-                      <button onClick={() => handleOpenDialog()} className="text-xl cursor-pointer">
-                          <RiEyeLine />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-       <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
 
+  {/* Table */}
+  <div className="overflow-x-auto mt-8">
+    <table className="min-w-[800px] w-full table-auto text-sm">
+      <thead className="text-gray-500 border-b border-gray-300 bg-gray-50">
+        <tr>
+          <th className="py-2 text-left">Ngày</th>
+          <th className="text-left">Thời gian làm việc</th>
+          <th className="text-left">Giờ bắt đầu</th>
+          <th className="text-left">Giờ điểm danh</th>
+          <th className="text-left">Trạng thái</th>
+          <th className="text-left">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {diemdanh.map((item, idx) => (
+          <tr key={idx} className="border-b border-gray-200">
+            <td className="py-2">
+              {new Date(item.ngay_diem_danh).toLocaleDateString("vi-VN")}
+            </td>
+            <td>{formatTo12Hour(item.gio_bat_dau)}</td>
+            <td>8:00 AM</td>
+            <td>{formatTo12Hour(item.gio_bat_dau)}</td>
+            <td>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${statusStyle(
+                  item.gio_bat_dau
+                )}`}
+              >
+                {getStatus(item.gio_bat_dau)}
+              </span>
+            </td>
+            <td>
+              <button
+                onClick={() => handleOpenDialog()}
+                className="text-xl text-gray-600 hover:text-black"
+              >
+                <RiEyeLine />
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Pagination */}
+  <div className="mt-6">
+    <Pagination
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+      totalPages={totalPages}
+    />
+  </div>
 </div>
+
 
 
     </>

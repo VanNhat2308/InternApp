@@ -6,6 +6,7 @@ import { SidebarProvider } from './context/sidebarContext.jsx'
 import { DialogProvider } from './context/dialogContext.jsx'
 import { ToastProvider } from './context/toastContext.jsx'
 import { FilterProvider } from './context/filteContext.jsx'
+import { UserProvider } from './context/userContext.jsx'
 import CustomDialog from './components/customDialog.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')).render(
     <ToastProvider>
       <FilterProvider>
         <CustomDialog/>
-        <App />
+        <UserProvider>
+          <App />
+        </UserProvider>
       </FilterProvider>
     </ToastProvider>
   </DialogProvider>

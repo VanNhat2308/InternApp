@@ -98,7 +98,7 @@ const Navbar = () => {
       className={` transition-all duration-300
         ${isCollapsed ? "w-20 p-5" : "w-76 lg:w-84 p-10"}
         ${isSidebarOpen ? "translate-x-full" : "-translate-x-0"}
-      rounded-r-3xl shadow-lg flex flex-col
+       lg:rounded-r-3xl shadow-lg flex flex-col
       `}
     >
       {/* Nút toggle */}

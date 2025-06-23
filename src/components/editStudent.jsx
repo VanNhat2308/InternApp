@@ -170,8 +170,15 @@ useEffect(() => {
       </Toast>:""
       }
          {isMobile ? <ResponNav /> : <Header>
-         <h2 className="text-xl font-semibold">Chỉnh sửa hồ sơ</h2>
-            <p className="flex gap-2 items-center">Danh Sách <MdChevronRight  className="text-xl"/> {studentData.hoTen} <MdChevronRight  className="text-xl" />Chỉnh sửa hồ sơ</p>
+ <h2 className="text-xl sm:text-2xl font-semibold mb-1">Chỉnh sửa hồ sơ</h2>
+
+  <p className="flex flex-wrap gap-1 sm:gap-2 items-center text-sm sm:text-base text-gray-600">
+    <span>Danh Sách</span>
+    <MdChevronRight className="text-lg sm:text-xl" />
+    <span className="font-medium">{studentData.hoTen}</span>
+    <MdChevronRight className="text-lg sm:text-xl" />
+    <span className="text-black font-medium">Chỉnh sửa hồ sơ</span>
+  </p>
         </Header>}
       
      

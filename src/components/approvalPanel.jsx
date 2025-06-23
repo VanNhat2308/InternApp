@@ -105,29 +105,30 @@ function ApprovalPanel() {
   return (
     <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
-      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
-        {/* search */}
-        <div className="h-full relative flex-1">
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            type="text"
-            placeholder="Tìm kiếm"
-            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
-          />
+  {/* filter bar */}
+<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+  {/* Search box */}
+  <div className="relative flex-1">
+    <input
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      type="text"
+      placeholder="Tìm kiếm"
+      className="w-full border border-gray-300 pl-10 pr-4 py-3 rounded-lg transition-all duration-300"
+    />
+    <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+  </div>
 
-          <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
-        </div>
+  {/* Filter button */}
+  <button
+    onClick={toggleFilter}
+    className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg px-4 py-3 bg-white text-gray-800 hover:bg-gray-50 transition-all"
+  >
+    <FaSlidersH />
+    <span className="hidden sm:inline">Lọc</span>
+  </button>
+</div>
 
-        {/* filter btn */}
-        <button
-          onClick={toggleFilter}
-          className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer"
-        >
-          <FaSlidersH />
-          Lọc
-        </button>
-      </div>
       {/* table */}
 
       {loading ? (

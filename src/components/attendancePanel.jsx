@@ -139,30 +139,36 @@ useEffect(() => {
           <p className="text-gray-500">Xem Thời Gian Điểm Danh Của Sinh Viên</p>
         </Header>
       )}
-      <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
-        {/* filter bar */}
-        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
-          <h1 className="text-2xl my-1  font-bold">Điểm danh hôm nay</h1>
-          {/* search */}
-          <div className="h-full relative flex-1">
-            <input
-              type="text"
-              placeholder="Tìm kiếm"
-              className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
-            />
+   <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
+  {/* Filter bar */}
+  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-4">
+    {/* Left: Title */}
+    <h1 className="text-xl font-bold text-gray-800">Điểm danh hôm nay</h1>
 
-            <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
-          </div>
+    {/* Right: Search + Filter */}
+    <div className="flex flex-col sm:flex-row gap-3 flex-1 lg:justify-end">
+      {/* Search input */}
+      <div className="relative flex-1">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+        />
+        <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+      </div>
 
-          {/* filter btn */}
-          <button
-            onClick={toggleFilter}
-            className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer"
-          >
-            <FaSlidersH />
-            Lọc
-          </button>
-        </div>
+      {/* Filter button */}
+      <button
+        onClick={toggleFilter}
+        className="flex items-center justify-center gap-2 border border-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+      >
+        <FaSlidersH />
+        <span>Lọc</span>
+      </button>
+    </div>
+  </div>
+
+
         {/* table */}
 
         {loading? 

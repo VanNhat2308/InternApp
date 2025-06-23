@@ -196,7 +196,7 @@ useEffect(() => {
 
     return ( 
 
-            <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
+            <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-md lg:rounded-xl shadow border border-[#ECECEE]">
               {/* filter bar */}
               <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
                 {/* search */}
@@ -205,14 +205,14 @@ useEffect(() => {
                     type="text"
                     placeholder="Tìm kiếm"
                     onChange={(e)=>setSearchTerm(e.target.value)}
-                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
+                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-3 lg:py-4 rounded-md lg:rounded-lg transition-all duration-300"
                   />
         
                   <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
                 </div>
                
                 {/* filter btn */}
-                <button onClick={toggleFilter} className="rounded-xl p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
+                <button onClick={toggleFilter} className="rounded-md lg:rounded-xl p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
                   <FaSlidersH/>
                   Lọc
                 </button>

@@ -96,28 +96,30 @@ useEffect(() => {
                   </div>
                 </Toast>:""
                 }
-         <div className="p-4 w-full max-w-screen h-fit  mt-10 rounded-xl shadow border border-[#ECECEE]">
-      {/* filter bar */}
-      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
-        {/* search */}
-        <div className="h-full relative flex-1">
-          <input
-            onChange={(e)=>setSearchTerm(e.target.value)}
-            type="text"
-            placeholder="Tìm kiếm"
-            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-4 lg:py-1 rounded-lg transition-all duration-300"
-          />
+   <div className="p-4 w-full h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
+  {/* filter bar */}
+  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+    {/* Search box */}
+    <div className="relative flex-1 w-full">
+      <input
+        onChange={(e) => setSearchTerm(e.target.value)}
+        type="text"
+        placeholder="Tìm kiếm"
+        className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base"
+      />
+      <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500 text-base" />
+    </div>
 
-          <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
-        </div>
-        {/* add btn */}
-        <button onClick={handleOpenDialog} className="rounded-xl p-5 flex items-center gap-2 bg-green-600 text-white cursor-pointer">
-          <GoPlusCircle className="text-xl" />
-          Tạo task mới
-        </button>
-   
-      
-      </div>
+    {/* Add Task button */}
+    <button
+      onClick={handleOpenDialog}
+      className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base"
+    >
+      <GoPlusCircle className="text-xl" />
+      Tạo task mới
+    </button>
+</div>
+
          {loading ? (
         <div className="flex justify-center items-center py-10">
         <div role="status">

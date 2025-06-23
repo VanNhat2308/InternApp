@@ -214,7 +214,7 @@ const handleOpenDialog = () => {
               </h4>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-3 lg:mt-0">
             <button
               onClick={handleOpenDialogDelete}
               className="cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-md"
@@ -234,7 +234,7 @@ const handleOpenDialog = () => {
 
         {/* lịch */}
         <div>
-          <div className="bg-green-100 p-1 rounded-2xl inline-flex mt-4">
+          <div className="bg-green-100 p-1 lg:rounded-2xl inline-flex mt-4">
             <button
               onClick={() => setViewMode("week")}
               className={`rounded-2xl py-1 px-5 text-lg font-bold cursor-pointer transition ${
@@ -262,7 +262,7 @@ const handleOpenDialog = () => {
               id="week-select"
               value={currentWeek}
               onChange={(e) => setCurrentWeek(Number(e.target.value))}
-              className="px-4 py-2 bg-green-50 border border-gray-300 rounded-xl ml-5"
+              className="px-4 py-2 bg-green-50 border border-gray-300 rounded-md lg:rounded-xl ml-1 lg:ml-5 mt-2 lg:mt-0"
             >
               <option value={0}>Tuần hiện tại</option>
               <option value={-1}>Tuần trước</option>

@@ -24,7 +24,7 @@ export default function DateInput({ value, onChange }) {
           display: 'flex',
           alignItems: 'center',
           cursor: 'pointer',
-          minWidth: 400
+         
         }}
       >
         <input
@@ -48,7 +48,7 @@ export default function DateInput({ value, onChange }) {
           ref={ref}
           style={{
             position: 'absolute',
-            right: '-40%',
+            right: '0',
             zIndex: 10,
             backgroundColor: 'white',
             border: '1px solid #ddd',

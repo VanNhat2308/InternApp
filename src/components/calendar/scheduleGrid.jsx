@@ -35,21 +35,22 @@ const getWeekDates = (weekOffset = 0) => {
 };
 
 const ScheduleCard = ({ event, onDelete }) => (
-  <div className="bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative h-full">
-    <div className="text-base font-medium">
+  <div className="bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative z-[-1] h-full w-full overflow-hidden">
+    <div className="text-sm font-medium truncate">
       {event.time} - {parseInt(event.time) + event.duration}:00
     </div>
-    <div className="text-sm text-gray-500 mt-1 flex gap-1">
-      <MdTimer className="text-lg" /> {event.duration}h
+    <div className="text-xs text-gray-500 mt-1 flex gap-1 items-center">
+      <MdTimer className="text-base" /> {event.duration}h
     </div>
     <button
       onClick={() => onDelete(event.id)}
-      className="absolute bottom-2 right-2 text-2xl cursor-pointer text-orange-500 hover:text-red-600"
+      className="absolute bottom-2 right-2 text-lg cursor-pointer text-orange-500 hover:text-red-600"
     >
       <BiTrash />
     </button>
   </div>
 );
+
 
 const ScheduleGrid = ({ currentWeek, events,loading,onDeleteById }) => {
  
@@ -74,95 +75,96 @@ const ScheduleGrid = ({ currentWeek, events,loading,onDeleteById }) => {
   const occupiedCells = new Set();
 
   return (
-    <div className="p-4">
-      {/* Table Layout */}
-      {loading ? (
-        <p className="text-center p-4">Đang tải dữ liệu...</p>
-      ) : events.length === 0 ? (
-        <p className="text-center p-4">Không có lịch trong tuần này.</p>
-      ) : (
-        <table className="w-full border-collapse table-fixed">
-          <thead>
-            <tr>
-              {/* Empty top-left corner */}
-              <th className="border border-gray-300 p-2 bg-gray-100 font-bold"></th>
-              {/* Day headers */}
-              {weekDays.map((day, i) => (
-                <th
-                  key={i}
-                  className={`border border-gray-300 p-2 pb-10 text-left ${
-                    i === todayIndex ? "bg-green-500" : "bg-gray-100"
-                  }`}
-                >
-                  <div className="flex flex-col justify-start">
-                    <span className="text-base font-bold">{day.thu}</span>
-                    <span className="text-3xl font-bold">{day.date}</span>
-                    <span className="text-gray-500">4h</span>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {hours.map((hour) => (
-              <tr key={hour}>
-                {/* Hour column */}
-                <td className="text-base font-bold flex items-end justify-end px-2 bg-gray-50 border border-gray-300 h-20">
-                  {hour}
-                </td>
-                {/* Day cells */}
-                {weekDays.map((day, colIndex) => {
-                  const isToday = colIndex === todayIndex;
-                  const cellKey = `${day.thu}-${hour}`;
 
-                  if (occupiedCells.has(cellKey)) {
-                    return null;
-                  }
+<div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[90vw]">
+  {/* Table Layout */}
+  {loading ? (
+    <p className="text-center p-4">Đang tải dữ liệu...</p>
+  ) : events.length === 0 ? (
+    <p className="text-center p-4">Không có lịch trong tuần này.</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[800px] table-fixed text-sm sm:text-base ">
+        <thead>
+          <tr>
+            {/* Empty top-left corner */}
+            <th className="border border-gray-300 p-2 bg-gray-100 font-bold"></th>
+            {/* Day headers */}
+            {weekDays.map((day, i) => (
+              <th
+                key={i}
+                className={`border border-gray-300 p-2 pb-10 text-left ${
+                  i === todayIndex ? "bg-green-500 text-white" : "bg-gray-100"
+                }`}
+              >
+                <div className="flex flex-col justify-start">
+                  <span className="text-base font-bold">{day.thu}</span>
+                  <span className="text-3xl font-bold">{day.date}</span>
+                  <span className="text-gray-200 sm:text-gray-500">4h</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {hours.map((hour) => (
+            <tr key={hour}>
+              {/* Hour column */}
+              <td className="text-base font-bold text-right px-2 bg-gray-50 border border-gray-300 h-20">
+                {hour}
+              </td>
+              {/* Day cells */}
+              {weekDays.map((day, colIndex) => {
+                const isToday = colIndex === todayIndex;
+                const cellKey = `${day.thu}-${hour}`;
 
-                  const hourIndex = hours.indexOf(hour);
-                  const previousHour = hours[hourIndex - 1];
-               const event = filteredEvents.find(
-  (e) => e.day === day.thu && e.time === hour
-);
+                if (occupiedCells.has(cellKey)) {
+                  return null;
+                }
 
+                const hourIndex = hours.indexOf(hour);
+                const event = filteredEvents.find(
+                  (e) => e.day === day.thu && e.time === hour
+                );
 
-                  if (event) {
-                    const hourIndex = hours.indexOf(hour);
-                    for (let i = 0; i < event.duration; i++) {
-                      const nextHour = hours[hourIndex + i];
-                      if (nextHour) {
-                        occupiedCells.add(`${day.thu}-${nextHour}`);
-                      }
+                if (event) {
+                  for (let i = 0; i < event.duration; i++) {
+                    const nextHour = hours[hourIndex + i];
+                    if (nextHour) {
+                      occupiedCells.add(`${day.thu}-${nextHour}`);
                     }
-
-                    return (
-                      <td
-                        key={cellKey}
-                        rowSpan={event.duration}
-                        className={`border border-gray-200 relative overflow-hidden h-20 p-1 ${
-                          isToday ? "bg-green-50" : ""
-                        }`}
-                      >
-                        <ScheduleCard event={event} onDelete={onDeleteById} />
-                      </td>
-                    );
                   }
 
                   return (
                     <td
                       key={cellKey}
-                      className={`border border-gray-200 h-20 ${
+                      rowSpan={event.duration}
+                      className={`border border-gray-200 relative overflow-hidden h-20 p-1 ${
                         isToday ? "bg-green-50" : ""
                       }`}
-                    ></td>
+                    >
+                      <ScheduleCard event={event} onDelete={onDeleteById} />
+                    </td>
                   );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                }
+
+                return (
+                  <td
+                    key={cellKey}
+                    className={`border border-gray-200 h-20 ${
+                      isToday ? "bg-green-50" : ""
+                    }`}
+                  ></td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
+  )}
+</div>
+
   );
 };
 

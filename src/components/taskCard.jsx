@@ -20,95 +20,103 @@ function TaskCard({ task }) {
 const getStatusColor = (trangThai) => {
   switch (trangThai) {
     case "Chưa nộp":
-      return "#FCBE12"; // vàng nhạt
+      return "#FCD34D"; // vàng pastel
     case "Đã nộp":
-      return "#3FC28A"; // xanh nhạt
+      return "#6EE7B7"; // xanh bạc hà
     case "Nộp trễ":
-      return "#F45B69"; // đỏ nhạt
+      return "#FCA5A5"; // đỏ nhạt
     default:
-      return "#E5E7EB"; // xám nhạt
+      return "#E5E7EB"; // xám
   }
 };
+
 const getPriorityColor = (p) => {
   switch (p) {
-    case "Trung bình":
-      return "#FCBE12"; // vàng nhạt
-    case "Thấp":
-      return "#3FC28A"; // xanh nhạt
     case "Cao":
-      return "#F45B69"; // đỏ nhạt
+      return "#EF4444"; // đỏ tươi (danger)
+    case "Trung bình":
+      return "#F59E0B"; // vàng tươi (warning)
+    case "Thấp":
+      return "#10B981"; // xanh ngọc (success)
     default:
-      return "#E5E7EB"; // xám nhạt
+      return "#9CA3AF"; // xám trung tính
   }
 };
 
 
   return (
+ <div
+  className="p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:shadow-lg transition-all duration-300"
+  onClick={handleClick}
+>
+  {/* Trạng thái */}
+  <div className="flex items-center gap-2 mb-2">
     <div
-      className="p-2 rounded-md border border-gray-200 cursor-pointer hover:shadow-md transition"
-      onClick={handleClick}
-    >
-      <div className="flex items-center gap-2">
-        <div
-          className={`w-4 h-4 rounded-full`}
-           style={{ backgroundColor: getStatusColor(task.trangThai) }}
-  
-        ></div>
-        <span className="text-lg font-semibold">{task.trangThai}</span>
+      className="w-3 h-3 rounded-full"
+      style={{ backgroundColor: getStatusColor(task.trangThai) }}
+    ></div>
+    <span className="text-sm font-medium text-gray-700">{task.trangThai}</span>
+  </div>
+
+  {/* Nội dung task */}
+  <div className="bg-gray-50 p-3 rounded-lg">
+    <div className="flex items-start gap-3">
+      <div className="bg-green-100 p-2 rounded-md text-green-600">
+        <LuShoppingBag className="text-xl" />
       </div>
-      <div className="bg-gray-50 p-2">
-        <div className="flex gap-2">
-          <div className="bg-gray-100 p-3 rounded-md">
-            <LuShoppingBag className="text-xl" />
-          </div>
-          <div className="flex flex-col w-full">
-            <h2 className="text-lg truncate w-full lg:w-[80%]">{task.tieuDe}</h2>
-            <span className="flex gap-1 items-center text-base">
-              <AiOutlineMessage />
-              {/* {task.commentCount}
-               */}
-               2
-            </span>
-          </div>
-        </div>
-
-        <div className="flex gap-2 mt-3">
-          <div
-            className={`flex gap-1 items-center px-3 py-2 rounded-3xl ${
-              task.tagTextColor || "text-white"
-            }`}
-            style={{ backgroundColor: getStatusColor(task.trangThai) }}
-          >
-            <TfiTimer />
-            {task.trangThai}
-          </div>
-         <div 
-         style={{background:`${getPriorityColor(task.doUuTien)}`}}
-         className={`flex gap-1 items-center px-4 py-2 rounded-4xl text-white`}>
-  <FaFlag />
-  {task.doUuTien}
-</div>
-
-        </div>
-
-        <div className="h-1 bg-green-500 rounded-3xl mt-3"></div>
-
-        <div className="mt-5 flex justify-between">
-          <div className="flex items-center gap-1 text-base text-gray-700">
-            <FaRegCalendarAlt />
-            {new Date(task.hanHoanThanh).toLocaleDateString("vi-VN")}
-          </div>
-          <div className="flex">
-              <img
-                src={defaulAvatar}
-                alt="task avatar"
-                className={`w-5 h-5 rounded-full object-cover`}
-              />
-           
-          </div>
-        </div>
+      <div className="flex flex-col flex-1">
+        <h2 className="text-base font-semibold text-gray-800 truncate">{task.tieuDe}</h2>
+        <span className="flex items-center text-sm text-gray-500 gap-1 mt-1">
+          <AiOutlineMessage className="text-base" />
+          2 bình luận
+        </span>
       </div>
     </div>
+
+    {/* Tag trạng thái + độ ưu tiên */}
+    <div className="flex gap-2 mt-4 flex-wrap">
+      <div
+        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium"
+        style={{
+          backgroundColor: getStatusColor(task.trangThai),
+          color: "#fff",
+        }}
+      >
+        <TfiTimer />
+        {task.trangThai}
+      </div>
+
+      <div
+        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-white"
+        style={{
+          backgroundColor: getPriorityColor(task.doUuTien),
+        }}
+      >
+        <FaFlag />
+        {task.doUuTien}
+      </div>
+    </div>
+
+    {/* Progress bar */}
+    <div className="h-1 bg-green-400/50 rounded-full mt-4">
+      <div className="h-full w-[70%] bg-green-500 rounded-full"></div>
+    </div>
+
+    {/* Footer: hạn + avatar */}
+    <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
+      <div className="flex items-center gap-1">
+        <FaRegCalendarAlt className="text-base" />
+        {new Date(task.hanHoanThanh).toLocaleDateString("vi-VN")}
+      </div>
+      <img
+        src={defaulAvatar}
+        alt="task avatar"
+        className="w-6 h-6 rounded-full object-cover"
+      />
+    </div>
+  </div>
+</div>
+
   );
 }
 

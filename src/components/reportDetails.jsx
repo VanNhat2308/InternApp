@@ -36,24 +36,24 @@ function ReportDetails() {
     showDialog({
       title: "Báo Cáo Thực Tập",
       customContent: (
-        <>
-          <div className="flex items-center">
-            <span className="text-xl font-semibold min-w-[150px]">Ngày</span>
-            <span className="text-xl">{report.ngayTao}</span>
-          </div>
-          <div className="flex items-center mt-2">
-            <span className="text-xl font-semibold min-w-[150px]">
-              Công việc
-            </span>
-            <span className="text-xl">{report.loai}</span>
-          </div>
-          <div className="flex mt-2 max-h-[60vh] overflow-y-scroll">
-            <span className="text-xl font-semibold min-w-[150px]">
-              Nội dung
-            </span>
-            <PaginatedContent text={report.noiDung} maxCharsPerPage={500} />
-          </div>
-        </>
+    <>
+  <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] gap-y-4 gap-x-4 text-base sm:text-lg">
+    {/* Ngày */}
+    <span className="font-semibold">Ngày</span>
+    <span>{new Date(report.ngayTao).toLocaleDateString("vi-VN")}</span>
+
+    {/* Công việc */}
+    <span className="font-semibold">Công việc</span>
+    <span>{report.loai}</span>
+
+    {/* Nội dung */}
+    <span className="font-semibold">Nội dung</span>
+    <div className="max-h-[60vh] overflow-y-auto pr-2">
+      <PaginatedContent text={report.noiDung} maxCharsPerPage={500} />
+    </div>
+  </div>
+</>
+
       ),
       confirmPrintText: "1",
 
@@ -110,126 +110,109 @@ function ReportDetails() {
   };
   return (
     <>
-      {isToast ? (
-        <Toast onClose={() => setToast(false)}>
-          <div className="flex items-center gap-3">
-            <div className="w-15 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
-              <MdOutlineDone className="text-2xl text-green-400" />
-            </div>
-            <p>Báo cáo đã được in thành công !!</p>
-          </div>
-        </Toast>
-      ) : (
-        ""
-      )}
-      {isToastV2 ? (
-        <Toast onClose={() => setToastV2(false)}>
-          <div className="flex items-center gap-3">
-            <div className="w-15 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
-              <FiDownload className="text-2xl text-green-400" />
-            </div>
-            <p>Tải về báo cáo thành công!</p>
-          </div>
-        </Toast>
-      ) : (
-        ""
-      )}
-
-      {!report ? (
-        <div className="text-center py-10">
-          <p className="text-gray-500 text-lg">Đang tải báo cáo...</p>
+  {isToast && (
+    <Toast onClose={() => setToast(false)}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
+          <MdOutlineDone className="text-2xl text-green-400" />
         </div>
-      ) : (
-        <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
-          <div className="flex flex-col items-center pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
-            {/* avartar */}
-            <div className="flex gap-2 ">
-              <img
-                src={avatar}
-                alt="avartar"
-                className="w-20 aspect-square rounded-md border border-gray-300"
-              />
-              <div>
-                <h1 className="text-xl font-bold">
-                  {report?.sinh_vien?.hoTen}
-                </h1>
-                <h4
-                  className="flex
-                        items-center gap-1 text-lg text-gray-600"
-                >
-                  <RiShoppingBag3Line className="text-2xl" />
-                  {report?.sinh_vien?.viTri}
-                </h4>
-                <h4
-                  className="flex
-                        items-center gap-1 text-lg text-gray-600"
-                >
-                  <MdOutlineEmail className="text-2xl" />
-                  {report?.sinh_vien?.email}
-                </h4>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleOpenDialog}
-                className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white"
-              >
-                <IoIosPrint className="text-xl" />
-                In
-              </button>
-            </div>
-          </div>
-          {/* main ct */}
+        <p>Báo cáo đã được in thành công !!</p>
+      </div>
+    </Toast>
+  )}
+
+  {isToastV2 && (
+    <Toast onClose={() => setToastV2(false)}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
+          <FiDownload className="text-2xl text-green-400" />
+        </div>
+        <p>Tải về báo cáo thành công!</p>
+      </div>
+    </Toast>
+  )}
+
+  {!report ? (
+    <div className="text-center py-10">
+      <p className="text-gray-500 text-lg">Đang tải báo cáo...</p>
+    </div>
+  ) : (
+    <div className="border border-gray-300 p-4 sm:p-6 mt-6 sm:mt-10 rounded-md shadow">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between pb-5 border-b border-gray-300">
+        {/* Avatar + Info */}
+        <div className="flex gap-3 items-start sm:items-center">
+          <img
+            src={avatar}
+            alt="avatar"
+            className="w-20 aspect-square rounded-md border border-gray-300"
+          />
           <div>
-            <h1 className="my-4 text-2xl font-bold">Báo Cáo Thực Tập</h1>
-            <div>
-              <div className="flex items-center">
-                <span className="text-xl font-semibold min-w-[150px]">
-                  Ngày
-                </span>
-                <span className="text-xl">
-                  {new Date(report?.ngayTao).toLocaleDateString("vi-VN")}
-                </span>
-              </div>
-              <div className="flex items-center mt-2">
-                <span className="text-xl font-semibold min-w-[150px]">
-                  Công việc
-                </span>
-                <span className="text-xl">{report?.loai}</span>
-              </div>
-              <div className="flex mt-2">
-                <span className="text-xl font-semibold min-w-[150px]">
-                  Nội dung
-                </span>
-                <PaginatedContent
-                  text={report?.noiDung}
-                  maxCharsPerPage={500}
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 pb-10 border-b border-gray-300">
-              <p className="font-medium text-gray-600 mb-2">Tệp tin đính kèm</p>
-              <FilePreviewAuto filePath={report?.tepDinhKem} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold mt-7">Nhận xét</h1>
-              <textarea
-                className="rounded-xl my-4 p-3 w-full border border-gray-300"
-                name="comment"
-                rows="5"
-                placeholder="Nhập nhận xét..."
-              ></textarea>
-              <div className="flex justify-end">
-                <button className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-md">
-                  Gửi Cho Sinh Viên
-                </button>
-              </div>
-            </div>
+            <h1 className="text-xl font-bold">{report?.sinh_vien?.hoTen}</h1>
+            <h4 className="flex items-center gap-1 text-base text-gray-600">
+              <RiShoppingBag3Line className="text-xl" />
+              {report?.sinh_vien?.viTri}
+            </h4>
+            <h4 className="flex items-center gap-1 text-base text-gray-600">
+              <MdOutlineEmail className="text-xl" />
+              {report?.sinh_vien?.email}
+            </h4>
           </div>
         </div>
-      )}
-    </>
+
+        {/* Print Button */}
+        <div className="flex mt-4 sm:mt-0">
+          <button
+            onClick={handleOpenDialog}
+            className="cursor-pointer px-4 py-2 flex items-center gap-2 bg-[#34A853] rounded-md text-white"
+          >
+            <IoIosPrint className="text-xl" />
+            In
+          </button>
+        </div>
+      </div>
+
+      {/* Nội dung chính */}
+      <div>
+        <h1 className="my-6 text-xl font-bold sm:text-2xl">Báo Cáo Thực Tập</h1>
+
+        <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] gap-y-4 gap-x-4 text-base sm:text-lg">
+          <span className="font-semibold">Ngày</span>
+          <span>{new Date(report?.ngayTao).toLocaleDateString("vi-VN")}</span>
+
+          <span className="font-semibold">Công việc</span>
+          <span>{report?.loai}</span>
+
+          <span className="font-semibold">Nội dung</span>
+          <PaginatedContent text={report?.noiDung} maxCharsPerPage={500} />
+        </div>
+
+        {/* File đính kèm */}
+        <div className="pt-6 pb-8 mt-6 border-b border-gray-300">
+          <p className="font-medium text-gray-600 mb-2">Tệp tin đính kèm</p>
+          <FilePreviewAuto filePath={report?.tepDinhKem} />
+        </div>
+
+        {/* Nhận xét */}
+        <div className="mt-8">
+          <h1 className="text-xl font-bold mb-4">Nhận xét</h1>
+          <textarea
+            className="w-full border border-gray-300 rounded-xl p-3 text-base"
+            name="comment"
+            rows="5"
+            placeholder="Nhập nhận xét..."
+          ></textarea>
+          <div className="flex justify-end mt-3">
+            <button className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-md">
+              Gửi Cho Sinh Viên
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</>
+
   );
 }
 
