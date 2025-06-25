@@ -1,39 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import avatar from "../assets/images/avatar.png";
+import { useEffect, useState } from "react";
+import axiosClient from "../service/axiosClient";
 
 function FeedbackPanel() {
-  const messages = [
-    {
-      id: 1,
-      name: "Phạm Văn A",
-      avatar: avatar,
-      preview: "Anh ơi cho em xin hỏi là báo cáo deadline đến ...",
-      time: "Mới gửi",
-      unread: true,
-    },
-    {
-      id: 2,
-      name: "Lê Thị B",
-      avatar: avatar,
-      preview: "Cho em hỏi là chức năng này làm sao vậy ạ ...",
-      time: "11:16 AM",
-    },
-    {
-      id: 3,
-      name: "Lê Văn D",
-      avatar: avatar,
-      preview: "Cho em hỏi là hệ thống của mình đang bị lỗi ạ ...",
-      time: "09:00 AM",
-    },
-    {
-      id: 4,
-      name: "Trần Văn D",
-      avatar: avatar,
-      preview: "Anh ơi cho em xin hỏi là báo cáo deadline đến ...",
-      time: "Hôm qua",
-    },
-  ];
+  const [messages, setMessages] = useState({});
+  const [searchTerm,setSearchTerm] = useState('')
+
+  useEffect(() => {
+  axiosClient.get(`messages/feedback-panel`,{
+    params:{
+     search:searchTerm
+    }
+  }
+  )
+    .then(res => {
+      
+      setMessages(res.data)
+
+    
+    });
+    
+}, [searchTerm]);
+
 
   const navigate = useNavigate();
 
@@ -42,6 +32,7 @@ function FeedbackPanel() {
       {/* Search */}
       <div className="relative mb-4">
         <input
+          onChange={(e)=>setSearchTerm(e.target.value)}
           type="text"
           placeholder="Tìm kiếm..."
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
@@ -51,15 +42,15 @@ function FeedbackPanel() {
 
       {/* Message list */}
       <div className="space-y-3 max-h-[65vh] overflow-y-auto">
-        {messages.map((msg) => (
+        {Object.values(messages).map((msg) => (
           <div
             key={msg.id}
-            onClick={() => navigate(`/admin/feedback/conversation/${msg.id}`)}
+            onClick={() => navigate(`/admin/feedback/conversation/${msg.conversation_id}`)}
             className={`flex items-center justify-between cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg transition`}
           >
             <div className="flex items-center gap-3">
               <img
-                src={msg.avatar}
+                src={avatar}
                 alt="avatar"
                 className="w-10 h-10 rounded-full object-cover"
               />

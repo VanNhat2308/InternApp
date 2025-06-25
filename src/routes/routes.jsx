@@ -34,6 +34,8 @@ import Register from "../components/student/register";
 import Student from "../pages/student";
 import ChooseLogin from "../pages/ChooseLogin";
 import LoginStudent from "../pages/LoginStudent";
+import SenderTest from "../components/senderTest";
+import ReceiverTest from "../components/receiverTest";
 const publicRoutes = [
   {
     path: "/",
@@ -245,6 +247,20 @@ const protectedRoutes = [
     element: (
 
         <Test />
+    ),
+  },
+  {
+    path: "/testSender",
+    element: (
+
+        <SenderTest />
+    ),
+  },
+  {
+    path: "/testReceiver",
+    element: (
+
+        <ReceiverTest />
     ),
   },
 ];
