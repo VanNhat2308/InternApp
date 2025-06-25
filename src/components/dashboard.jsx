@@ -52,45 +52,6 @@ const Dashboard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // const students = [
-  //   {
-  //     name: "Phạm Văn A",
-  //     role: "Graphic Design",
-  //     time: "8:00 AM",
-  //     status: "Đúng giờ",
-  //   },
-  //   {
-  //     name: "Lê Thị B",
-  //     role: "Business analyst",
-  //     time: "7:58 AM",
-  //     status: "Đúng giờ",
-  //   },
-  //   { name: "Trần Văn C", role: "Tester", time: "7:30 AM", status: "Đúng giờ" },
-  //   {
-  //     name: "Lê Văn D",
-  //     role: "Front-end Developer",
-  //     time: "8:07 AM",
-  //     status: "Đi trễ",
-  //   },
-  //   {
-  //     name: "Nguyễn Văn Z",
-  //     role: "Back-end Developer",
-  //     time: "8:30 AM",
-  //     status: "Đi trễ",
-  //   },
-  //   {
-  //     name: "Trần Văn D",
-  //     role: "Back-end Developer",
-  //     time: "8:47 AM",
-  //     status: "Đi trễ",
-  //   },
-  //   {
-  //     name: "Trần Văn B",
-  //     role: "Digital Marketing",
-  //     time: "7:55 AM",
-  //     status: "Đúng giờ",
-  //   },
-  // ];
 function getTrangThaiTiengViet(status) {
   switch (status) {
     case 'on_time':
@@ -123,14 +84,14 @@ function getTrangThaiTiengViet(status) {
     return "Chào buổi tối";
   }
 }
-
+const nameUser = localStorage.getItem('user')
   return (
     <div className="lg:p-6 flex-1 space-y-6">
       {isMobile ? (
         <ResponNav />
       ) : (
         <Header>
-          <h2 className="text-xl font-semibold">Xin chào {User?.hoTen} 👋</h2>
+          <h2 className="text-xl font-semibold">Xin chào {nameUser || 'Unknow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
         </Header>
       )}

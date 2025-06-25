@@ -1,11 +1,11 @@
 // src/pages/Login.jsx
 import { useEffect, useState } from 'react'
-import pizitechLogo from '../assets/images/pizitech.png'; // cập nhật đường dẫn phù hợp
+import pizitechLogo from '../assets/images/pizitech.png'; 
 import manImage from '../assets/images/man.png';
 import axiosClient from '../service/axiosClient';
 import { useNavigate } from 'react-router-dom';
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs';
-import { useUser } from '../context/userContext';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,8 +30,8 @@ export default function Login() {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('role', 'admin');
         localStorage.setItem('user',res.data.user.hoTen)
+
         
- 
         alert('Đăng nhập thành công!');
         navigate('/admin/dashboard');
       } else {

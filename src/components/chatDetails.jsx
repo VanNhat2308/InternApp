@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import avatar from "../assets/images/avatar.png";
 import {
   FiSearch,
   FiSend
@@ -9,94 +10,124 @@ import {
 import { GrAttachment } from "react-icons/gr";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { BiDotsVertical } from "react-icons/bi";
-
+import axiosClient from "../service/axiosClient";
+import { useNavigate, useParams } from "react-router-dom";
 
 const currentUser = { id: 1, name: "Tôi" };
 
-const users = [
-  {
-    id: 2,
-    name: "Phạm Văn A",
-    avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-  },
-  {
-    id: 3,
-    name: "Trần Thị B",
-    avatar: "https://randomuser.me/api/portraits/women/21.jpg",
-  },
-];
-
-const dummyConversations = {
-  2: [
-    { from_user_id: 2, to_user_id: 1, type: "text", content: "Chào anh ạ" },
-    { from_user_id: 1, to_user_id: 2, type: "text", content: "Chào em" },
-  ],
-  3: [
-    { from_user_id: 3, to_user_id: 1, type: "text", content: "Báo cáo đến đâu rồi anh?" },
-    { from_user_id: 1, to_user_id: 3, type: "text", content: "Tôi đang kiểm tra" },
-  ],
-};
-
 export default function ChatDetails() {
-  const [selectedUserId, setSelectedUserId] = useState(users[0].id);
-  const [conversations, setConversations] = useState(dummyConversations);
+  const {idSlug} = useParams()
+  const [messagesRecent, setMessagesRecent] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedConversationId, setSelectedConversationId] = useState(idSlug);
+  const [conversations, setConversations] = useState({});
   const [newMsg, setNewMsg] = useState("");
   const [showSidebar, setShowSidebar] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
-  const selectedUser = users.find((u) => u.id === selectedUserId);
+  
+ 
+
+  useEffect(() => {
+  setSelectedConversationId(idSlug);
+}, [idSlug]);
+
+useEffect(() => {
+  if (!idSlug || !messagesRecent.length) return;
+
+  const foundUser = messagesRecent.find(u => u.conversation_id == idSlug);
+  if (foundUser) {
+    setSelectedUserId(foundUser.id);
+  }
+}, [idSlug, messagesRecent]);
+
+  // Lấy danh sách sinh viên nhắn tin gần nhất
+  useEffect(() => {
+    axiosClient.get(`messages/feedback-panel`, {
+      params: { search: searchTerm }
+    }).then(res => {
+      setMessagesRecent(res.data);
+    });
+  }, [searchTerm]);
+
+  // Lấy tin nhắn của 1 conversation
+  useEffect(() => {
+    if (!selectedConversationId) return;
+
+    axiosClient.get(`/messages/conversation/${selectedConversationId}`)
+      .then(res => {
+        setConversations(prev => ({
+          ...prev,
+          [selectedUserId]: res.data
+        }));
+      });
+  }, [selectedConversationId, selectedUserId]);
+
+  const selectedUser = messagesRecent.find(u => u.id === selectedUserId);
   const messages = conversations[selectedUserId] || [];
 
   const sendMessage = () => {
     if (!newMsg.trim()) return;
+
     const newMessage = {
-      from_user_id: currentUser.id,
-      to_user_id: selectedUserId,
+      from_id: currentUser.id,
+      from_role: 'admin',
+      to_id: selectedUserId,
+      to_role:'sinhvien',
       type: "text",
       content: newMsg,
+      conversation_id: selectedConversationId
     };
-    setConversations((prev) => ({
+
+    setConversations(prev => ({
       ...prev,
       [selectedUserId]: [...(prev[selectedUserId] || []), newMessage],
     }));
+
     setNewMsg("");
+    axiosClient.post('/messages', newMessage);
   };
 
   return (
     <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] border border-gray-300 rounded-md overflow-hidden lg:shadow mt-8">
       
       {/* Sidebar */}
-      <div className={`md:w-1/3 w-full md:block ${showSidebar ? "block" : "hidden"} md:border-r border-gray-300 p-4 overflow-y-auto`}>
+      <div className={`md:w-1/3 w-full ${showSidebar ? "block" : "hidden"} md:block md:border-r border-gray-300 p-4 overflow-y-auto`}>
         <div className="relative mb-3">
           <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2 text-gray-400" />
           <input
             className="pl-8 w-full py-2 border border-gray-300 rounded-md"
             type="text"
             placeholder="Tìm kiếm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        {users.map((user) => (
+        {messagesRecent.map((user) => (
           <div
             key={user.id}
-            onClick={() => {
-              setSelectedUserId(user.id);
-              setShowSidebar(false); // ẩn khi chọn trong mobile
-            }}
+          onClick={() => {
+  setSelectedUserId(user.id);
+  setSelectedConversationId(user.conversation_id);
+  navigate(`/admin/feedback/conversation/${user.conversation_id}`); // ✅ cập nhật URL param
+  setShowSidebar(false);
+}}
+
             className={`flex items-center gap-3 p-2 rounded-md cursor-pointer mb-2 ${
-              selectedUserId === user.id
-                ? "bg-green-100"
-                : "hover:bg-gray-100"
+              selectedUserId === user.id ? "bg-green-100" : "hover:bg-gray-100"
             }`}
           >
             <img
-              src={user.avatar}
+              src={avatar}
               className="w-10 h-10 rounded-full object-cover"
               alt={user.name}
             />
             <div>
               <p className="font-semibold">{user.name}</p>
-              <p className="text-sm text-gray-500 truncate">
-                Tin nhắn gần đây...
+              <p className="text-sm text-gray-500 truncate max-w-[180px]">
+                {user.preview || 'Tin nhắn gần đây...'}
               </p>
             </div>
           </div>
@@ -106,41 +137,41 @@ export default function ChatDetails() {
       {/* Chat content */}
       <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-       <div className="p-4 border-b border-gray-300 flex flex-wrap gap-2 items-center justify-between bg-white">
-  <div className="flex items-center gap-1">
-    <button
-      className="md:hidden px-2 py-1 rounded text-sm mr-2"
-      onClick={() => setShowSidebar(!showSidebar)}
-    >
-      <BiDotsVertical />
-    </button>
-    <img
-      src={selectedUser.avatar}
-      className="w-10 h-10 rounded-full object-cover"
-      alt={selectedUser.name}
-    />
-    <h3 className="font-semibold text-lg">{selectedUser.name}</h3>
-  </div>
+        <div className="p-4 border-b border-gray-300 flex flex-wrap gap-2 items-center justify-between bg-white">
+          <div className="flex items-center gap-1">
+            <button
+              className="md:hidden px-2 py-1 rounded text-sm mr-2"
+              onClick={() => setShowSidebar(!showSidebar)}
+            >
+              <BiDotsVertical />
+            </button>
+            {selectedUser && (
+              <>
+                <img
+                  src={avatar}
+                  className="w-10 h-10 rounded-full object-cover"
+                  alt={selectedUser.name}
+                />
+                <h3 className="font-semibold text-lg">{selectedUser.name}</h3>
+              </>
+            )}
+          </div>
 
-  {/* Button Delete - responsive */}
-  <button
-    // onClick={() => handleDelete()}
-    className="group relative px-2 lg:px-4 py-2 flex items-center gap-2 border border-gray-300 rounded-md cursor-pointer hover:text-red-500"
-  >
-    <FaRegTrashCan className="text-lg" />
-    <span className="hidden lg:inline">Xóa</span>
-
-    {/* Tooltip khi chỉ là icon */}
-    <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-gray-700 text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-all lg:hidden">
-      Xóa đoạn chat
-    </span>
-  </button>
-</div>
+          <button
+            className="group relative px-2 lg:px-4 py-2 flex items-center gap-2 border border-gray-300 rounded-md cursor-pointer hover:text-red-500"
+          >
+            <FaRegTrashCan className="text-lg" />
+            <span className="hidden lg:inline">Xóa</span>
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-gray-700 text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-all lg:hidden">
+              Xóa đoạn chat
+            </span>
+          </button>
+        </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3">
           {messages.map((msg, i) => {
-            const isMe = msg.from_user_id === currentUser.id;
+            const isMe = msg.from_id === currentUser.id;
             return (
               <div
                 key={i}

@@ -234,14 +234,15 @@ const protectedRoutes = [
             path:'dashboard'
             ,element:<DashboardStudent/>
           },
-          {
-            path:'register',
-            element:<Register/>
-          }
+          
         ]
       }
 ]
   },
+  {
+            path:'register',
+            element:<Register/>
+          },
   {
     path: "/test",
     element: (

@@ -143,11 +143,11 @@ useEffect(() => {
     return "Chào buổi tối";
   }
 }
- const {User} = useUser()
+ const nameUser = localStorage.getItem('user')
   return (
     <>
      {isMobile ? <ResponNav /> : <Header>
-       <h2 className="text-xl font-semibold">Xin chào {User?.hoTen} 👋</h2>
+       <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
     <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">

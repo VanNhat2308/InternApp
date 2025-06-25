@@ -35,7 +35,7 @@ function Header({children}) {
   const handleNotify = () => {
     navigate('/admin/notify');
   };
-
+ const nameUser = localStorage.getItem('user')
    
     return (   
       <div className="w-full flex h-12 justify-between items-center">
@@ -66,7 +66,7 @@ function Header({children}) {
       >
         <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full" />
         <div>
-          <p className="text-sm font-semibold">{User?.hoTen}</p>
+          <p className="text-sm font-semibold">{nameUser||'UnKnow'}</p>
           <p className="text-xs text-gray-500">Admin</p>
         </div>
         <FaChevronDown />

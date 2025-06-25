@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import pizitechLogo from '../assets/images/pizitech.png'; // cập nhật đường dẫn phù hợp
 import manImage from '../assets/images/man.png';
 import axiosClient from '../service/axiosClient';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs';
 export default function LoginStudent() {
   const [email, setEmail] = useState('');
@@ -28,6 +28,7 @@ export default function LoginStudent() {
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('role', 'sinhvien');
+        localStorage.setItem('user',res.data.user.hoTen)
         alert('Đăng nhập thành công!');
         navigate('/student/dashboard');
       } else {
@@ -149,9 +150,9 @@ export default function LoginStudent() {
          {/* Đăng ký */}
              <p className="text-center text-sm mt-4">
                Chưa có tài khoản ?{' '}
-               <a href="#" className="text-blue-600 font-medium">
+               <Link to={'/register'} className="text-blue-600 font-medium">
                  Đăng Ký
-               </a>
+               </Link>
              </p>
        </div>
      </div>
