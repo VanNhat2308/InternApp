@@ -2,14 +2,12 @@
 import pizitechLogo from "../../assets/images/pizitech.png";
 import {
   FaTh,
-  FaList,
   FaCalendarAlt,
-  FaFileAlt,
-  FaFolderOpen,
   FaClock,
   FaTasks,
   FaFlag,
   FaCog,
+  FaPager,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
@@ -20,32 +18,25 @@ import { useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
 const navItems = [
   { label: "Dashboard", icon: <FaTh />, active: true, linkTo: "dashboard" },
-  { label: "Danh sách", icon: <FaList />, active: false, linkTo: "list" },
   {
-    label: "Quản lý lịch thực tập",
+    label: "Viết Nhật Ký",
+    active: false,
+    icon: <FaPager />,
+    linkTo: "diary",
+  },
+  {
+    label: "Lịch thực tập",
     active: false,
     icon: <FaCalendarAlt />,
-    linkTo: "schedule",
+    linkTo: "calendar",
   },
   {
-    label: "Xem báo cáo",
-    active: false,
-    icon: <FaFileAlt />,
-    linkTo: "report",
-  },
-  {
-    label: "Duyệt hồ sơ",
-    active: false,
-    icon: <FaFolderOpen />,
-    linkTo: "approval",
-  },
-  {
-    label: "Quản lý điểm danh",
+    label: "Lịch sử điểm danh",
     active: false,
     icon: <FaClock />,
     linkTo: "attendance",
   },
-  { label: "Quản lý Task", active: false, icon: <FaTasks />, linkTo: "task" },
+  { label: "Task", active: false, icon: <FaTasks />, linkTo: "task" },
   {
     label: "Phản hồi",
     active: false,
@@ -131,7 +122,7 @@ const Navbar = () => {
       {/* Nav items */}
       <nav className="flex-1">
         {navItemsState.map((item, index) => (
-          <Link to={`/admin/${item.linkTo}`}
+          <Link to={`/student/${item.linkTo}`}
             key={index}
             onClick={() => handleActive(item)} // <-- thêm onClick ở đây
             className={`flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 cursor-pointer transition

@@ -36,6 +36,10 @@ import ChooseLogin from "../pages/ChooseLogin";
 import LoginStudent from "../pages/LoginStudent";
 import SenderTest from "../components/senderTest";
 import ReceiverTest from "../components/receiverTest";
+import RegisterSuccess from "../components/student/registerSuccess";
+import Diary from "../components/student/diary/diary";
+import DiaryPanel from "../components/student/diary/diaryPanel";
+import DiaryDetails from "../components/student/diary/diaryDetails";
 const publicRoutes = [
   {
     path: "/",
@@ -234,6 +238,25 @@ const protectedRoutes = [
             path:'dashboard'
             ,element:<DashboardStudent/>
           },
+           {
+            path: "diary",
+            element: <Diary />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="diary-list" replace />,
+              },
+              {
+                path: "diary-list",
+                element: <DiaryPanel />,
+              },
+              {
+                path:"diary-details/:idSlug",
+                element:<DiaryDetails/>
+              }
+
+            ]
+          }
           
         ]
       }
@@ -262,6 +285,12 @@ const protectedRoutes = [
     element: (
 
         <ReceiverTest />
+    ),
+  },
+  {
+    path: "/register-success",
+    element: (
+        <RegisterSuccess />
     ),
   },
 ];
