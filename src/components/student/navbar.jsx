@@ -28,7 +28,7 @@ const navItems = [
     label: "Lịch thực tập",
     active: false,
     icon: <FaCalendarAlt />,
-    linkTo: "calendar",
+    linkTo: "schedule",
   },
   {
     label: "Lịch sử điểm danh",

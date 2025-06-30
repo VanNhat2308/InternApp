@@ -40,18 +40,20 @@ import RegisterSuccess from "../components/student/registerSuccess";
 import Diary from "../components/student/diary/diary";
 import DiaryPanel from "../components/student/diary/diaryPanel";
 import DiaryDetails from "../components/student/diary/diaryDetails";
+import TaskStudent from "../components/student/taskStudent";
+const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
     path: "/",
-    element: <ChooseLogin /> // Trang chọn đăng nhập
+    element: <ChooseLogin /> 
   },
   {
     path: "/login-admin",
-    element: <Login /> // Trang đăng nhập Admin
+    element: <Login /> 
   },
   {
     path: "/login-sinhvien",
-    element: <LoginStudent /> // Trang đăng nhập Sinh viên
+    element: <LoginStudent /> 
   }
 ]
 
@@ -256,7 +258,77 @@ const protectedRoutes = [
               }
 
             ]
+          },
+           {
+            path: "attendance",
+            element: <Attendance />,
+            children:[
+             {
+                index: true,
+                element: <Navigate to={`attendance-details/${maSv}`}  replace />,
+              },
+              {
+                path:`attendance-details/${maSv}`,
+                element: <AttendanceDetails/>
+              }
+            ]
+          },
+           {
+            path: "task",
+            element: <Task />,
+             children:[
+             {
+                index: true,
+                element: <Navigate to="task-list" replace />,
+              },
+              {
+                path:'task-list',
+                element:<TaskPanel/>
+              },
+              {
+                path:'task-details/:idSlug',
+                element:<TaskStudent/>
+              }
+            ]
+          },
+            {
+            path: "feedback",
+            element: <Feedback />,
+             children:[
+             {
+                index: true,
+                element: <Navigate to="feedback-list" replace />,
+              },
+              {
+                path:'feedback-list',
+                element:<FeedbackPanel/>
+              },
+              {
+                path:'conversation/:idSlug',
+                element:<ChatDetails/>
+              }
+            ]
+          },
+          {
+            path: "settings",
+            element: <Settings />,
+          },
+            {
+            path: "schedule",
+            element: <Schedule />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to={`schedule-list/${maSv}`} replace />,
+              },
+               {
+                path: `schedule-list/${maSv}`,
+                element: <ScheduleDetails />,
+              }
+            
+            ]
           }
+          
           
         ]
       }

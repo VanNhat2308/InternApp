@@ -28,8 +28,9 @@ export default function Login() {
 
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('role', 'admin');
+        localStorage.setItem('role', 'Admin');
         localStorage.setItem('user',res.data.user.hoTen)
+      
 
         
         alert('Đăng nhập thành công!');

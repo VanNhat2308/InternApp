@@ -27,8 +27,9 @@ export default function LoginStudent() {
 
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('role', 'sinhvien');
+        localStorage.setItem('role', 'Student');
         localStorage.setItem('user',res.data.user.hoTen)
+        localStorage.setItem('maSV',res.data.user.maSV)
         alert('Đăng nhập thành công!');
         navigate('/student/dashboard');
       } else {

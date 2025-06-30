@@ -5,12 +5,10 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
-import { useUser } from '../context/userContext';
 function Header({children}) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {User} = useUser()
   const dropdownRef = useRef();
 
   // Đóng dropdown nếu click ngoài
@@ -35,7 +33,8 @@ function Header({children}) {
   const handleNotify = () => {
     navigate('/admin/notify');
   };
- const nameUser = localStorage.getItem('user')
+const nameUser = localStorage.getItem('user')
+const userRole = localStorage.getItem('role')
    
     return (   
       <div className="w-full flex h-12 justify-between items-center">
@@ -67,7 +66,7 @@ function Header({children}) {
         <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full" />
         <div>
           <p className="text-sm font-semibold">{nameUser||'UnKnow'}</p>
-          <p className="text-xs text-gray-500">Admin</p>
+          <p className="text-xs text-gray-500">{userRole||'Unknow'}</p>
         </div>
         <FaChevronDown />
       </div>

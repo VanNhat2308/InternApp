@@ -26,6 +26,15 @@ function FeedbackPanel() {
 
 
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('role')
+  const handleNavigate = (conversation_id)=>{
+    if(userRole === 'Student'){
+      navigate(`/student/feedback/conversation/${conversation_id}`)
+    }
+    else{
+      navigate(`/admin/feedback/conversation/${conversation_id}`)
+    }
+  }
 
   return (
     <div className="border border-gray-300 lg:rounded-xl shadow-md mt-10 p-4 bg-white max-w-full w-full lg:w-full mx-auto">
@@ -45,7 +54,7 @@ function FeedbackPanel() {
         {Object.values(messages).map((msg) => (
           <div
             key={msg.id}
-            onClick={() => navigate(`/admin/feedback/conversation/${msg.conversation_id}`)}
+            onClick={()=>handleNavigate(msg.conversation_id)}
             className={`flex items-center justify-between cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg transition`}
           >
             <div className="flex items-center gap-3">

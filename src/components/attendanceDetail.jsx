@@ -12,7 +12,7 @@ import Pagination from "./pagination";
 import axiosClient from "../service/axiosClient";
 import { format } from "date-fns";
 function AttendanceDetails() {
-   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
   const { showDialog } = useDialog();
   const { idSlug } = useParams();
   const navigate = useNavigate()
@@ -21,10 +21,12 @@ function AttendanceDetails() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); 
   const [loading, setLoading] = useState(false)
+  
+  const param = localStorage.getItem("maSV")?localStorage.getItem("maSV"):idSlug
    useEffect(()=>{
     setLoading(true);
       axiosClient
-        .get(`/diem-danh/sinh-vien/${idSlug}`, {
+        .get(`/diem-danh/sinh-vien/${param}`, {
           params: {
             date: date ? format(date,'yyyy-MM-dd') : null,
             page: currentPage,

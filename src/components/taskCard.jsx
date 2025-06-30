@@ -7,10 +7,14 @@ import defaulAvatar from '../assets/images/avatar.png'
 import axiosClient from "../service/axiosClient";
 
 function TaskCard({ task }) {
+  const userRole = localStorage.getItem('role')
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/admin/task/task-details/${task.id}`); // ví dụ: task.id = 123 → /task/123
+    if(userRole === 'Student')
+       navigate(`/student/task/task-details/${task.id}`)
+      else
+      navigate(`/admin/task/task-details/${task.id}`)
   };
   const priorityColors = {
   Cao: "bg-red-500",

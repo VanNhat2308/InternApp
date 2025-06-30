@@ -128,6 +128,7 @@ useEffect(() => {
         return "text-gray-600 bg-gray-100";
     }
   };
+  const userRole = localStorage.getItem('role')
 
   return (
     <>
@@ -136,7 +137,7 @@ useEffect(() => {
       ) : (
         <Header>
           <h2 className="text-xl font-semibold">Quản Lý Điểm Danh</h2>
-          <p className="text-gray-500">Xem Thời Gian Điểm Danh Của Sinh Viên</p>
+          <p className="text-gray-500">{userRole==='Student'? 'Danh sách lịch sử điểm danh của sinh viên' :'Xem Thời Gian Điểm Danh Của Sinh Viên'}</p>
         </Header>
       )}
    <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">

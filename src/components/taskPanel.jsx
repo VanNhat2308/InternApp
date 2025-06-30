@@ -19,6 +19,7 @@ function TaskPanel() {
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
+    const userRole = localStorage.getItem('role')
 
  const fetchStudents = () => {
       setLoading(true);

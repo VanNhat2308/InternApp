@@ -1,42 +1,19 @@
 import { FaRegCalendarAlt, FaFlag, FaTrashAlt } from "react-icons/fa";
 import { LuShoppingBag } from "react-icons/lu";
 import { FiSend } from "react-icons/fi";
-import avatar from "../assets/images/avatar.png"; // ảnh đại diện
-
-import { FaRegTrashCan } from "react-icons/fa6";
+import avatar from "../../assets/images/avatar.png";
+import { FaRegTrashCan, FaUpload } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import axiosClient from "../service/axiosClient";
+import axiosClient from "../../service/axiosClient";
 import { useNavigate, useParams } from "react-router-dom";
+import UploadSection from "../UploadSelection";
+import { BsListTask } from "react-icons/bs";
+import { useDialog } from "../../context/dialogContext";
 
-function TaskDetails() {
- const [isScore,SetScore] = useState(false)
- const newScore = useRef(null)
+function TaskStudent() {
  const navigate = useNavigate()
- const handleScore = () => {
-  const value = newScore.current?.value?.trim();
 
-  if (!value) {
-    alert("Vui lòng nhập điểm số!");
-    return;
-  }
-
-  const parsed = parseFloat(value);
-  if (isNaN(parsed) || parsed < 0 || parsed > 10) {
-    alert("Điểm số phải là số từ 0 đến 10!");
-    return;
-  }
-
-  axiosClient
-    .put(`/tasks/diem-so/${idSlug}`, {
-      diemSo: parsed
-    })
-    .then(() => {
-      alert("Cập nhật điểm số thành công");
-      SetScore(true);
-    })
-    .catch((err) => console.error(err));
-};
-
+ const [btnStatus, setBtnStatus] = useState(false)
  const {idSlug} = useParams()
  const [task,setTask] = useState({})
  useEffect(()=>{
@@ -77,22 +54,24 @@ const getPriorityColor = (p) => {
   }
 };
 
-const handleDel = (idSlug) => {
-  const confirmDelete = window.confirm("Bạn có chắc chắn muốn xoá task này không?");
-  
-  if (!confirmDelete) return;
 
-  axiosClient
-    .delete(`/tasks/${idSlug}`)
-    .then((res) => {
-      alert("Xoá task thành công!");
-      navigate("/admin/task");
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("Xoá thất bại!");
-    });
-};
+
+const handleComfirmUpTask = ()=>{
+  setBtnStatus((prev)=>!prev)
+}
+
+  const {showDialog} = useDialog()
+    //  dialog
+  const handleOpenDialog = () => {
+    showDialog({
+      title: "Hoàn thành task",
+      content:
+        "Sau khi bạn ấn hoàn thành task sẽ được đánh dấu hoàn tất và không thể chỉnh sửa. Vui lòng kiểm tra kỹ thông tin trước khi ấn",
+      icon: <BsListTask />,
+      confirmText: "Hoàn thành",
+      cancelText: "Không, tôi muốn kiểm tra lại",
+      onConfirm: handleComfirmUpTask
+  })}
 
   return (
   <div className="mt-8 p-4 border border-gray-300 bg-white rounded-xl shadow w-full">
@@ -128,10 +107,11 @@ const handleDel = (idSlug) => {
 
     {/* Delete button */}
     <button
-      onClick={() => handleDel(idSlug)}
-      className="py-2 px-4 border border-gray-300 rounded-md text-sm hover:text-red-600 flex items-center gap-2 self-start"
+      disabled={btnStatus}
+      onClick={handleOpenDialog}
+      className= {`cursor-pointer py-2 px-4  ${btnStatus ? 'bg-gray-400 text-black':'bg-green-500 text-white'} border border-gray-300 rounded-md text-sm hover:text-black flex items-center gap-2 self-start`}
     >
-      <FaRegTrashCan /> Xóa
+      { btnStatus ? 'Hoàn thành': <><FaUpload /> Nộp Task </> }
     </button>
   </div>
 
@@ -155,30 +135,7 @@ const handleDel = (idSlug) => {
 
   {/* Chấm điểm */}
   <div className="mb-6 border-b pb-5 border-gray-200">
-    <h3 className="font-bold text-lg mb-2">Chấm Điểm</h3>
-    {isScore ? (
-      <p className="text-green-600 font-semibold">Đã chấm điểm</p>
-    ) : (
-      <>
-        <input
-          type="text"
-          ref={newScore}
-          placeholder="Nhập điểm số"
-          className="w-full border rounded-md p-2 text-sm mb-1"
-        />
-        <p className="text-sm text-gray-400 mb-2">
-          Nhập điểm từ 0 đến 10, có thể là số thập phân
-        </p>
-        <div className="flex justify-end">
-          <button
-            onClick={handleScore}
-            className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700"
-          >
-            Chấm điểm
-          </button>
-        </div>
-      </>
-    )}
+<UploadSection/>
   </div>
 
   {/* Nhận xét */}
@@ -216,4 +173,4 @@ const handleDel = (idSlug) => {
   );
 }
 
-export default TaskDetails;
+export default TaskStudent;

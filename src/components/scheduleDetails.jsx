@@ -12,6 +12,7 @@ import ScheduleMonthGrid from "./calendar/scheduleMonthGrid";
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import { useParams } from "react-router-dom";
+import { AiOutlineSwap } from "react-icons/ai";
 function ScheduleDetails() {
   const { showDialog } = useDialog();
   const { isToast, setToast } = useToast();
@@ -21,9 +22,12 @@ function ScheduleDetails() {
   const [currentWeek, setCurrentWeek] = useState(0);
   const [student,setStudent] = useState({})
   const { idSlug } = useParams();
+
+  const userRole = localStorage.getItem('role')
+  const param = localStorage.getItem('maSV')?localStorage.getItem('maSV'):idSlug
   
 
-  const now = new Date();
+const now = new Date();
 const currentMonth = now.getMonth() + 1; // getMonth() trả 0-11
 const currentYear = now.getFullYear();
 
@@ -39,11 +43,11 @@ const currentWeek_ = getWeekOfMonth(now);
 
 
   const fetchSchedule = async () => {
-    if (!idSlug) return;
+    if (!param) return;
     setLoading(true);
 
     let url = "/lich/theo-tuan";
-    const params = { maSV: idSlug, week: currentWeek };
+    const params = { maSV: param, week: currentWeek };
 
     if (viewMode === "month") {
       url = "/lich/theo-thang";
@@ -76,7 +80,7 @@ const currentWeek_ = getWeekOfMonth(now);
 
   const handleDeleteAll = async () => {
     try {
-      const res = await axiosClient.delete(`/lich/sinhvien/${idSlug}`);
+      const res = await axiosClient.delete(`/lich/sinhvien/${param}`);
       alert(res.data.message || "Đã xóa toàn bộ lịch.");
       fetchSchedule();
     } catch (error) {
@@ -84,17 +88,17 @@ const currentWeek_ = getWeekOfMonth(now);
     }
   };
   useEffect(()=>{
-    axiosClient.get(`/sinhviens/${idSlug}`)
+    axiosClient.get(`/sinhviens/${param}`)
     .then((res)=>{
       setStudent(res.data.data)
       console.log(res.data.data);
       
     })
-  },[idSlug])
+  },[param])
 
   useEffect(() => {
     fetchSchedule();
-  }, [idSlug, currentWeek, viewMode]);
+  }, [param, currentWeek, viewMode]);
 
   const handleOpenDialogDelete = () => {
     showDialog({
@@ -173,6 +177,138 @@ const handleOpenDialog = () => {
     },
   });
 };
+const handleOpenDialogSwap = () => {
+  showDialog({
+    title: "Đề xuất đổi lịch",
+    customContent: <SwapScheduleForm />,
+    confirmText: "Gửi yêu cầu",
+    cancelText: "Hủy",
+    onConfirm: () => {}, // sẽ xử lý trong form luôn
+  });
+};
+
+const SwapScheduleForm = () => {
+  const [selectedThu, setSelectedThu] = useState("Mon");
+  const [selectedCa, setSelectedCa] = useState("8:00-12:00");
+  const [newThu, setNewThu] = useState("Thu");
+  const [newCa, setNewCa] = useState("13:00-17:00");
+  const [changeType, setChangeType] = useState("doi");
+  const [reason, setReason] = useState("");
+
+  // Khi người dùng bấm xác nhận trong dialog
+  const handleSubmit = async () => {
+    // const payload = {
+    //   maSV: idSlug,
+    //   caCu: { thu: selectedThu, ca: selectedCa },
+    //   loai: changeType,
+    //   lyDo: reason,
+    // };
+
+    // if (changeType === "doi") {
+    //   payload.caMoi = { thu: newThu, ca: newCa };
+    // }
+
+    // try {
+    //   const res = await axiosClient.post("/de-xuat-doi-ca", payload);
+    //   alert(res.data.message);
+    //   fetchSchedule();
+    // } catch (err) {
+    //   alert("Gửi yêu cầu thất bại");
+    //   console.error(err);
+    // }
+  };
+
+  // Gửi tự động khi dialog gọi onConfirm
+  useEffect(() => {
+    const listener = () => handleSubmit();
+    window.addEventListener("dialogConfirm", listener);
+    return () => window.removeEventListener("dialogConfirm", listener);
+  }, [selectedThu, selectedCa, newThu, newCa, changeType, reason]);
+
+  return (
+    <div className="flex flex-col gap-3 mt-2">
+      {/* Ca cần thay đổi */}
+      <label className="font-medium">Chọn ca cần thay đổi:</label>
+      <select
+        className="border border-gray-300 p-2 rounded-md"
+        onChange={(e) => {
+          const [thu, ca] = e.target.value.split("|");
+          setSelectedThu(thu);
+          setSelectedCa(ca);
+        }}
+      >
+        <option value="Mon|8:00-12:00">Thứ 2, Ca sáng</option>
+        <option value="Mon|13:00-17:00">Thứ 2, Ca chiều</option>
+        <option value="Tue|8:00-12:00">Thứ 3, Ca sáng</option>
+        <option value="Tue|13:00-17:00">Thứ 3, Ca chiều</option>
+        <option value="Wed|8:00-12:00">Thứ 4, Ca sáng</option>
+        <option value="Wed|13:00-17:00">Thứ 4, Ca chiều</option>
+        <option value="Thu|8:00-12:00">Thứ 5, Ca sáng</option>
+        <option value="Thu|13:00-17:00">Thứ 5, Ca chiều</option>
+        <option value="Fri|8:00-12:00">Thứ 6, Ca sáng</option>
+        <option value="Fri|13:00-17:00">Thứ 6, Ca chiều</option>
+      </select>
+
+      {/* Hình thức thay đổi */}
+      <label className="font-medium">Hình thức thay đổi:</label>
+      <div className="flex gap-4">
+        <label className="flex items-center gap-1">
+          <input
+            type="radio"
+            name="hinh-thuc"
+            checked={changeType === "doi"}
+            onChange={() => setChangeType("doi")}
+          />
+          Đổi sang ca khác
+        </label>
+        <label className="flex items-center gap-1">
+          <input
+            type="radio"
+            name="hinh-thuc"
+            checked={changeType === "nghi"}
+            onChange={() => setChangeType("nghi")}
+          />
+          Nghỉ ca đó
+        </label>
+      </div>
+
+      {/* Ca mới (ẩn nếu chọn nghỉ) */}
+      {changeType === "doi" && (
+        <div className="flex flex-col gap-2 transition-all duration-300">
+          <label className="font-medium">Chọn ca mới:</label>
+          <select
+            className="border border-gray-300 p-2 rounded-md"
+            onChange={(e) => {
+              const [thu, ca] = e.target.value.split("|");
+              setNewThu(thu);
+              setNewCa(ca);
+            }}
+          >
+            <option value="Mon|8:00-12:00">Thứ 2, Ca sáng</option>
+            <option value="Mon|13:00-17:00">Thứ 2, Ca chiều</option>
+            <option value="Tue|8:00-12:00">Thứ 3, Ca sáng</option>
+            <option value="Tue|13:00-17:00">Thứ 3, Ca chiều</option>
+            <option value="Wed|8:00-12:00">Thứ 4, Ca sáng</option>
+            <option value="Wed|13:00-17:00">Thứ 4, Ca chiều</option>
+            <option value="Thu|8:00-12:00">Thứ 5, Ca sáng</option>
+            <option value="Thu|13:00-17:00">Thứ 5, Ca chiều</option>
+            <option value="Fri|8:00-12:00">Thứ 6, Ca sáng</option>
+            <option value="Fri|13:00-17:00">Thứ 6, Ca chiều</option>
+          </select>
+        </div>
+      )}
+
+      {/* Lý do */}
+      <textarea
+        placeholder="Nhập lý do đổi ca"
+        className="border border-gray-300 rounded-md p-2 mt-2"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+      />
+    </div>
+  );
+};
+
 
   return (
     <>
@@ -214,7 +350,15 @@ const handleOpenDialog = () => {
               </h4>
             </div>
           </div>
-          <div className="flex gap-2 mt-3 lg:mt-0">
+          {userRole==='Student'?
+          (
+            <button 
+            onClick={handleOpenDialogSwap}
+            className="bg-green-500 cursor-pointer flex gap-1 items-center text-white rounded-lg px-4 py-2">
+             <AiOutlineSwap /> Đổi lịch
+            </button>
+          )
+          :(<div className="flex gap-2 mt-3 lg:mt-0">
             <button
               onClick={handleOpenDialogDelete}
               className="cursor-pointer p-3 flex items-center gap-2 border border-gray-300 rounded-md"
@@ -229,7 +373,7 @@ const handleOpenDialog = () => {
               <BiEdit className="text-xl" />
               Thêm
             </button>
-          </div>
+          </div>)}
         </div>
 
         {/* lịch */}

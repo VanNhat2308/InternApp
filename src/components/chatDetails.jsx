@@ -88,6 +88,7 @@ useEffect(() => {
     setNewMsg("");
     axiosClient.post('/messages', newMessage);
   };
+  const userRole = localStorage.getItem('role')
 
   return (
     <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] border border-gray-300 rounded-md overflow-hidden lg:shadow mt-8">
@@ -157,7 +158,7 @@ useEffect(() => {
             )}
           </div>
 
-          <button
+          {userRole === 'Sinhvien' ? "":(<button
             className="group relative px-2 lg:px-4 py-2 flex items-center gap-2 border border-gray-300 rounded-md cursor-pointer hover:text-red-500"
           >
             <FaRegTrashCan className="text-lg" />
@@ -165,7 +166,7 @@ useEffect(() => {
             <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-gray-700 text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-all lg:hidden">
               Xóa đoạn chat
             </span>
-          </button>
+          </button>)}
         </div>
 
         {/* Messages */}

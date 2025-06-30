@@ -42,10 +42,11 @@ function UploadSection({ onUploaded }) {
       setUploading(false);
     }
   };
+  const userRole = localStorage.getItem('role')
 
   return (
     <div className="mt-6">
-      <p className="font-semibold mb-2">CV Của Sinh Viên</p>
+      <p className="font-semibold mb-2">{ userRole === 'Student' ? 'Tệp đính kèm':'CV Của Sinh Viên'}</p>
 
       {/* Label drag & click */}
       <label
@@ -95,13 +96,13 @@ function UploadSection({ onUploaded }) {
         </div>
       )}
 
-      <button
+      {/* <button
         onClick={handleUpload}
         disabled={uploading}
         className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
       >
         {uploading ? "Đang tải lên..." : "Gửi lên server"}
-      </button>
+      </button> */}
 
       {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
     </div>
