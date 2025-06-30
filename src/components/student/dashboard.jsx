@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ResponNav from "../responsiveNav";
 import Header from "../header";
 import { TiShoppingBag } from "react-icons/ti";
@@ -12,6 +12,7 @@ import WeeklyAttendanceChart from "../WeeklyAttendanceChart";
 import { useDialog } from "../../context/dialogContext";
 import Toast from "../toast";
 import { useToast } from "../../context/toastContext";
+import Clock from "../Clock";
 
 function Dashboard() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -22,6 +23,12 @@ function Dashboard() {
     const [diemDanh,setDiemDanh] = useState(0)
     const [loading, setLoading] = useState(false)
     const [btnStatus,setBtnStatus] = useState('Chưa điểm danh')
+    const [currentTime, setCurrentTime] = useState("");
+    const checkInRef = useRef(null);
+    const checkOutRef = useRef(null);
+    const handleTimeUpdate = (time) => {
+       setCurrentTime(time);
+  };
 
     const getStyleBtnStatus = (btnStatus)=>{
         switch (btnStatus) {
@@ -155,6 +162,7 @@ function Dashboard() {
     if(btnStatus === 'Chưa điểm danh'){
       // cập nhật checkingtime
       setBtnStatus('Clock up')
+      handleShowClockOut()
     }
     else if(btnStatus === 'Clock up'){
       // gọi dialog, cập nhật checkout
@@ -287,7 +295,7 @@ function Dashboard() {
                 <BsClockFill className="text-gray-500"/>
                 <span>Hôm nay</span>
             </div>
-            <h1 className="text-3xl font-semibold">00:00 Hrs</h1>
+            <h1 className="text-3xl font-semibold"><Clock onTimeUpdate={handleTimeUpdate} /></h1>
             </div>
            <button
   onClick={handleCheckTime}
