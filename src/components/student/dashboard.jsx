@@ -13,25 +13,94 @@ import { useDialog } from "../../context/dialogContext";
 import Toast from "../toast";
 import { useToast } from "../../context/toastContext";
 import Clock from "../Clock";
-import axiosClient from "../../service/axiosClient";
 import { useDashboardData } from "../../hooks/useDashboardData";
+import axiosClient from "../../service/axiosClient";
+import { useQueryClient } from '@tanstack/react-query';
 
 function Dashboard() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
-  const [diemdanh, setDiemDanh] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [btnStatus, setBtnStatus] = useState("Chưa điểm danh");
-  const [currentTime, setCurrentTime] = useState("");
-  const checkInRef = useRef(null);
-  const checkOutRef = useRef(null);
-  // const [chartData, setChartData] = useState([]);
+  const [checkInTime, setCheckInTime] = useState(null);
+  const [checkOutTime, setCheckOutTime] = useState(null);
+  const [currentTime,setCurrentTime] = useState(null)
+  const queryClient = useQueryClient();
+
+  // logic checking
+const handleClockIn = async() => {
+  const now = new Date();
+  const hhmmss = now.toTimeString().split(' ')[0]; // "HH:mm:ss"
+  setCheckInTime(hhmmss);
+
+  // Tính tổng phút hiện tại
+  const [hour, minute] = hhmmss.split(":").map(Number);
+  const totalMinutes = hour * 60 + minute;
+
+  // Mặc định là 'on_time', nếu điểm danh sau 08:00 hoặc sau 13:00 thì là 'late'
+  let status = "on_time";
+  if (hour < 12) {
+    // Buổi sáng: sau 08:00 AM là trễ
+    if (totalMinutes > 480) status = "late";
+  } else {
+    // Buổi chiều: sau 01:00 PM là trễ
+    if (totalMinutes > 780) status = "late";
+  }
+
+ await axiosClient.post('/diem-danh/store-or-update', {
+    maSV,
+    gio_bat_dau: hhmmss,
+    trang_thai: status, // 'on_time' hoặc 'late'
+  });
+ queryClient.invalidateQueries(['dashboard-data', maSV]);
+
+  setBtnStatus("Clock up");
+};
+
+const handleClockOut = async() => {
+  if (!checkInTime) {
+    alert("Bạn chưa điểm danh giờ bắt đầu.");
+    return;
+  }
+
+  const now = new Date();
+  const [inHour, inMinute, inSecond] = checkInTime.split(":").map(Number);
+  const checkInDate = new Date(now);
+  checkInDate.setHours(inHour, inMinute, inSecond, 0);
+
+  const diffMs = now - checkInDate;
+  const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+  if (diffMinutes < 5) {
+    alert("Bạn chưa làm việc đủ 5 phút để Clock Out.");
+    return;
+  }
+
+  const hhmmss = now.toTimeString().split(' ')[0];
+  setCheckOutTime(hhmmss);
+
+  await axiosClient.post('/diem-danh/store-or-update', {
+    maSV,
+    gio_ket_thuc: hhmmss,
+  });
+ queryClient.invalidateQueries(['dashboard-data', maSV]);
+ setBtnStatus("Đã hết giờ làm việc")
+};
+
+
+
+
+
+const handleCheckTime = () => {
+  if (btnStatus === "Chưa điểm danh") {
+    handleClockIn(); // lấy giờ hiện tại 1 lần duy nhất
+  } else if (btnStatus === "Clock up") {
+    handleShowClockOut(); // chỉ hiện dialog
+  }
+};
+
+
+
+  // 
   const maSV = localStorage.getItem("maSV");
-  // const [internStats, setInternStats] = useState({
-  //   totalTime: 0,
-  //   level: 0,
-  //   numTasks: 0,
-  //   score: 0,
-  // });
   const parseTimeToMinutes = (timeStr) => {
     const [time, meridiem] = timeStr.split(" ");
     let [hours, minutes] = time.split(":").map(Number);
@@ -55,10 +124,19 @@ function Dashboard() {
     return `${hour}:${minute.padStart(2, "0")} ${meridiem}`;
   };
 
-  const getStatus = (checkingTime) => {
-    const totalMinutes = parseTimeToMinutes(checkingTime);
-    return totalMinutes <= 480 ? "Đúng giờ" : "Đi trễ";
-  };
+const getStatus = (checkInTime) => {
+  const [hour, minute] = checkInTime.split(":").map(Number);
+
+  const totalMinutes = hour * 60 + minute;
+
+  // Nếu điểm danh buổi sáng (trước 12h)
+  if (hour < 12) {
+    return totalMinutes <= 480 ? "Đúng giờ" : "Đi trễ"; // 480 = 8:00 AM
+  } else {
+    return totalMinutes <= 780 ? "Đúng giờ" : "Đi trễ"; // 780 = 13:00 PM
+  }
+};
+
 
   const statusStyles = (checkInTime) => {
     const totalMinutes = parseTimeToMinutes(checkInTime);
@@ -66,54 +144,33 @@ function Dashboard() {
       ? "text-green-600 bg-green-100"
       : "text-yellow-600 bg-yellow-100";
   };
-const { data = { internStats: {}, diemDanh: [], chartData: {} }, isLoading, isError } = useDashboardData(maSV);
+const { data = { internStats: {}, diemDanh: [], chartData: {}, todayCheck: null}, isLoading, isError } = useDashboardData(maSV);
 const { internStats, diemDanh, chartData } = data;
-  // intern stats
-  // useEffect(() => {
-  //   if (!maSV) return; // Bảo vệ: tránh gọi API khi chưa có maSV
 
-  //   setLoading(true); // Bắt đầu loading
 
-  //   Promise.all([
-  //     axiosClient.get(`/diem-danh/tong-gio-thuc-tap/${maSV}`),
-  //     axiosClient.get(`/diem-danh/thong-ke-chuyen-can/${maSV}`),
-  //     axiosClient.get(`/student/tasks/tong-task-sv/${maSV}`),
-  //     axiosClient.get(`/diem-danh/sinh-vien/${maSV}`, {
-  //       params: {
-  //         date: null,
-  //         page: 1,
-  //         per_page: 10,
-  //       },
-  //     }),
-  //       axiosClient
-  //           .get(`/diem-danh/thong-ke-tuan-sv/${maSV}`)
-  //   ])
-  //     .then(([resTotal, resLevel, resTask, resDiemDanh, resChartData]) => {
-  //       const tongBuoi = resLevel.data.tong_so_buoi || 1; // Tránh chia 0
-  //       const buoiDungGio = resLevel.data.so_buoi_dung_gio || 0;
+useEffect(() => {
+  const today = data?.todayCheck?.data;
 
-  //       setInternStats({
-  //         totalTime: resTotal.data.tong_gio_thuc_tap,
-  //         level: `${buoiDungGio}/${tongBuoi}`,
-  //         numTasks: resTask.data.tong_so_task,
-  //         score: Math.round((buoiDungGio / tongBuoi) * 10), // Làm tròn điểm nếu cần
-  //       });
-  //       setDiemDanh(resDiemDanh.data.data.data)
-  //       setChartData(resChartData.data)
-  //     })
-  //     .catch((err) => {
-  //       console.error("Lỗi khi gọi API thống kê intern:", err);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, [maSV]);
+  if (today) {
+    const { gio_bat_dau, gio_ket_thuc } = today;
 
-  //
+    if (gio_bat_dau && !gio_ket_thuc) {
+      setBtnStatus("Clock up");
+      setCheckInTime(gio_bat_dau);
+    } else if (gio_bat_dau && gio_ket_thuc) {
+      setBtnStatus("Đã hết giờ làm việc");
+      setCheckInTime(gio_bat_dau);
+      setCheckOutTime(gio_ket_thuc);
+    }
+  } else {
+    // Nếu chưa có điểm danh hôm nay
+    setBtnStatus("Chưa điểm danh");
+    setCheckInTime(null);
+    setCheckOutTime(null);
+  }
+}, [data]);
 
-  const handleTimeUpdate = (time) => {
-    setCurrentTime(time);
-  };
+
 
   const getStyleBtnStatus = (btnStatus) => {
     switch (btnStatus) {
@@ -202,13 +259,13 @@ const { internStats, diemDanh, chartData } = data;
               <p className="text-gray-500 flex items-center gap-1">
                 <BsClockFill /> Hôm nay
               </p>
-              <p className="text-xl font-semibold">08:00:00 Hrs</p>
+              <p className="text-xl font-semibold">{checkInTime} hrs</p>
             </div>
             <div className="bg-gray-200 px-6 py-4 rounded-md flex-1">
               <p className="text-gray-500 flex items-center gap-1">
                 <BsClockFill /> Overtime
               </p>
-              <p className="text-xl font-semibold">00:13:00 Hrs</p>
+              <p className="text-xl font-semibold">  {checkOutTime || new Date().toTimeString().split(" ")[0]} hrs</p>
             </div>
           </div>
         </div>
@@ -216,26 +273,14 @@ const { internStats, diemDanh, chartData } = data;
       confirmText: "Có, Clock Out",
       cancelText: "Không, tôi muốn kiểm tra lại",
       onConfirm: () => {
-        // Gọi API clock out tại đây
-        console.log("Clocked out");
+        handleClockOut();
       },
     });
   };
 
   const { isToast, setToast } = useToast();
 
-  const handleCheckTime = () => {
-    if (btnStatus === "Chưa điểm danh") {
-      // cập nhật checkingtime
-      setBtnStatus("Clock up");
-      handleShowClockOut();
-    } else if (btnStatus === "Clock up") {
-      // gọi dialog, cập nhật checkout
-      handleShowClockOut();
-      // chỗ này sẽ gọi trong hàm onChange
-      setBtnStatus("Đã hết giờ làm việc");
-    }
-  };
+
 
   return (
     <div className="lg:p-6 flex-1 space-y-6">
@@ -382,7 +427,7 @@ const { internStats, diemDanh, chartData } = data;
                   <span>Hôm nay</span>
                 </div>
                 <h1 className="text-3xl font-semibold">
-                  <Clock onTimeUpdate={handleTimeUpdate} />
+                 <Clock onTimeUpdate={(time) => setCurrentTime(time)} />
                 </h1>
               </div>
               <button

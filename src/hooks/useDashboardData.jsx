@@ -12,6 +12,7 @@ export const useDashboardData = (maSV) => {
         resTask,
         resDiemDanh,
         resChartData,
+        resTodayStatus, // <== Thêm API điểm danh hôm nay
       ] = await Promise.all([
         axiosClient.get(`/diem-danh/tong-gio-thuc-tap/${maSV}`),
         axiosClient.get(`/diem-danh/thong-ke-chuyen-can/${maSV}`),
@@ -23,7 +24,8 @@ export const useDashboardData = (maSV) => {
             per_page: 10,
           },
         }),
-        axiosClient.get(`/diem-danh/thong-ke-tuan-sv/${maSV}`)
+        axiosClient.get(`/diem-danh/thong-ke-tuan-sv/${maSV}`),
+        axiosClient.post(`/diem-danh/check-today`, { maSV }) // <== gọi POST
       ]);
 
       const tongBuoi = resLevel.data.tong_so_buoi || 1;
@@ -38,8 +40,9 @@ export const useDashboardData = (maSV) => {
         },
         diemDanh: resDiemDanh.data.data.data,
         chartData: resChartData.data,
+        todayCheck: resTodayStatus.data // <== thêm phần này
       };
     },
-    enabled: !!maSV, // chỉ chạy khi có maSV
+    enabled: !!maSV,
   });
 };
