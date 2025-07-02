@@ -8,20 +8,23 @@ import { ToastProvider } from './context/toastContext.jsx'
 import { FilterProvider } from './context/filteContext.jsx'
 import { UserProvider } from './context/userContext.jsx'
 import CustomDialog from './components/customDialog.jsx'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+const queryClient = new QueryClient();
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-   <SidebarProvider>
-  <DialogProvider>
-    <ToastProvider>
-      <FilterProvider>
-        <CustomDialog/>
-        <UserProvider>
-          <App />
-        </UserProvider>
-      </FilterProvider>
-    </ToastProvider>
-  </DialogProvider>
-</SidebarProvider>
+   <QueryClientProvider client={queryClient}>
+     <SidebarProvider>
+       <DialogProvider>
+      <ToastProvider>
+        <FilterProvider>
+          <CustomDialog/>
+          <UserProvider>
+            <App />
+          </UserProvider>
+        </FilterProvider>
+      </ToastProvider>
+       </DialogProvider>
+     </SidebarProvider>
+   </QueryClientProvider>
 </StrictMode>
 )
