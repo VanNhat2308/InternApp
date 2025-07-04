@@ -40,7 +40,8 @@ import RegisterSuccess from "../components/student/registerSuccess";
 import Diary from "../components/student/diary/diary";
 import DiaryPanel from "../components/student/diary/diaryPanel";
 import DiaryDetails from "../components/student/diary/diaryDetails";
-import TaskStudent from "../components/student/taskStudent";
+import TaskStudent from "../components/student/task/taskStudent";
+import TaskPanelStudent from "../components/student/task/taskPanelStudent";
 const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
@@ -283,7 +284,7 @@ const protectedRoutes = [
               },
               {
                 path:'task-list',
-                element:<TaskPanel/>
+                element:<TaskPanelStudent/>
               },
               {
                 path:'task-details/:idSlug',

@@ -103,7 +103,7 @@ const getPriorityColor = (p) => {
 
     {/* Progress bar */}
     <div className="h-1 bg-green-400/50 rounded-full mt-4">
-      <div className="h-full w-[70%] bg-green-500 rounded-full"></div>
+      <div className={`h-full ${task.trangThai==='Đã nộp'?'w-full' :'w-[70%]'}  bg-green-500 rounded-full`}></div>
     </div>
 
     {/* Footer: hạn + avatar */}

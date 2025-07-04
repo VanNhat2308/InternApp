@@ -27,8 +27,9 @@ function DiaryPanel() {
   const handleView = (id) => navigate(`/student/diary/diary-details/${id}`);
   const fetchDiary = () => {
     setLoading(true)
-    axiosClient
-      .get(`/nhat-ky/list/${maSV}`)
+    axiosClient.get(`/nhat-ky/list/${maSV}`, {
+      params: { keyword: searchTerm}
+    })
       .then((res) => {
         setDiaries(res.data.data);
       })
@@ -44,7 +45,7 @@ function DiaryPanel() {
     if (maSV) {
       fetchDiary();
     }
-  }, [maSV]); 
+  }, [maSV,searchTerm]); 
 
   const getStatusStyle = (status) =>
     status === "Hoàn thành"

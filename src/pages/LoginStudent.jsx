@@ -30,6 +30,9 @@ export default function LoginStudent() {
         localStorage.setItem('role', 'Student');
         localStorage.setItem('user',res.data.user.hoTen)
         localStorage.setItem('maSV',res.data.user.maSV)
+        localStorage.setItem('email',res.data.user.email)
+        localStorage.setItem('hoTen',res.data.user.hoTen)
+        localStorage.setItem('viTri',res.data.user.viTri)
         alert('Đăng nhập thành công!');
         navigate('/student/dashboard');
       } else {
