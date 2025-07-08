@@ -13,7 +13,7 @@ import { BiDotsVertical } from "react-icons/bi";
 import axiosClient from "../service/axiosClient";
 import { useNavigate, useParams } from "react-router-dom";
 
-const currentUser = { id: 1, name: "Tôi" };
+
 
 export default function ChatDetails() {
   const {idSlug} = useParams()
@@ -25,8 +25,21 @@ export default function ChatDetails() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const role = localStorage.getItem('role')
+  const path = role === 'Student' ? `/messages/feedback-panel-student`: `messages/feedback-panel`  
+  const id = role === 'Student'? localStorage.getItem('maSV') : localStorage.getItem('maAdmin')
+ const swapUser = (r) => {
+  switch (r) {
+    case 'Student':
+      return 'sinhvien';
+    case 'Admin':
+      return 'admin';
+    default:
+      return '';
+  }
+};
 
-  
+  const currentUser = { id: id, name: "Tôi",from_role: swapUser(role)};
  
 
   useEffect(() => {
@@ -44,9 +57,12 @@ useEffect(() => {
 
   // Lấy danh sách sinh viên nhắn tin gần nhất
   useEffect(() => {
-    axiosClient.get(`messages/feedback-panel`, {
-      params: { search: searchTerm }
-    }).then(res => {
+     axiosClient.get(path,{
+    params:{
+     id : id,
+     search:searchTerm
+    }
+  }).then(res => {
       setMessagesRecent(res.data);
     });
   }, [searchTerm]);
@@ -71,14 +87,15 @@ useEffect(() => {
     if (!newMsg.trim()) return;
 
     const newMessage = {
-      from_id: currentUser.id,
-      from_role: 'admin',
-      to_id: selectedUserId,
-      to_role:'sinhvien',
-      type: "text",
-      content: newMsg,
-      conversation_id: selectedConversationId
-    };
+  from_id: currentUser.id,
+  from_role: currentUser.from_role, 
+  to_id: selectedUserId,
+  to_role: currentUser.from_role === 'admin' ? 'sinhvien' : 'admin', // đảo ngược lại
+  type: "text",
+  content: newMsg,
+  conversation_id: selectedConversationId
+};
+
 
     setConversations(prev => ({
       ...prev,
@@ -158,7 +175,7 @@ useEffect(() => {
             )}
           </div>
 
-          {userRole === 'Sinhvien' ? "":(<button
+          {role === 'Student' ? "":(<button
             className="group relative px-2 lg:px-4 py-2 flex items-center gap-2 border border-gray-300 rounded-md cursor-pointer hover:text-red-500"
           >
             <FaRegTrashCan className="text-lg" />
@@ -172,7 +189,9 @@ useEffect(() => {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3">
           {messages.map((msg, i) => {
-            const isMe = msg.from_id === currentUser.id;
+            const isMe = msg.from_id == currentUser.id && msg.from_role == currentUser.from_role;
+  
+            
             return (
               <div
                 key={i}

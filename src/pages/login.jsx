@@ -30,6 +30,7 @@ export default function Login() {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('role', 'Admin');
         localStorage.setItem('user',res.data.user.hoTen)
+        localStorage.setItem('maAdmin',res.data.user.maAdmin)
       
 
         
