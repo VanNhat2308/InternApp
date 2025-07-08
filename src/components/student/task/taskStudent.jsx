@@ -16,6 +16,7 @@ function TaskStudent() {
  const [btnStatus, setBtnStatus] = useState(false)
  const {idSlug} = useParams()
  const [task,setTask] = useState({})
+ const maSV = localStorage.getItem('maSV')
  useEffect(()=>{
   axiosClient.get(`tasks/${idSlug}`)
   .then((res)=>{
@@ -184,6 +185,47 @@ useEffect(() => {
     });
 }, []);
 
+//comments
+const [comments, setComments] = useState([]);
+const fetchTaskComments = async (taskId) => {
+  try {
+    const res = await axiosClient.get(`/task-comments/${taskId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi fetch nhận xét:", error);
+    return [];
+  }
+}
+
+useEffect(() => {
+  if (idSlug) {
+    fetchTaskComments(idSlug).then((data) => setComments(data));
+  }
+}, [idSlug]);
+
+// push new comment
+
+const [newComment, setNewComment] = useState("");
+
+const handleSubmitComment = async () => {
+  if (!newComment.trim()) return;
+
+  try {
+    await axiosClient.post("/task-comments", {
+      task_id: idSlug,
+      noi_dung: newComment,
+      user_type: 'App\\Models\\SinhVien',
+      user_id: maSV
+    });
+
+    const updatedComments = await fetchTaskComments(idSlug);
+    setComments(updatedComments);
+    setNewComment("");
+  } catch (error) {
+    alert("Gửi nhận xét thất bại.");
+  }
+};
+
 
 
   return (
@@ -331,28 +373,50 @@ useEffect(() => {
     <h3 className="font-bold text-lg mb-2">Nhận Xét</h3>
 
     {/* Nhận xét đã có */}
-    <div className="flex items-start gap-3 mb-4">
-      <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
-      <div>
-        <p className="font-semibold">
-          Nguyễn Văn A <span className="text-green-500 text-sm ml-2">Admin</span>
-        </p>
-        <p className="text-gray-700">Nhật ký tốt, tiến độ OK.</p>
-      </div>
+   {comments.map((comment) => (
+  <div key={comment.id} className="flex items-start gap-3 mb-4">
+    <img
+      src={avatar} // Bạn có thể thay đổi ảnh theo user_type nếu muốn
+      alt="avatar"
+      className="w-8 h-8 rounded-full object-cover"
+    />
+    <div>
+      <p className="font-semibold">
+        {comment.user?.hoTen || "Không rõ"}
+        <span className="text-green-500 text-sm ml-2">
+          {comment.user_type.includes("Admin") ? "Admin" : "Sinh viên"}
+        </span>
+      </p>
+      <p className="text-gray-700">{comment.noi_dung}</p>
     </div>
+  </div>
+))}
+
 
     {/* Ghi nhận xét mới */}
     <div className="flex items-start gap-3">
       <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
       <div className="flex-1 relative">
-        <textarea
-          rows="4"
-          className="w-full border-2 border-gray-300 rounded-md p-2 pr-10 text-sm resize-none"
-          placeholder="Ghi phản hồi..."
-        ></textarea>
-        <button className="absolute top-2 right-2 bg-gray-400 text-white p-2 rounded-md hover:bg-gray-500">
-          <FiSend />
-        </button>
+  <textarea
+  rows="4"
+  className="w-full border-2 border-gray-300 rounded-md p-2 pr-10 text-sm resize-none"
+  placeholder="Ghi phản hồi..."
+  value={newComment}
+  onChange={(e) => setNewComment(e.target.value)}
+></textarea>
+<button
+  disabled={!newComment.trim()}
+  className={`absolute top-2 right-2 p-2 rounded-md transition ${
+    newComment.trim()
+      ? "bg-green-500 hover:bg-green-600 text-white cursor-pointer"
+      : "bg-gray-300 text-white cursor-not-allowed"
+  }`}
+  onClick={handleSubmitComment}
+>
+  <FiSend />
+</button>
+
+
       </div>
     </div>
   </div>
