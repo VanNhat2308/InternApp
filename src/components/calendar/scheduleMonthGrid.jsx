@@ -35,12 +35,14 @@ const generateCalendar = (year, month) => {
 const ScheduleCard = ({ event, onDelete }) => {
   const startTime = dayjs(`2025-07-01T${event.time}`);
   const endTime = startTime.add(event.duration, "hour");
+  const role = localStorage.getItem("role")
 
   return (
     <div className="bg-white border border-gray-300 border-l-4 border-l-green-600 rounded-md p-2 shadow-sm relative text-sm mb-1">
       <div className="font-semibold">
         {startTime.format("HH:mm")} - {endTime.format("HH:mm")}
       </div>
+      { role === "Student" ? '':(<>
       <div className="text-gray-500 mt-1 flex items-center gap-1">
         <MdTimer className="text-base" />
         {event.duration}h
@@ -51,6 +53,7 @@ const ScheduleCard = ({ event, onDelete }) => {
       >
         <BiTrash />
       </button>
+      </>)}
     </div>
   );
 };

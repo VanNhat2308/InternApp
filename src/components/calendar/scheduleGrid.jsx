@@ -34,8 +34,12 @@ const getWeekDates = (weekOffset = 0) => {
   });
 };
 
-const ScheduleCard = ({ event, onDelete }) => (
-  <div className="bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative z-[-1] h-full w-full overflow-hidden">
+const ScheduleCard = ({ event, onDelete, isToday }) => (
+    <div
+    className={`bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative z-[-1] h-full w-full overflow-hidden ${
+      isToday ? "bg-green-50" : ""
+    }`}
+  >
     <div className="text-sm font-medium truncate">
       {event.time} - {parseInt(event.time) + event.duration}:00
     </div>
@@ -136,15 +140,14 @@ const ScheduleGrid = ({ currentWeek, events,loading,onDeleteById }) => {
                   }
 
                   return (
-                    <td
-                      key={cellKey}
-                      rowSpan={event.duration}
-                      className={`border border-gray-200 relative overflow-hidden h-20 p-1 ${
-                        isToday ? "bg-green-50" : ""
-                      }`}
-                    >
-                      <ScheduleCard event={event} onDelete={onDeleteById} />
-                    </td>
+                 <td
+  key={cellKey}
+  rowSpan={event.duration}
+  className="border border-gray-200 relative overflow-hidden h-20 p-1"
+>
+  <ScheduleCard event={event} onDelete={onDeleteById} isToday={isToday} />
+</td>
+
                   );
                 }
 

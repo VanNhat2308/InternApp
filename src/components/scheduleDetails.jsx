@@ -22,14 +22,13 @@ function ScheduleDetails() {
   const [currentWeek, setCurrentWeek] = useState(0);
   const [student,setStudent] = useState({})
   const { idSlug } = useParams();
-
   const userRole = localStorage.getItem('role')
   const param = localStorage.getItem('maSV')?localStorage.getItem('maSV'):idSlug
   
 
-const now = new Date();
-const currentMonth = now.getMonth() + 1; // getMonth() trả 0-11
-const currentYear = now.getFullYear();
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
 
 // Tính tuần trong tháng
 const getWeekOfMonth = (date) => {
@@ -156,12 +155,12 @@ const handleOpenDialog = () => {
     onConfirm: async () => {
       try {
         const res = await axiosClient.post("/lich", {
-          maSV: idSlug, // truyền từ props hoặc state
-          thu: selectedThu,
-          ca: selectedCa,
-          month: currentMonth, // ví dụ tháng hiện tại (1-12)
-          year: currentYear,
-          week: currentWeek_,
+            maSV: idSlug,
+            thu: selectedThu,
+            ca: selectedCa,
+            currentWeek: currentWeek, // -1, 0, 1
+            month: currentMonth,
+            year: currentYear,
         });
 
         alert(res.data.message);
@@ -368,6 +367,7 @@ const SwapScheduleForm = () => {
             </button>
             <button
               onClick={handleOpenDialog}
+              disabled={viewMode === "month"}
               className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white"
             >
               <BiEdit className="text-xl" />
