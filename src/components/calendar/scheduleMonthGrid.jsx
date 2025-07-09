@@ -1,24 +1,45 @@
 import React, { useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
-
+import dayjs from "dayjs";
 const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-// Dữ liệu mẫu
-const initialEvents = [
-  { id: 1, day: "Tue", time: "08:00", duration: 4, week: 1 },
-  { id: 2, day: "Tue", time: "13:00", duration: 4, week: 1 },
-  { id: 3, day: "Mon", time: "13:00", duration: 4, week: 3 },
-];
+// Sample data with actual dates
+// const sampleEvents = [
+//   { id: 1, date: "2025-07-02", time: "08:00", duration: 2 },
+//   { id: 2, date: "2025-07-02", time: "13:00", duration: 3 },
+//   { id: 3, date: "2025-07-15", time: "09:30", duration: 1.5 },
+//   { id: 4, date: "2025-07-21", time: "10:00", duration: 2 },
+//   { id: 5, date: "2025-07-25", time: "14:00", duration: 1 },
+// ];
+
+const generateCalendar = (year, month) => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDay = new Date(year, month - 1, 1).getDay(); // Sunday = 0
+  const calendar = [];
+  let dayCounter = 1;
+
+  for (let i = 0; i < 6; i++) {
+    const week = new Array(7).fill(null);
+    for (let j = 0; j < 7; j++) {
+      if ((i === 0 && j < (firstDay === 0 ? 6 : firstDay - 1)) || dayCounter > daysInMonth) continue;
+      week[j] = dayCounter++;
+    }
+    calendar.push(week);
+    if (dayCounter > daysInMonth) break;
+  }
+
+  return calendar;
+};
 
 const ScheduleCard = ({ event, onDelete }) => {
-  const startHour = parseInt(event.time);
-  const endHour = startHour + event.duration;
+  const startTime = dayjs(`2025-07-01T${event.time}`);
+  const endTime = startTime.add(event.duration, "hour");
 
   return (
-    <div className="bg-white border border-gray-300 border-l-4 border-l-green-600 rounded-md p-2 shadow-sm relative h-full text-sm mb-1">
+    <div className="bg-white border border-gray-300 border-l-4 border-l-green-600 rounded-md p-2 shadow-sm relative text-sm mb-1">
       <div className="font-semibold">
-        {event.time} - {endHour}:00
+        {startTime.format("HH:mm")} - {endTime.format("HH:mm")}
       </div>
       <div className="text-gray-500 mt-1 flex items-center gap-1">
         <MdTimer className="text-base" />
@@ -34,63 +55,49 @@ const ScheduleCard = ({ event, onDelete }) => {
   );
 };
 
-const ScheduleMonthGrid = ({events,onDeleteById,loading}) => {
-  const weeks = [1, 2, 3, 4];
-
-  const handleDelete = (id) => {
-    setEvents(events.filter((e) => e.id !== id));
-  };
+const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = false }) => {
+  const [year, month] = [2025, 7]; // July 2025
+  const calendar = generateCalendar(year, month);
 
   return (
-    <div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[90vw]">
+    <div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[95vw] overflow-x-auto">
       {loading ? (
         <p className="text-center p-4">Đang tải dữ liệu...</p>
-      ) : events.length === 0 ? (
-        <p className="text-center p-4">Không có lịch trong tháng này.</p>
       ) : (
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px] table-fixed">
+        <table className="w-full min-w-[800px] table-fixed border border-gray-300">
           <thead>
             <tr>
-              <th className="w-20 border border-gray-300 bg-gray-100 text-center font-bold">
-                Tuần
-              </th>
-              {daysShort.map((day) => (
-                <th
-                  key={day}
-                  className="border border-gray-300 bg-gray-100 text-center font-bold"
-                >
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                <th key={day} className="text-center bg-gray-100 p-2">
                   {day}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {weeks.map((week) => (
-              <tr key={week}>
-                <td className="text-center font-bold bg-gray-50 border border-gray-300">
-                  Tuần {week}
-                </td>
-                {daysShort.map((day) => {
-                  const eventsInCell = events.filter(
-                    (e) => e.day === day && e.week === week
-                  );
+            {calendar.map((week, i) => (
+              <tr key={i}>
+                {week.map((day, index) => {
+                  const dateStr = day
+                    ? `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+                    : null;
+                  const dayEvents = events.filter((e) => e.date === dateStr);
+
                   return (
                     <td
-                      key={`${day}-${week}`}
-                      className="border border-gray-200 h-28 p-1 align-top"
+                      key={index}
+                      className="align-top border border-gray-200 h-32 p-1"
                     >
-                      {eventsInCell.length > 0 ? (
-                        <div className="space-y-2">
-                          {eventsInCell.map((event) => (
-                            <ScheduleCard
-                              key={event.id}
-                              event={event}
-                              onDelete={onDeleteById}
-                            />
-                          ))}
+                      {day && (
+                        <div>
+                          <div className="text-sm font-bold text-gray-700 mb-1">{day}</div>
+                          <div className="space-y-1">
+                            {dayEvents.map((event) => (
+                              <ScheduleCard key={event.id} event={event} onDelete={onDeleteById} />
+                            ))}
+                          </div>
                         </div>
-                      ) : null}
+                      )}
                     </td>
                   );
                 })}
@@ -98,10 +105,10 @@ const ScheduleMonthGrid = ({events,onDeleteById,loading}) => {
             ))}
           </tbody>
         </table>
-      </div>
-    )}
+      )}
     </div>
   );
 };
+
 
 export default ScheduleMonthGrid;

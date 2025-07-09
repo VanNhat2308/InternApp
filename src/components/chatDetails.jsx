@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import avatar from "../assets/images/avatar.png";
 import {
   FiSearch,
@@ -12,7 +12,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { BiDotsVertical } from "react-icons/bi";
 import axiosClient from "../service/axiosClient";
 import { useNavigate, useParams } from "react-router-dom";
-
+import echo from "../service/echo";
 
 
 export default function ChatDetails() {
@@ -28,7 +28,8 @@ export default function ChatDetails() {
   const role = localStorage.getItem('role')
   const path = role === 'Student' ? `/messages/feedback-panel-student`: `messages/feedback-panel`  
   const id = role === 'Student'? localStorage.getItem('maSV') : localStorage.getItem('maAdmin')
- const swapUser = (r) => {
+  const hasMarkedAsRead = useRef(false);
+  const swapUser = (r) => {
   switch (r) {
     case 'Student':
       return 'sinhvien';
@@ -38,10 +39,55 @@ export default function ChatDetails() {
       return '';
   }
 };
+ const messagesEndRef = useRef(null);
+//  
+const checkIfMessagesViewed = () => {
+  const container = messageContainerRef.current;
+  if (!container || hasMarkedAsRead.current) return;
 
-  const currentUser = { id: id, name: "Tôi",from_role: swapUser(role)};
+  const scrollable =
+    container.scrollHeight > container.clientHeight;
+
+  const isBottom =
+    container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
+
+  if (!scrollable || isBottom) {
+    // Nếu không cần scroll hoặc đã chạm đáy => đánh dấu đã đọc
+    axiosClient.post('/messages/mark-as-read', {
+      conversation_id: selectedConversationId,
+      user_id: currentUser.id,
+      user_role: currentUser.from_role,
+    });
+    hasMarkedAsRead.current = true;
+  }
+};
+
+  // Mỗi khi tin nhắn thay đổi
+const messageContainerRef = useRef(null);
+
+const handleScroll = () => {
+  checkIfMessagesViewed();
+  const container = messageContainerRef.current;
+  if (!container) return;
+
+  const isBottom =
+    container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
+
+  if (isBottom && !hasMarkedAsRead.current) {
+    axiosClient.post('/messages/mark-as-read', {
+      conversation_id: selectedConversationId,
+      user_id: currentUser.id,
+      user_role: currentUser.from_role,
+    });
+
+    hasMarkedAsRead.current = true; // ✅ Đánh dấu đã gọi
+  }
+};
+
+
  
-
+ const currentUser = { id: id, name: "Tôi",from_role: swapUser(role)};
+ 
   useEffect(() => {
   setSelectedConversationId(idSlug);
 }, [idSlug]);
@@ -82,7 +128,12 @@ useEffect(() => {
 
   const selectedUser = messagesRecent.find(u => u.id === selectedUserId);
   const messages = conversations[selectedUserId] || [];
-
+   useEffect(() => {
+   checkIfMessagesViewed();
+  if (messagesEndRef.current) {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }
+}, [messages]);
   const sendMessage = () => {
     if (!newMsg.trim()) return;
 
@@ -105,7 +156,30 @@ useEffect(() => {
     setNewMsg("");
     axiosClient.post('/messages', newMessage);
   };
-  const userRole = localStorage.getItem('role')
+  // const userRole = localStorage.getItem('role')
+
+  // realtime pusher
+useEffect(() => {
+  const channel = echo.channel(`chat.${currentUser.id}`);
+  channel.listen("NewMessage", (e) => {
+    const msg = e.message;
+    if (msg.conversation_id === Number(selectedConversationId)) {
+      setConversations(prev => ({
+        ...prev,
+        [selectedUserId]: [...(prev[selectedUserId] || []), msg],
+      }));
+
+      hasMarkedAsRead.current = false; 
+    }
+  });
+
+  return () => {
+    echo.leave(`chat.${currentUser.id}`);
+  };
+}, [selectedConversationId, selectedUserId]);
+
+
+
 
   return (
     <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] border border-gray-300 rounded-md overflow-hidden lg:shadow mt-8">
@@ -187,7 +261,11 @@ useEffect(() => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3"
+          ref={messageContainerRef}
+          onScroll={handleScroll}
+          style={{ maxHeight: "calc(100vh - 220px)" }} 
+        >
           {messages.map((msg, i) => {
             const isMe = msg.from_id == currentUser.id && msg.from_role == currentUser.from_role;
   
@@ -209,6 +287,7 @@ useEffect(() => {
               </div>
             );
           })}
+            <div ref={messagesEndRef}></div>
         </div>
 
         {/* Input */}
