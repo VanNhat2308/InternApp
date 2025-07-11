@@ -77,7 +77,7 @@ const ScheduleGrid = ({ currentWeek, events, loading, onDeleteById = () => {} })
 
   return (
 
-<div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[90vw]">
+<div className="mt-4 w-full max-w-[90vw]">
   {/* Table Layout */}
   {loading ? (
     <p className="text-center p-4">Đang tải dữ liệu...</p>

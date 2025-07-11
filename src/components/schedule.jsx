@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ResponNav from "./responsiveNav";
 import Header from "./header";
-import { MdChevronRight } from "react-icons/md";
 import { Outlet } from "react-router-dom";
 
 function Schedule() {
@@ -18,7 +17,7 @@ function Schedule() {
     <div className="flex-1">
           {isMobile ? <ResponNav /> : <Header>
        <h2 className="text-xl font-semibold">Quản Lý Lịch Thực Tập</h2>
-          <p className="flex gap-2 items-center text-sm">Danh Sách Lịch Thực Tập Của Sinh Viên </p>
+          <p className="flex gap-2 items-center text-gray-500">Danh Sách Lịch Thực Tập Của Sinh Viên </p>
       </Header>}
     <Outlet/>
 

@@ -18,7 +18,7 @@ function Feedback() {
         <div className="flex-1">
              {isMobile ? <ResponNav /> : <Header>
          <h2 className="text-xl font-semibold">Phản hồi</h2>
-            <p className="flex gap-2 items-center text-base">Tất Cả Tin Nhắn Phản Hồi</p>
+            <p className="flex gap-2 items-center text-base text-gray-500">Tất Cả Tin Nhắn Phản Hồi</p>
         </Header>}
       <Outlet/>
 

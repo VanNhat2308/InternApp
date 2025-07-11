@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BiTrash } from "react-icons/bi";
+import { BiChevronLeft, BiChevronRight, BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
 import dayjs from "dayjs";
 const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -60,11 +60,54 @@ const ScheduleCard = ({ event, onDelete }) => {
 };
 
 const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = false }) => {
-  const [year, month] = [2025, 7]; // July 2025
-  const calendar = generateCalendar(year, month);
+  // const [year, month] = [2025, 7]; 
+  const today = dayjs();
+  const [currentMonth, setCurrentMonth] = useState(today.month()); // 0-indexed
+  const [currentYear, setCurrentYear] = useState(today.year());
+  const calendar = generateCalendar(currentYear, currentMonth); 
+
 
   return (
-    <div className="mt-4 lg:mt-0 lg:p-4 w-full max-w-[95vw] overflow-x-auto">
+    <>
+<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-4 mt-4 px-2">
+  <div className="flex justify-between sm:justify-start gap-2 sm:gap-4">
+    <button
+      onClick={() => {
+        if (currentMonth === 0) {
+          setCurrentMonth(11);
+          setCurrentYear(currentYear - 1);
+        } else {
+          setCurrentMonth(currentMonth - 1);
+        }
+      }}
+      className="cursor-pointer p-2 rounded-full bg-white shadow-lg hover:bg-gray-100 transition duration-200 text-xl"
+      title="Tháng trước"
+    >
+      <BiChevronLeft />
+    </button>
+
+    <button
+      onClick={() => {
+        if (currentMonth === 11) {
+          setCurrentMonth(0);
+          setCurrentYear(currentYear + 1);
+        } else {
+          setCurrentMonth(currentMonth + 1);
+        }
+      }}
+      className="cursor-pointer p-2 rounded-full bg-white shadow-lg hover:bg-gray-100 transition duration-200 text-xl"
+      title="Tháng sau"
+    >
+      <BiChevronRight />
+    </button>
+  </div>
+
+  <div className="text-lg sm:text-xl font-semibold text-center sm:text-left text-gray-800">
+    {dayjs().month(currentMonth).format("MMMM")} {currentYear}
+  </div>
+</div>
+
+    <div className="mt-4 lg:mt-0  w-full max-w-[95vw] overflow-x-auto">
       {loading ? (
         <p className="text-center p-4">Đang tải dữ liệu...</p>
       ) : (
@@ -83,7 +126,7 @@ const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = fal
               <tr key={i}>
                 {week.map((day, index) => {
                   const dateStr = day
-                    ? `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+                    ? `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
                     : null;
                   const dayEvents = events.filter((e) => e.date === dateStr);
 
@@ -111,6 +154,7 @@ const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = fal
         </table>
       )}
     </div>
+  </>
   );
 };
 

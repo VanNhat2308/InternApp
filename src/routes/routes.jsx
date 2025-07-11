@@ -42,6 +42,7 @@ import DiaryPanel from "../components/student/diary/diaryPanel";
 import DiaryDetails from "../components/student/diary/diaryDetails";
 import TaskStudent from "../components/student/task/taskStudent";
 import TaskPanelStudent from "../components/student/task/taskPanelStudent";
+import SwapSchedule from "../components/SwapSchedule";
 const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
@@ -116,6 +117,10 @@ const protectedRoutes = [
               {
                 path: "schedule-list",
                 element: <SchedulePanel />,
+              },
+              {
+                path: "SwapSchedule/:idSlug",
+                element: <SwapSchedule />,
               },
                {
                 path: "schedule-details/:idSlug",

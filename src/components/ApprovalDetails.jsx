@@ -10,6 +10,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../service/axiosClient";
 import { FaFileAlt } from "react-icons/fa";
+import dayjs from "dayjs";
+import "dayjs/locale/vi"; 
+dayjs.locale("vi");
 
 function ApprovalDetails() {
   const { showDialog } = useDialog();
@@ -176,7 +179,7 @@ function ApprovalDetails() {
         ["Mã Số Sinh Viên", students?.maSV],
         ["Giáo Viên Hướng Dẫn", students?.tenGiangVien],
         ["Trường Đại Học", students?.truong?.tenTruong],
-        ["Ngày Sinh", students?.ngaySinh],
+        ["Ngày Sinh",dayjs(students?.ngaySinh).format('DD/MM/YYYY')],
         ["Chuyên Ngành", students?.nganh],
         ["Vị Trí Ứng Tuyển", students?.viTri],
         [

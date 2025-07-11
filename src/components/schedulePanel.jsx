@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
+import { IoSwapHorizontal } from "react-icons/io5";
 function SchedulePanel() {
       const navigate = useNavigate()
       const { showDialog } = useDialog();
@@ -73,6 +74,10 @@ function SchedulePanel() {
             onConfirm: () => handleDelete(id),
           });
         };
+
+        const handleSwapInfo =(id) => {
+          navigate(`/admin/schedule/SwapSchedule/${id}`)
+        }
       
 
 
@@ -191,6 +196,11 @@ useEffect(() => {
                       onClick={() => handleOpenDialog(s.maSV)}
                       className="text-xl cursor-pointer">
                          <RiDeleteBin6Line />
+                      </button>
+                      <button 
+                      onClick={() => handleSwapInfo(s.maSV)}
+                      className="text-xl cursor-pointer">
+                         <IoSwapHorizontal />
                       </button>
                     </td>
                   </tr>

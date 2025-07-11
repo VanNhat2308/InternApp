@@ -17,7 +17,7 @@ function Report() {
          <div className="flex-1">
                {isMobile ? <ResponNav /> : <Header>
             <h2 className="text-xl font-semibold">Xem Báo Cáo</h2>
-               <p className="flex gap-2 items-center text-base">Tất Cả Báo Cáo Của Sinh Viên</p>
+               <p className="flex gap-2 items-center text-base text-gray-500">Tất Cả Báo Cáo Của Sinh Viên</p>
            </Header>}
          <Outlet/>
      

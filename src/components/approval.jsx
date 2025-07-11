@@ -17,7 +17,7 @@ function Approval() {
     <div className="flex-1">
     {isMobile ? <ResponNav /> : <Header>
        <h2 className="text-xl font-semibold">Duyệt Hồ Sơ</h2>
-          <p className="flex gap-2 items-center">Danh Sách Hồ Sơ Của Sinh Viên</p>
+          <p className="flex gap-2 items-center text-gray-500">Danh Sách Hồ Sơ Của Sinh Viên</p>
       </Header>}
       <Outlet/>
       

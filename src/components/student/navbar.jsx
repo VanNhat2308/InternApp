@@ -50,7 +50,7 @@ const navItems = [
 const Navbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { isSidebarOpen, setSidebarOpen } = useSidebar();
-  const [navItemsState, setNavItemsState] = useState(navItems);
+
 
   const navRef = useRef();
   useEffect(() => {
@@ -121,35 +121,27 @@ const Navbar = () => {
 
       {/* Nav items */}
       <nav className="flex-1">
-        {navItemsState.map((item, index) => (
-          <Link to={`/student/${item.linkTo}`}
-            key={index}
-            onClick={() => handleActive(item)} // <-- thêm onClick ở đây
-            className={`flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 cursor-pointer transition
-      ${
-        item.active
-          ? "bg-green-200 text-green-700 font-semibold border-l-2 border-l-green-400"
-          : ""
-      }
-      hover:bg-green-100
-      ${isCollapsed ? "justify-center" : ""}
-    `}
-          >
-            
-              <span
-                className={`text-lg relative ${
-                  item.danger
-                    ? "before:content-[''] before:bg-red-500 before:w-2 before:h-2 before:rounded-full before:absolute before:right-[-4px] before:top-[-2px]"
-                    : ""
-                }`}
-              >
-                {item.icon}
-              </span>
-              {!isCollapsed && (
-                <span className="text-lg ml-3">{item.label}</span>
-              )}
-            
-          </Link>
+        {navItems.map((item, index) => (
+      <NavLink
+  to={`/Student/${item.linkTo}`}
+  key={index}
+  className={({ isActive }) => `
+    flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 transition
+    ${isActive ? "bg-green-200 text-green-700 font-semibold border-l-2 border-l-green-400" : ""}
+    hover:bg-green-100
+    ${isCollapsed ? "justify-center" : ""}
+  `}
+>
+  <span className={`text-lg relative ${
+    item.danger
+      ? "before:content-[''] before:bg-red-500 before:w-2 before:h-2 before:rounded-full before:absolute before:right-[-4px] before:top-[-2px]"
+      : ""
+  }`}>
+    {item.icon}
+  </span>
+  {!isCollapsed && <span className="text-lg ml-3">{item.label}</span>}
+</NavLink>
+
         ))}
       </nav>
     </div>

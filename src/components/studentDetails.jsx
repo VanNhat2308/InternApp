@@ -14,6 +14,10 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { useDialog } from "../context/dialogContext";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../service/axiosClient";
+import dayjs from "dayjs";
+import "dayjs/locale/vi"; 
+dayjs.locale("vi");
+
 function StudentDetails() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025)
   const [chuyenCan, setChuyenCan] = useState(false)
@@ -251,7 +255,7 @@ const getStatusColor = (status) => {
           ["Mã Số Sinh Viên", students?.maSV],
           ["Giáo Viên Hướng Dẫn", students?.tenGiangVien],
           ["Trường Đại Học", students?.truong?.tenTruong],
-          ["Ngày Sinh", students?.ngaySinh],
+          ["Ngày Sinh", dayjs(students?.ngaySinh).format('DD/MM/YYYY')],
           ["Chuyên Ngành", students?.nganh],
           ["Vị Trí Thực Tập", students?.viTri],
           [

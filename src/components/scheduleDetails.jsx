@@ -16,7 +16,7 @@ import { AiOutlineSwap } from "react-icons/ai";
 import dayjs from "dayjs";
 function ScheduleDetails() {
   const { showDialog } = useDialog();
-  const { isToast, setToast } = useToast();
+  const { isToast, setToast, isToastV2, setToastV2 } = useToast();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("week");
@@ -39,7 +39,6 @@ const getWeekOfMonth = (date) => {
 };
 
 
-const currentWeek_ = getWeekOfMonth(now);
 
 
   const fetchSchedule = async () => {
@@ -51,7 +50,7 @@ const currentWeek_ = getWeekOfMonth(now);
 
     if (viewMode === "month") {
       url = "/lich/theo-thang";
-      params.month = new Date().getMonth() + 1; // hoặc state month
+      params.month = new Date().getMonth() + 1; 
       params.year = new Date().getFullYear();
     } 
 
@@ -71,7 +70,7 @@ const currentWeek_ = getWeekOfMonth(now);
     try {
       const res = await axiosClient.delete(`/lich/${id}`);
       alert(res.data.message || "Đã xóa lịch.");
-      fetchSchedule(); // cập nhật lại danh sách
+      fetchSchedule();
     } catch (error) {
       console.error(error);
       alert("Không thể xóa lịch.");
@@ -174,24 +173,49 @@ const handleOpenDialog = () => {
 };
 
 const formRef = useRef();
+
 const handleOpenDialogSwap = () => {
 
   showDialog({
     title: "Đề xuất đổi lịch",
     customContent: <SwapScheduleForm ref={formRef} maSV={param} />,
     cancelText: "Hủy",
-    onValidatedConfirm: async () => {
+  onValidatedConfirm: async () => {
   if (!formRef.current) return false;
 
-  const isValid = await formRef.current.validateForm(); // ← Thêm `await` vào đây
+  const isValid = await formRef.current.validateForm();
   if (!isValid) return false;
 
-  const data = formRef.current.getFormData();
-  console.log("✅ Dữ liệu hợp lệ:", data);
+  const {
+    oldDate,
+    maLich,
+    oldCa,
+    newDate,
+    newCa,
+    changeType,
+    reason,
+  } = formRef.current.getFormData();
 
-  // TODO: Gửi API ở đây nếu muốn
-  return true;
+  try {
+    const res = await axiosClient.post('/schedule-swaps', {
+      maSV: param, 
+      maLich: maLich,
+      old_date: oldDate,
+      old_shift: oldCa,
+      new_date: changeType === "doi" ? newDate : null,
+      new_shift: changeType === "doi" ? newCa : null,
+      change_type: changeType,
+      reason: reason,
+    });
+
+    setToastV2(true)
+    return true;
+  } catch (error) {
+    console.error("❌ Gửi yêu cầu thất bại:", error);
+    return false;
+  }
 }
+
   });
 };
 
@@ -200,7 +224,7 @@ const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
   const today = dayjs().format("YYYY-MM-DD");
 
   const [oldDate, setOldDate] = useState(today);
-  const [oldCa, setOldCa] = useState("8:00-12:00");
+  const [oldCa, setOldCa] = useState("08:00-12:00");
 
   const [newDate, setNewDate] = useState(dayjs().add(1, "day").format("YYYY-MM-DD"));
   const [newCa, setNewCa] = useState("13:00-17:00");
@@ -213,86 +237,87 @@ const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
   const [errorSwapOld, setErrorSwapOld] = useState("");
   const [errorSwapNew, setErrorSwapNew] = useState("");
   const [errorWeekend, setErrorWeekend] = useState("");
+  const [errorSmall, setErrorSmall] = useState("");
+useImperativeHandle(ref, () => {
+  let maLichTemp = null; // biến tạm trong ref
 
-  useImperativeHandle(ref, () => ({
-   validateForm: async () => {
-  let isValid = true;
+  return {
+    validateForm: async () => {
+      let isValid = true;
+      maLichTemp = null;
 
-  // Reset lỗi cũ
-  setErrorReason("");
-  setErrorSwapOld("");
-  setErrorSwapNew("");
-  setErrorWeekend("");
+      // Reset lỗi
+      setErrorReason("");
+      setErrorSwapOld("");
+      setErrorSwapNew("");
+      setErrorWeekend("");
+      setErrorSmall("");
 
-  // 1. Kiểm tra lý do
-  if (!reason.trim()) {
-    setErrorReason("Vui lòng nhập lý do đổi ca.");
-    isValid = false;
-  }
-
-  if (changeType === "doi") {
-    // 2. Không đổi sang cùng ngày và cùng ca
-    if (oldDate === newDate && oldCa === newCa) {
-      setErrorSwapOld("Ca muốn đổi phải khác ca hiện tại.");
-      isValid = false;
-    }
-    // 3. Không đổi sang ca giống (dù khác ngày)
-    else if (oldCa === newCa) {
-      setErrorSwapNew("Không được đổi sang ca giống với ca cũ.");
-      isValid = false;
-    }
-
-    // 4. Không đổi sang Thứ Bảy hoặc Chủ Nhật
-    const dow = dayjs(newDate).day();
-    if (dow === 0 || dow === 6) {
-      setErrorWeekend("Không thể đổi sang Thứ Bảy hoặc Chủ Nhật.");
-      isValid = false;
-    }
-
-    // 5. Kiểm tra ca mới đã bị trùng chưa
-    try {
-      const resNew = await axiosClient.get('/schedule/check', {
-        params: {
-          type: 'new',
-          date: newDate,
-          ca: newCa.split('-')[0],
-          maSV,
-        },
-      });
-
-      if (resNew.data.exists) {
-        setErrorSwapNew("Ca mới đã bị trùng lịch đăng ký.");
+      if (!reason.trim()) {
+        setErrorReason("Vui lòng nhập lý do đổi ca.");
         isValid = false;
       }
-    } catch (error) {
-      console.error("Lỗi kiểm tra ca mới:", error);
-    }
 
-    // 6. Kiểm tra ca cũ có tồn tại không
-    try {
-      const resOld = await axiosClient.get('/schedule/check', {
-        params: {
-          type: 'old',
-          date: oldDate,
-          ca: oldCa.split('-')[0],
-          maSV,
-        },
-      });
+      if (changeType === "doi") {
+        if (oldDate === newDate && oldCa === newCa) {
+          setErrorSwapOld("Ca muốn đổi phải khác ca hiện tại.");
+          isValid = false;
+        }
 
-      if (!resOld.data.exists) {
-        setErrorSwapOld("Ca hiện tại không tồn tại trong lịch đăng ký.");
-        isValid = false;
+        if (newDate < oldDate) {
+          setErrorSmall("Ca mới không được nhỏ hơn ca cũ");
+          isValid = false;
+        }
+
+        const dow = dayjs(newDate).day();
+        if (dow === 0 || dow === 6) {
+          setErrorWeekend("Không thể đổi sang Thứ Bảy hoặc Chủ Nhật.");
+          isValid = false;
+        }
+
+        try {
+          const resNew = await axiosClient.get('/schedule/check', {
+            params: {
+              type: 'new',
+              date: newDate,
+              ca: newCa.split('-')[0],
+              maSV,
+            },
+          });
+          if (resNew.data.exists) {
+            setErrorSwapNew("Ca mới đã bị trùng lịch đăng ký.");
+            isValid = false;
+          }
+        } catch (error) {
+          console.error("Lỗi kiểm tra ca mới:", error);
+        }
+
+        try {
+          const resOld = await axiosClient.get('/schedule/check', {
+            params: {
+              type: 'old',
+              date: oldDate,
+              ca: oldCa.split('-')[0],
+              maSV,
+            },
+          });
+
+          if (!resOld.data.exists) {
+            setErrorSwapOld("Ca hiện tại không tồn tại trong lịch đăng ký.");
+            isValid = false;
+          } else {
+            maLichTemp = resOld.data.maLich; // ✅ lưu trực tiếp vào biến tạm
+          }
+        } catch (error) {
+          console.error("Lỗi kiểm tra ca cũ:", error);
+        }
       }
-    } catch (error) {
-      console.error("Lỗi kiểm tra ca cũ:", error);
-    }
-  }
 
-  return isValid;
-},
-
+      return isValid;
+    },
 
     getFormData: () => ({
+      maLich: maLichTemp, // ✅ dùng biến tạm thay vì state
       oldDate,
       oldCa,
       newDate,
@@ -300,7 +325,10 @@ const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
       changeType,
       reason: reason.trim(),
     }),
-  }));
+  };
+});
+
+
 
   useEffect(() => {
   if (changeType === "nghi") {
@@ -365,9 +393,10 @@ const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
             onChange={(e) => setNewCa(e.target.value)}
             className="border p-2 rounded-md"
           >
-            <option value="8:00-12:00">Ca sáng</option>
+            <option value="08:00-12:00">Ca sáng</option>
             <option value="13:00-17:00">Ca chiều</option>
           </select>
+          {errorSmall && <p className="text-red-500 text-sm mt-1">{errorSmall}</p>}
           {errorSwapNew && <p className="text-red-500 text-sm mt-1">{errorSwapNew}</p>}
           {errorWeekend && <p className="text-red-500 text-sm mt-1">{errorWeekend}</p>}
         </>
@@ -399,6 +428,18 @@ const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
               <MdOutlineDone className="text-2xl text-green-400" />
             </div>
             <p>Lịch thực tập đã được thêm vào !</p>
+          </div>
+        </Toast>
+      ) : (
+        ""
+      )}
+      {isToastV2 ? (
+        <Toast onClose={() => setToastV2(false)}>
+          <div className="flex items-center gap-3">
+            <div className="w-15 aspect-square rounded-full border-2 border-green-400 flex items-center justify-center">
+              <MdOutlineDone className="text-2xl text-green-400" />
+            </div>
+            <p>Đã gửi yêu cầu đổi lịch!</p>
           </div>
         </Toast>
       ) : (
