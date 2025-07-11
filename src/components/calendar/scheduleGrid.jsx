@@ -1,7 +1,5 @@
 import { BiTimer, BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
-import React, { useEffect, useState } from "react";
-import axiosClient from "../../service/axiosClient";
 
 const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const hours = Array.from(
@@ -9,11 +7,6 @@ const hours = Array.from(
   (_, i) => `${8 + i}`.padStart(2, "0") + ":00"
 );
 
-const initialEvents = [
-  { id: 1, day: "Tue", time: "08:00", duration: 4, week: 0 },
-  { id: 2, day: "Tue", time: "13:00", duration: 4, week: 0 },
-  { id: 3, day: "Mon", time: "13:00", duration: 4, week: 0 },
-];
 
 const getWeekDates = (weekOffset = 0) => {
   const today = new Date();
@@ -34,9 +27,13 @@ const getWeekDates = (weekOffset = 0) => {
   });
 };
 
-const ScheduleCard = ({ event, onDelete, isToday }) => (
-    <div
-    className={`bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative z-[-1] h-full w-full overflow-hidden ${
+const ScheduleCard = ({ event, onDelete, isToday }) =>
+{
+   const role = localStorage.getItem("role")
+  
+ return (
+  <div
+    className={`bg-white border border-gray-300 border-t-4 border-t-green-600 rounded-md p-2 shadow-md relative h-full w-full overflow-hidden ${
       isToday ? "bg-green-50" : ""
     }`}
   >
@@ -46,24 +43,24 @@ const ScheduleCard = ({ event, onDelete, isToday }) => (
     <div className="text-xs text-gray-500 mt-1 flex gap-1 items-center">
       <MdTimer className="text-base" /> {event.duration}h
     </div>
-    <button
-      onClick={() => onDelete(event.id)}
-      className="absolute bottom-2 right-2 text-lg cursor-pointer text-orange-500 hover:text-red-600"
-    >
-      <BiTrash />
-    </button>
+    {role === 'Student' ? (
+      ""
+    ) : (
+      <button
+        onClick={() => onDelete(event.id)}
+        className="z-10 absolute bottom-2 right-2 text-lg cursor-pointer text-orange-500 hover:text-red-600"
+      >
+        <BiTrash />
+      </button>
+    )}
   </div>
 );
 
+};
 
-const ScheduleGrid = ({ currentWeek, events,loading,onDeleteById }) => {
+
+const ScheduleGrid = ({ currentWeek, events, loading, onDeleteById = () => {} }) => {
  
-
-
-
-
-
-
   const weekDays = getWeekDates(currentWeek);
   const filteredEvents = events;
 

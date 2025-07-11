@@ -9,10 +9,11 @@ import Toast from "./toast";
 import { BsFillPeopleFill } from "react-icons/bs";
 import ScheduleGrid from "./calendar/scheduleGrid";
 import ScheduleMonthGrid from "./calendar/scheduleMonthGrid";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import axiosClient from "../service/axiosClient";
 import { useParams } from "react-router-dom";
 import { AiOutlineSwap } from "react-icons/ai";
+import dayjs from "dayjs";
 function ScheduleDetails() {
   const { showDialog } = useDialog();
   const { isToast, setToast } = useToast();
@@ -23,7 +24,7 @@ function ScheduleDetails() {
   const [student,setStudent] = useState({})
   const { idSlug } = useParams();
   const userRole = localStorage.getItem('role')
-  const param = localStorage.getItem('maSV')?localStorage.getItem('maSV'):idSlug
+  const param = localStorage.getItem('maSV') ? localStorage.getItem('maSV'):idSlug
   
 
   const now = new Date();
@@ -90,8 +91,6 @@ const currentWeek_ = getWeekOfMonth(now);
     axiosClient.get(`/sinhviens/${param}`)
     .then((res)=>{
       setStudent(res.data.data)
-      console.log(res.data.data);
-      
     })
   },[param])
 
@@ -114,33 +113,28 @@ const currentWeek_ = getWeekOfMonth(now);
     });
   };
 const handleOpenDialog = () => {
-  let selectedThu = "Mon";
+  let selectedDate = new Date().toISOString().split("T")[0]; // format yyyy-mm-dd
   let selectedCa = "8:00-12:00";
 
   showDialog({
     title: "Thêm lịch",
     customContent: (
       <div className="flex flex-col mt-5">
-        <label className="font-semibold text-xl" htmlFor="thu">
-          Thứ
+        <label className="font-semibold text-xl" htmlFor="ngay">
+          Ngày thực tập
         </label>
-        <select
-          className="border border-gray-300 p-3 rounded-md"
-          id="thu"
-          onChange={(e) => (selectedThu = e.target.value)}
-        >
-          <option value="Mon">Thứ 2</option>
-          <option value="Tue">Thứ 3</option>
-          <option value="Wed">Thứ 4</option>
-          <option value="Thu">Thứ 5</option>
-          <option value="Fri">Thứ 6</option>
-        </select>
+        <input
+          type="date"
+          defaultValue={selectedDate}
+          className="border border-gray-300 p-3 rounded-md mt-2"
+          onChange={(e) => (selectedDate = e.target.value)}
+        />
 
         <label className="font-semibold text-xl mt-3" htmlFor="ca">
           Ca
         </label>
         <select
-          className="mb-20 border border-gray-300 p-3 rounded-md"
+          className="mb-20 border border-gray-300 p-3 rounded-md mt-2"
           id="ca"
           onChange={(e) => (selectedCa = e.target.value)}
         >
@@ -149,25 +143,27 @@ const handleOpenDialog = () => {
         </select>
       </div>
     ),
-
     confirmText: "Áp dụng",
     cancelText: "Đặt lại",
     onConfirm: async () => {
+      const today = new Date().toISOString().split("T")[0];
+      if (selectedDate < today) {
+        alert("Không thể thêm lịch vào ngày đã qua!");
+        return;
+      }
+
       try {
         const res = await axiosClient.post("/lich", {
-            maSV: idSlug,
-            thu: selectedThu,
-            ca: selectedCa,
-            currentWeek: currentWeek, // -1, 0, 1
-            month: currentMonth,
-            year: currentYear,
+          maSV: idSlug,
+          ngay: selectedDate,
+          ca: selectedCa,
         });
 
         alert(res.data.message);
-        fetchSchedule(); // cập nhật lại dữ liệu
+        fetchSchedule();
       } catch (err) {
-        if (err.response && err.response.status === 409) {
-          alert("Lịch bị trùng khung giờ");
+        if (err.response?.status === 409) {
+          alert("Lịch bị trùng khung giờ!");
         } else {
           alert("Lỗi khi thêm lịch");
           console.error(err);
@@ -176,137 +172,222 @@ const handleOpenDialog = () => {
     },
   });
 };
+
+const formRef = useRef();
 const handleOpenDialogSwap = () => {
+
   showDialog({
     title: "Đề xuất đổi lịch",
-    customContent: <SwapScheduleForm />,
-    confirmText: "Gửi yêu cầu",
+    customContent: <SwapScheduleForm ref={formRef} maSV={param} />,
     cancelText: "Hủy",
-    onConfirm: () => {}, // sẽ xử lý trong form luôn
+    onValidatedConfirm: async () => {
+  if (!formRef.current) return false;
+
+  const isValid = await formRef.current.validateForm(); // ← Thêm `await` vào đây
+  if (!isValid) return false;
+
+  const data = formRef.current.getFormData();
+  console.log("✅ Dữ liệu hợp lệ:", data);
+
+  // TODO: Gửi API ở đây nếu muốn
+  return true;
+}
   });
 };
 
-const SwapScheduleForm = () => {
-  const [selectedThu, setSelectedThu] = useState("Mon");
-  const [selectedCa, setSelectedCa] = useState("8:00-12:00");
-  const [newThu, setNewThu] = useState("Thu");
+
+const SwapScheduleForm = forwardRef(({ maSV }, ref) => {
+  const today = dayjs().format("YYYY-MM-DD");
+
+  const [oldDate, setOldDate] = useState(today);
+  const [oldCa, setOldCa] = useState("8:00-12:00");
+
+  const [newDate, setNewDate] = useState(dayjs().add(1, "day").format("YYYY-MM-DD"));
   const [newCa, setNewCa] = useState("13:00-17:00");
+
   const [changeType, setChangeType] = useState("doi");
   const [reason, setReason] = useState("");
 
-  // Khi người dùng bấm xác nhận trong dialog
-  const handleSubmit = async () => {
-    // const payload = {
-    //   maSV: idSlug,
-    //   caCu: { thu: selectedThu, ca: selectedCa },
-    //   loai: changeType,
-    //   lyDo: reason,
-    // };
+  // Error states
+  const [errorReason, setErrorReason] = useState("");
+  const [errorSwapOld, setErrorSwapOld] = useState("");
+  const [errorSwapNew, setErrorSwapNew] = useState("");
+  const [errorWeekend, setErrorWeekend] = useState("");
 
-    // if (changeType === "doi") {
-    //   payload.caMoi = { thu: newThu, ca: newCa };
-    // }
+  useImperativeHandle(ref, () => ({
+   validateForm: async () => {
+  let isValid = true;
 
-    // try {
-    //   const res = await axiosClient.post("/de-xuat-doi-ca", payload);
-    //   alert(res.data.message);
-    //   fetchSchedule();
-    // } catch (err) {
-    //   alert("Gửi yêu cầu thất bại");
-    //   console.error(err);
-    // }
-  };
+  // Reset lỗi cũ
+  setErrorReason("");
+  setErrorSwapOld("");
+  setErrorSwapNew("");
+  setErrorWeekend("");
 
-  // Gửi tự động khi dialog gọi onConfirm
+  // 1. Kiểm tra lý do
+  if (!reason.trim()) {
+    setErrorReason("Vui lòng nhập lý do đổi ca.");
+    isValid = false;
+  }
+
+  if (changeType === "doi") {
+    // 2. Không đổi sang cùng ngày và cùng ca
+    if (oldDate === newDate && oldCa === newCa) {
+      setErrorSwapOld("Ca muốn đổi phải khác ca hiện tại.");
+      isValid = false;
+    }
+    // 3. Không đổi sang ca giống (dù khác ngày)
+    else if (oldCa === newCa) {
+      setErrorSwapNew("Không được đổi sang ca giống với ca cũ.");
+      isValid = false;
+    }
+
+    // 4. Không đổi sang Thứ Bảy hoặc Chủ Nhật
+    const dow = dayjs(newDate).day();
+    if (dow === 0 || dow === 6) {
+      setErrorWeekend("Không thể đổi sang Thứ Bảy hoặc Chủ Nhật.");
+      isValid = false;
+    }
+
+    // 5. Kiểm tra ca mới đã bị trùng chưa
+    try {
+      const resNew = await axiosClient.get('/schedule/check', {
+        params: {
+          type: 'new',
+          date: newDate,
+          ca: newCa.split('-')[0],
+          maSV,
+        },
+      });
+
+      if (resNew.data.exists) {
+        setErrorSwapNew("Ca mới đã bị trùng lịch đăng ký.");
+        isValid = false;
+      }
+    } catch (error) {
+      console.error("Lỗi kiểm tra ca mới:", error);
+    }
+
+    // 6. Kiểm tra ca cũ có tồn tại không
+    try {
+      const resOld = await axiosClient.get('/schedule/check', {
+        params: {
+          type: 'old',
+          date: oldDate,
+          ca: oldCa.split('-')[0],
+          maSV,
+        },
+      });
+
+      if (!resOld.data.exists) {
+        setErrorSwapOld("Ca hiện tại không tồn tại trong lịch đăng ký.");
+        isValid = false;
+      }
+    } catch (error) {
+      console.error("Lỗi kiểm tra ca cũ:", error);
+    }
+  }
+
+  return isValid;
+},
+
+
+    getFormData: () => ({
+      oldDate,
+      oldCa,
+      newDate,
+      newCa,
+      changeType,
+      reason: reason.trim(),
+    }),
+  }));
+
   useEffect(() => {
-    const listener = () => handleSubmit();
-    window.addEventListener("dialogConfirm", listener);
-    return () => window.removeEventListener("dialogConfirm", listener);
-  }, [selectedThu, selectedCa, newThu, newCa, changeType, reason]);
+  if (changeType === "nghi") {
+    setErrorSwapNew(""); // clear lỗi khi không cần
+    setErrorSwapOld(""); // clear lỗi khi không cần
+  }
+}, [changeType]);
+
 
   return (
     <div className="flex flex-col gap-3 mt-2">
-      {/* Ca cần thay đổi */}
-      <label className="font-medium">Chọn ca cần thay đổi:</label>
+      <label className="font-medium">Ca muốn thay đổi:</label>
+      <input
+        type="date"
+        value={oldDate}
+        onChange={(e) => setOldDate(e.target.value)}
+        className="border p-2 rounded-md"
+        min={today}
+      />
       <select
-        className="border border-gray-300 p-2 rounded-md"
-        onChange={(e) => {
-          const [thu, ca] = e.target.value.split("|");
-          setSelectedThu(thu);
-          setSelectedCa(ca);
-        }}
+        value={oldCa}
+        onChange={(e) => setOldCa(e.target.value)}
+        className="border p-2 rounded-md"
       >
-        <option value="Mon|8:00-12:00">Thứ 2, Ca sáng</option>
-        <option value="Mon|13:00-17:00">Thứ 2, Ca chiều</option>
-        <option value="Tue|8:00-12:00">Thứ 3, Ca sáng</option>
-        <option value="Tue|13:00-17:00">Thứ 3, Ca chiều</option>
-        <option value="Wed|8:00-12:00">Thứ 4, Ca sáng</option>
-        <option value="Wed|13:00-17:00">Thứ 4, Ca chiều</option>
-        <option value="Thu|8:00-12:00">Thứ 5, Ca sáng</option>
-        <option value="Thu|13:00-17:00">Thứ 5, Ca chiều</option>
-        <option value="Fri|8:00-12:00">Thứ 6, Ca sáng</option>
-        <option value="Fri|13:00-17:00">Thứ 6, Ca chiều</option>
+        <option value="8:00-12:00">Ca sáng</option>
+        <option value="13:00-17:00">Ca chiều</option>
       </select>
+      {errorSwapOld && <p className="text-red-500 text-sm mt-1">{errorSwapOld}</p>}
 
-      {/* Hình thức thay đổi */}
-      <label className="font-medium">Hình thức thay đổi:</label>
-      <div className="flex gap-4">
-        <label className="flex items-center gap-1">
+      <label className="font-medium mt-2">Hình thức thay đổi:</label>
+      <div className="flex gap-5">
+        <label className="flex items-center gap-2">
           <input
             type="radio"
-            name="hinh-thuc"
             checked={changeType === "doi"}
             onChange={() => setChangeType("doi")}
           />
           Đổi sang ca khác
         </label>
-        <label className="flex items-center gap-1">
+        <label className="flex items-center gap-2">
           <input
             type="radio"
-            name="hinh-thuc"
             checked={changeType === "nghi"}
             onChange={() => setChangeType("nghi")}
           />
-          Nghỉ ca đó
+          Nghỉ ca này
         </label>
       </div>
 
-      {/* Ca mới (ẩn nếu chọn nghỉ) */}
       {changeType === "doi" && (
-        <div className="flex flex-col gap-2 transition-all duration-300">
-          <label className="font-medium">Chọn ca mới:</label>
+        <>
+          <label className="font-medium">Ca muốn đổi sang:</label>
+          <input
+            type="date"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            className="border p-2 rounded-md"
+            min={today}
+          />
           <select
-            className="border border-gray-300 p-2 rounded-md"
-            onChange={(e) => {
-              const [thu, ca] = e.target.value.split("|");
-              setNewThu(thu);
-              setNewCa(ca);
-            }}
+            value={newCa}
+            onChange={(e) => setNewCa(e.target.value)}
+            className="border p-2 rounded-md"
           >
-            <option value="Mon|8:00-12:00">Thứ 2, Ca sáng</option>
-            <option value="Mon|13:00-17:00">Thứ 2, Ca chiều</option>
-            <option value="Tue|8:00-12:00">Thứ 3, Ca sáng</option>
-            <option value="Tue|13:00-17:00">Thứ 3, Ca chiều</option>
-            <option value="Wed|8:00-12:00">Thứ 4, Ca sáng</option>
-            <option value="Wed|13:00-17:00">Thứ 4, Ca chiều</option>
-            <option value="Thu|8:00-12:00">Thứ 5, Ca sáng</option>
-            <option value="Thu|13:00-17:00">Thứ 5, Ca chiều</option>
-            <option value="Fri|8:00-12:00">Thứ 6, Ca sáng</option>
-            <option value="Fri|13:00-17:00">Thứ 6, Ca chiều</option>
+            <option value="8:00-12:00">Ca sáng</option>
+            <option value="13:00-17:00">Ca chiều</option>
           </select>
-        </div>
+          {errorSwapNew && <p className="text-red-500 text-sm mt-1">{errorSwapNew}</p>}
+          {errorWeekend && <p className="text-red-500 text-sm mt-1">{errorWeekend}</p>}
+        </>
       )}
 
-      {/* Lý do */}
       <textarea
-        placeholder="Nhập lý do đổi ca"
-        className="border border-gray-300 rounded-md p-2 mt-2"
         value={reason}
-        onChange={(e) => setReason(e.target.value)}
+        onChange={(e) => {
+          setReason(e.target.value);
+          if (e.target.value.trim()) setErrorReason("");
+        }}
+        className="border rounded-md p-2 mt-2"
+        placeholder="Lý do đổi ca..."
       />
+      {errorReason && <p className="text-red-500 text-sm">{errorReason}</p>}
     </div>
   );
-};
+});
+
+
 
 
   return (
@@ -367,7 +448,6 @@ const SwapScheduleForm = () => {
             </button>
             <button
               onClick={handleOpenDialog}
-              disabled={viewMode === "month"}
               className="cursor-pointer p-3 flex items-center gap-2 bg-[#34A853] rounded-md text-white"
             >
               <BiEdit className="text-xl" />

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useDialog } from "../context/dialogContext";
 import DialogPortal from "../dialogPortal";
 
 function CustomDialog() {
   const { dialog, hideDialog } = useDialog();
+  const [loading, setLoading] = useState(false);
 
   if (!dialog) return null;
 
@@ -19,10 +21,25 @@ function CustomDialog() {
     cancelText,
     onConfirm,
     onConfirmV2,
+    onValidatedConfirm,
     onCancel,
 
 
   } = dialog;
+ 
+const handleValidatedConfirm = async () => {
+  setLoading(true); // bật loading
+  try {
+    const shouldClose = await onValidatedConfirm?.();
+    if (shouldClose !== false) {
+      hideDialog();
+    }
+  } catch (err) {
+    console.error("Lỗi khi xác nhận:", err);
+  } finally {
+    setLoading(false); // tắt loading dù có lỗi hay không
+  }
+};
 
  const handleConfirm = () => {
   onConfirm?.();
@@ -68,7 +85,7 @@ const handleConfirmV2 = () => {
           {content && <p className="text-gray-700 mb-4 text-center">{content}</p>}
 
           {customContent && <div className="mb-4 w-full">{customContent}</div>}
-
+           
           {confirmPrintText&&
           <div className="flex justify-center gap-3 mt-4">
             <button onClick={handleConfirmPrint} className="cursor-pointer text-white py-2 px-9 rounded-xl bg-[#34a853]">In</button>
@@ -78,12 +95,20 @@ const handleConfirmV2 = () => {
           </div>
           }
           <div className="flex flex-col justify-end gap-2 w-full">
-               {confirmText && <button
-              className="px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer"
-              onClick={handleConfirm}
-            >
-              {confirmText}
-            </button>}
+  {(onValidatedConfirm || confirmText) && (
+  <button
+    disabled={loading}
+    className={`px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer transition-opacity ${
+      loading ? "opacity-50 cursor-not-allowed" : ""
+    }`}
+    onClick={onValidatedConfirm ? handleValidatedConfirm : handleConfirm}
+  >
+    {loading ? "Đang xử lý..." : confirmText || "Gửi yêu cầu"}
+  </button>
+)}
+
+
+
           {confirmTextV2 && (
   <button
     className="px-4 py-2 bg-green-600 text-white rounded-3xl w-full cursor-pointer"

@@ -42,11 +42,12 @@ const ScheduleCard = ({ event, onDelete }) => {
       <div className="font-semibold">
         {startTime.format("HH:mm")} - {endTime.format("HH:mm")}
       </div>
-      { role === "Student" ? '':(<>
-      <div className="text-gray-500 mt-1 flex items-center gap-1">
+       <div className="text-gray-500 mt-1 flex items-center gap-1">
         <MdTimer className="text-base" />
         {event.duration}h
       </div>
+      { role === "Student" ? '':(<>
+     
       <button
         onClick={() => onDelete(event.id)}
         className="absolute bottom-1 right-1 text-xl text-orange-500 hover:text-red-600"
