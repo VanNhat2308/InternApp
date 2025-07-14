@@ -13,6 +13,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "re
 import axiosClient from "../service/axiosClient";
 import { useParams } from "react-router-dom";
 import { AiOutlineSwap } from "react-icons/ai";
+import Swal from "sweetalert2";
 import dayjs from "dayjs";
 function ScheduleDetails() {
   const { showDialog } = useDialog();
@@ -25,6 +26,8 @@ function ScheduleDetails() {
   const { idSlug } = useParams();
   const userRole = localStorage.getItem('role')
   const param = localStorage.getItem('maSV') ? localStorage.getItem('maSV'):idSlug
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()+1)
+  console.log(selectedMonth);
   
 
   const now = new Date();
@@ -65,27 +68,71 @@ const getWeekOfMonth = (date) => {
     }
   };
   const handleDeleteById = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa lịch này?")) return;
+   const result = await Swal.fire({
+    title: "Bạn có chắc muốn xóa lịch này?",
+    text: "Hành động này sẽ không thể hoàn tác!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Xóa",
+    cancelButtonText: "Hủy",
+  });
 
-    try {
-      const res = await axiosClient.delete(`/lich/${id}`);
-      alert(res.data.message || "Đã xóa lịch.");
-      fetchSchedule();
-    } catch (error) {
-      console.error(error);
-      alert("Không thể xóa lịch.");
-    }
+  if (!result.isConfirmed) return;
+try {
+  const res = await axiosClient.delete(`/lich/${id}`);
+
+  Swal.fire({
+    icon: "success",
+    title: "Đã xóa lịch",
+    text: res.data.message || "Lịch đã được xóa thành công!",
+    confirmButtonColor: "#3085d6",
+  });
+
+  fetchSchedule();
+} catch (error) {
+  console.error(error);
+  Swal.fire({
+    icon: "error",
+    title: "Lỗi",
+    text: "Không thể xóa lịch.",
+    confirmButtonColor: "#d33",
+  });
+}
   };
 
-  const handleDeleteAll = async () => {
-    try {
-      const res = await axiosClient.delete(`/lich/sinhvien/${param}`);
-      alert(res.data.message || "Đã xóa toàn bộ lịch.");
-      fetchSchedule();
-    } catch (error) {
-      alert("Không thể xóa toàn bộ lịch.");
-    }
-  };
+const handleDeleteAll = async () => {
+  const result = await Swal.fire({
+    title: "Xóa toàn bộ lịch?",
+    text: "Bạn có chắc muốn xóa tất cả lịch của sinh viên này? Hành động này không thể hoàn tác!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Xóa tất cả",
+    cancelButtonText: "Hủy",
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await axiosClient.delete(`/lich/sinhvien/${param}`);
+    Swal.fire({
+      icon: "success",
+      title: "Đã xóa",
+      text: res.data.message || "Đã xóa toàn bộ lịch.",
+    });
+    fetchSchedule();
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi",
+      text: "Không thể xóa toàn bộ lịch.",
+    });
+    console.error(error);
+  }
+};
   useEffect(()=>{
     axiosClient.get(`/sinhviens/${param}`)
     .then((res)=>{
@@ -114,6 +161,7 @@ const getWeekOfMonth = (date) => {
 const handleOpenDialog = () => {
   let selectedDate = new Date().toISOString().split("T")[0]; // format yyyy-mm-dd
   let selectedCa = "8:00-12:00";
+  
 
   showDialog({
     title: "Thêm lịch",
@@ -135,7 +183,9 @@ const handleOpenDialog = () => {
         <select
           className="mb-20 border border-gray-300 p-3 rounded-md mt-2"
           id="ca"
-          onChange={(e) => (selectedCa = e.target.value)}
+          onChange={(e) => {selectedCa = e.target.value
+            setSelectedMonth(e.target.value)
+          }}
         >
           <option value="8:00-12:00">Ca sáng: 8:00 - 12:00</option>
           <option value="13:00-17:00">Ca chiều: 13:00 - 17:00</option>
@@ -144,31 +194,48 @@ const handleOpenDialog = () => {
     ),
     confirmText: "Áp dụng",
     cancelText: "Đặt lại",
-    onConfirm: async () => {
-      const today = new Date().toISOString().split("T")[0];
-      if (selectedDate < today) {
-        alert("Không thể thêm lịch vào ngày đã qua!");
-        return;
-      }
+   onConfirm: async () => {
+  const today = new Date().toISOString().split("T")[0];
+  if (selectedDate < today) {
+    Swal.fire({
+      icon: "warning",
+      title: "Ngày không hợp lệ",
+      text: "Không thể thêm lịch vào ngày đã qua!",
+    });
+    return;
+  }
 
-      try {
-        const res = await axiosClient.post("/lich", {
-          maSV: idSlug,
-          ngay: selectedDate,
-          ca: selectedCa,
-        });
+  try {
+    const res = await axiosClient.post("/lich", {
+      maSV: idSlug,
+      ngay: selectedDate,
+      ca: selectedCa,
+    });
 
-        alert(res.data.message);
-        fetchSchedule();
-      } catch (err) {
-        if (err.response?.status === 409) {
-          alert("Lịch bị trùng khung giờ!");
-        } else {
-          alert("Lỗi khi thêm lịch");
-          console.error(err);
-        }
-      }
-    },
+    Swal.fire({
+      icon: "success",
+      title: "Thành công",
+      text: res.data.message,
+    });
+
+    fetchSchedule();
+  } catch (err) {
+    if (err.response?.status === 409) {
+      Swal.fire({
+        icon: "error",
+        title: "Trùng lịch",
+        text: "Lịch bị trùng khung giờ!",
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Lỗi khi thêm lịch",
+      });
+      console.error(err);
+    }
+  }
+},
   });
 };
 

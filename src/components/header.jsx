@@ -23,8 +23,17 @@ function Header({children}) {
   }, []);
 
    const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+   localStorage.removeItem("email");
+localStorage.removeItem("hoTen");
+localStorage.removeItem("maAdmin");
+localStorage.removeItem("maSV");
+localStorage.removeItem("pusherTransportTLS");
+localStorage.removeItem("role");
+localStorage.removeItem("token");
+localStorage.removeItem("user");
+localStorage.removeItem("viTri");
+
+
     navigate("/")
   };
 

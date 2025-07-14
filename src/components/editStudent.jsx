@@ -23,21 +23,61 @@ function EditStudent() {
        const apiBaseURL = import.meta.env.VITE_API_BASE_URL
        const [avatarFile, setAvatarFile] = useState(null); // file object
        const [avatarFilePreview, setAvatarFilePreview] = useState(""); // preview path
-       const [isNewAvatar, setIsNewAvatar] = useState(false); // biết là local hay server
-           
+       const [isNewAvatar, setIsNewAvatar] = useState(false); 
+       const [danhSachTruong, setDanhSachTruong] = useState([]);
+       const [danhSachViTri, setDanhSachViTri] = useState([]);
+       const [errors, setErrors] = useState({});
+        useEffect(() => {
+        const fetchOptions = async () => {
+          const truongRes = await axiosClient.get("/truongs");
+          const viTriRes = await axiosClient.get("/vi-tris");
+          setDanhSachTruong(truongRes.data);
+          setDanhSachViTri(viTriRes.data);
+        };
+
+        fetchOptions();
+      }, []);
        const [studentData, setStudentData] = useState({
   hoTen: "",
   truong: "",
   mssv: "",
-  queQuan: "",
-  sdt: "",
+  diaChi: "",
+  soDienThoai: "",
   ngaySinh: "",
-  viTriThucTap: "",
-  chuyenNganh: "",
+  viTri: "",
+  nganh: "",
   email: "",
   cV:"",
-  duLieuGuongMat:""
+  duLieuGuongMat:"",
+  tenGiangVien:"",
+  thoiGianTT:""
+
+
 });
+
+const clearForm = () => {
+  setStudentData({
+  hoTen: "",
+  truong: "",
+  diaChi: "",
+  soDienThoai: "",
+  ngaySinh: "",
+  viTri: "",
+  nganh: "",
+  email: "",
+  cV:"",
+  duLieuGuongMat:"",
+  tenGiangVien:"",
+  thoiGianTT:""
+  });
+
+  setAvatarFile(null);
+  setAvatarFilePreview(null);
+  setCVFile(null);
+  setProgress(0);
+  setErrors({});
+};
+
 //  avatar logic
   const handleChangeAvatar = (e) => {
     const file = e.target.files[0];
@@ -65,6 +105,8 @@ useEffect(() => {
         nganh: data.nganh || "",
         duLieuGuongMat:  data.duLieuKhuonMat  || "",
         cV: data.cV || "",
+        thoiGianTT: data.thoiGianTT || "",
+        tenGiangVien: data.tenGiangVien || ""
       });
         
     if(data.duLieuKhuonMat){
@@ -78,6 +120,34 @@ useEffect(() => {
       console.error("Lỗi khi lấy dữ liệu sinh viên:", err);
     });
 }, [idSlug]);
+
+const validateForm = () => {
+  const newErrors = {};
+
+  if (!studentData.hoTen.trim()) newErrors.hoTen = "Họ tên là bắt buộc";
+  if (!studentData.diaChi.trim()) newErrors.diaChi = "Quê quán là bắt buộc";
+  if (!studentData.email.trim()) newErrors.email = "Email là bắt buộc";
+  else if (!/\S+@\S+\.\S+/.test(studentData.email)) newErrors.email = "Email không hợp lệ";
+
+  if (!studentData.truong.trim()) newErrors.maTruong = "Mã trường là bắt buộc";
+
+  if (!studentData.soDienThoai.trim()) newErrors.soDienThoai = "Số điện thoại là bắt buộc";
+  else if (!/^[0-9]{9,11}$/.test(studentData.soDienThoai)) newErrors.soDienThoai = "SĐT không hợp lệ";
+
+  if (!studentData.ngaySinh) newErrors.ngaySinh = "Ngày sinh là bắt buộc";
+
+  if (!studentData.viTri.trim()) newErrors.viTri = "Vị trí thực tập là bắt buộc";
+
+  if (!studentData.nganh.trim()) newErrors.nganh = "Chuyên ngành là bắt buộc";
+
+  // Tùy chọn nếu bạn muốn kiểm tra thêm
+  if (!studentData.thoiGianTT.trim()) newErrors.thoiGianTT = "Thời gian thực tập là bắt buộc";
+  if (!studentData.tenGiangVien.trim()) newErrors.tenGiangVien = "Tên giảng viên là bắt buộc";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
          const handleOpenDialog = () => {
            showDialog({
@@ -127,10 +197,12 @@ useEffect(() => {
   };
   // update student
   const handleSubmitForm = async () => {
+        if (!validateForm()) {
+    return; 
+  }
   try {
     const formData = new FormData();
     formData.append("hoTen", studentData.hoTen);
-    formData.append("maSV", studentData.maSV);
     formData.append("email", studentData.email);
     formData.append("nganh", studentData.nganh);
     formData.append("viTri", studentData.viTri);
@@ -138,6 +210,8 @@ useEffect(() => {
     formData.append("soDienThoai", studentData.soDienThoai);
     formData.append("ngaySinh", studentData.ngaySinh);
     formData.append("maTruong", studentData.truong); 
+    formData.append("thoiGianTT", studentData.thoiGianTT); 
+    formData.append("tenGiangVien", studentData.tenGiangVien); 
 
     if (avatarFile) formData.append("avatar", avatarFile);
     if (CVfile) formData.append("cv", CVfile);
@@ -217,94 +291,146 @@ useEffect(() => {
   
     {/* Grid form fields */}
  <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<input
-        type="text"
-        placeholder="Nhập Họ Tên"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.hoTen || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, hoTen: e.target.value })
-        }
-      />
+<div>
+  <input
+          type="text"
+          placeholder="Nhập Họ Tên"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.hoTen || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, hoTen: e.target.value })
+          }
+        />
+        {errors.hoTen && <p className="text-red-500 text-sm mt-1">{errors.hoTen}</p>}
+</div>
+        <div>
+          <select
+              name="maTruong"
+              value={studentData.truong || ""}
+              onChange={(e) =>
+            setStudentData({ ...studentData, truong: e.target.value })}
+          
+              className="input border border-gray-200 rounded-md p-4 w-full"
+            >
+              <option value="">-- Chọn trường --</option>
+              {danhSachTruong.map((truong) => (
+                <option key={truong.id} value={truong.maTruong}>
+          {truong.maTruong}
+                </option>
+              ))}
+            </select>
+            {errors.maTruong && <p className="text-red-500 text-sm mt-1">{errors.maTruong}</p>}
+        </div>
 
-      <input
-        type="text"
-        placeholder="Nhập Tên Trường"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.truong || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, truong: e.target.value })
-        }
-      />
 
-      <input
-        type="text"
-        placeholder="Mã Số Sinh Viên"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.maSV || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, maSV: e.target.value })
-        }
-      />
+      <div>
+        <input
+          type="text"
+          placeholder="Quê Quán"
+          className="border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.diaChi || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, diaChi: e.target.value })
+          }
+        />
+         {errors.diaChi && <p className="text-red-500 text-sm mt-1">{errors.diaChi}</p>}
+      </div>
+<div>
+  
+        <input
+          type="text"
+          placeholder="Nhập Số Điện Thoại"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.soDienThoai || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, soDienThoai: e.target.value })
+          }
+        />
+        {errors.soDienThoai && <p className="text-red-500 text-sm mt-1">{errors.soDienThoai}</p>}
+</div>
 
-      <input
-        type="text"
-        placeholder="Quê Quán"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.diaChi || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, diaChi: e.target.value })
-        }
-      />
+      <div>
+        <input
+          type="date"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.ngaySinh || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, ngaySinh: e.target.value })
+          }
+        />
+        {errors.ngaySinh && <p className="text-red-500 text-sm mt-1">{errors.ngaySinh}</p>}
+      </div>
 
-      <input
-        type="text"
-        placeholder="Nhập Số Điện Thoại"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.soDienThoai || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, soDienThoai: e.target.value })
-        }
-      />
+         <div>
+           <select
+               name="viTri"
+               value={studentData.viTri || ""}
+               onChange={(e) =>
+            setStudentData({ ...studentData, viTri: e.target.value })
+                   }
+               className="input border border-gray-200 rounded-md p-4 w-full"
+             >
+               <option value="">-- Chọn vị trí --</option>
+               {danhSachViTri.map((viTri) => (
+                 <option key={viTri.id} value={viTri.tenViTri}>
+                   {viTri.tenViTri}
+                 </option>
+               ))}
+             </select>
+             {errors.viTri && <p className="text-red-500 text-sm mt-1">{errors.viTri}</p>}
+         </div>
 
-      <input
-        type="date"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.ngaySinh || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, ngaySinh: e.target.value })
-        }
-      />
 
-      <input
-        type="text"
-        placeholder="Vị Trí Thực tập"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.viTri || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, viTri: e.target.value })
-        }
-      />
+      <div>
+        <input
+          type="text"
+          placeholder="Chuyên Ngành"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.nganh || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, nganh: e.target.value })
+          }
+        />
+         {errors.nganh && <p className="text-red-500 text-sm mt-1">{errors.nganh}</p>}
+      </div>
 
-      <input
-        type="text"
-        placeholder="Chuyên Ngành"
-        className="input border border-gray-200 rounded-md p-4"
-        value={studentData.nganh || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, nganh: e.target.value })
-        }
-      />
+      <div>
+        <input
+          type="email"
+          placeholder="Thêm Email"
+          className="input border border-gray-200 rounded-md p-4 col-span-1 w-full"
+          value={studentData.email || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, email: e.target.value })
+          }
+        />
+        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+      </div>
 
-      <input
-        type="email"
-        placeholder="Thêm Email"
-        className="input border border-gray-200 rounded-md p-4 col-span-1"
-        value={studentData.email || ""}
-        onChange={(e) =>
-          setStudentData({ ...studentData, email: e.target.value })
-        }
-      />
+        <div>
+        <input
+          type="text"
+          placeholder="Thời gian thực tập"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.thoiGianTT || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, thoiGianTT: e.target.value })
+          }
+        />
+         {errors.thoiGianTT && <p className="text-red-500 text-sm mt-1">{errors.thoiGianTT}</p>}
+      </div>
+        <div>
+        <input
+          type="text"
+          placeholder="Giảng viên hướng dẫn"
+          className="input border border-gray-200 rounded-md p-4 w-full"
+          value={studentData.tenGiangVien || ""}
+          onChange={(e) =>
+            setStudentData({ ...studentData, tenGiangVien: e.target.value })
+          }
+        />
+        {errors.tenGiangVien && <p className="text-red-500 text-sm mt-1">{errors.tenGiangVien}</p>}
+      </div>
 </form>
 
   
@@ -402,7 +528,7 @@ useEffect(() => {
   
     {/* Buttons */}
     <div className="flex justify-end gap-4 mt-6">
-      <button className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
+      <button onClick={clearForm} className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
       <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={handleSubmitForm}>Cập nhật</button>
     </div>
   </div>
