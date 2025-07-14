@@ -18,6 +18,19 @@ function AddStudentPanel() {
   const { isToast, setToast } = useToast();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarFilePreview, setAvatarFilePreview] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [danhSachTruong, setDanhSachTruong] = useState([]);
+  const [danhSachViTri, setDanhSachViTri] = useState([]);
+  useEffect(() => {
+  const fetchOptions = async () => {
+    const truongRes = await axiosClient.get("/truongs");
+    const viTriRes = await axiosClient.get("/vi-tris");
+    setDanhSachTruong(truongRes.data);
+    setDanhSachViTri(viTriRes.data);
+  };
+
+  fetchOptions();
+}, []);
   const [form, setForm] = useState({
   hoTen: "",
   tenDangNhap:"",
@@ -30,6 +43,8 @@ function AddStudentPanel() {
   viTri: "",
   nganh: "",
   email: "",
+  thoiGianTT: "",
+  tenGiangVien:"",
   cV: "",              // ← Sẽ được gán sau khi upload
   duLieuKhuonMat: "",  // ← Sẽ được gán sau khi upload
 });
@@ -40,7 +55,7 @@ function AddStudentPanel() {
     if (file) {
       setAvatarFile(file)
       setAvatarFilePreview(URL.createObjectURL(file)); // Hiển thị ảnh
-      // TODO: Bạn có thể upload `file` lên server tại đây
+      
     }
   };
 
@@ -136,7 +151,64 @@ const handleSubmitForm = async () => {
   }
   
 };
+const clearForm = () => {
+  setForm({
+    hoTen: "",
+    tenDangNhap: "",
+    password: "pwd123",
+    maTruong: "",
+    maSV: "",
+    diaChi: "",
+    soDienThoai: "",
+    ngaySinh: "",
+    viTri: "",
+    nganh: "",
+    email: "",
+    thoiGianTT: "",
+    tenGiangVien: "",
+    cV: "",
+    duLieuKhuonMat: "",
+  });
+
+  setAvatarFile(null);
+  setAvatarFilePreview(null);
+  setCVFile(null);
+  setProgress(0);
+  setErrors({});
+};
+
+const validateForm = () => {
+  const newErrors = {};
+
+  if (!form.hoTen.trim()) newErrors.hoTen = "Họ tên là bắt buộc";
+  if (!form.diaChi.trim()) newErrors.diaChi = "Quê quán là bắt buộc";
+  if (!form.email.trim()) newErrors.email = "Email là bắt buộc";
+  else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Email không hợp lệ";
+
+  if (!form.maTruong.trim()) newErrors.maTruong = "Mã trường là bắt buộc";
+
+  if (!form.soDienThoai.trim()) newErrors.soDienThoai = "Số điện thoại là bắt buộc";
+  else if (!/^[0-9]{9,11}$/.test(form.soDienThoai)) newErrors.soDienThoai = "SĐT không hợp lệ";
+
+  if (!form.ngaySinh) newErrors.ngaySinh = "Ngày sinh là bắt buộc";
+
+  if (!form.viTri.trim()) newErrors.viTri = "Vị trí thực tập là bắt buộc";
+
+  if (!form.nganh.trim()) newErrors.nganh = "Chuyên ngành là bắt buộc";
+
+  // Tùy chọn nếu bạn muốn kiểm tra thêm
+  if (!form.thoiGianTT.trim()) newErrors.thoiGianTT = "Thời gian thực tập là bắt buộc";
+  if (!form.tenGiangVien.trim()) newErrors.tenGiangVien = "Tên giảng viên là bắt buộc";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+
 const handleConfirmAddStudent = async () => {
+    if (!validateForm()) {
+    return; 
+  }
   try {
     const { avatar, cv } = await handleUpload(); // lấy path từ server trả về
 
@@ -145,6 +217,7 @@ const handleConfirmAddStudent = async () => {
       duLieuKhuonMat: avatar,
       cV: cv,
     };
+    setErrors({})
 
     console.log("Form chuẩn bị gửi:", formToSend); // kiểm tra
 
@@ -152,7 +225,11 @@ const handleConfirmAddStudent = async () => {
 
     setToast(true);
   } catch (error) {
-    alert(`Lỗi: ${error.message}`);
+       if (error.response?.status === 422) {
+      setErrors(error.response.data.errors || {});
+    } else {
+      alert(`Lỗi: ${error.message}`);
+    }
   }
 };
 
@@ -235,88 +312,148 @@ const handleInputForm = (e) => {
 
         {/* Grid form fields */}
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-  name="hoTen"  // thêm dòng này
-  value={form.hoTen}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Nhập Họ Tên"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Họ tên */}
+  <div>
+    <input
+      name="hoTen"
+      value={form.hoTen}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Nhập Họ Tên"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.hoTen && <p className="text-red-500 text-sm mt-1">{errors.hoTen}</p>}
+  </div>
 
-<input
-  name="maTruong"
-  value={form.maTruong}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Nhập Tên Trường"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Mã trường */}
+  <div>
 
-<input
-  name="maSV"
-  value={form.maSV}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Mã Số Sinh Viên"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  <select
+    name="maTruong"
+    value={form.maTruong}
+    onChange={handleInputForm}
+    className="input border border-gray-200 rounded-md p-4 w-full"
+  >
+    <option value="">-- Chọn trường --</option>
+    {danhSachTruong.map((truong) => (
+      <option key={truong.id} value={truong.maTruong}>
+        {truong.maTruong}
+      </option>
+    ))}
+  </select>
+{errors.maTruong && <p className="text-red-500 text-sm mt-1">{errors.maTruong}</p>}
+  </div>
 
-<input
-  name="diaChi"
-  value={form.diaChi}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Quê Quán"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Địa chỉ */}
+  <div>
+    <input
+      name="diaChi"
+      value={form.diaChi}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Quê Quán"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.diaChi && <p className="text-red-500 text-sm mt-1">{errors.diaChi}</p>}
+  </div>
 
-<input
-  name="soDienThoai"
-  value={form.soDienThoai}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Nhập Số Điện Thoại"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* SĐT */}
+  <div>
+    <input
+      name="soDienThoai"
+      value={form.soDienThoai}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Nhập Số Điện Thoại"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.soDienThoai && <p className="text-red-500 text-sm mt-1">{errors.soDienThoai}</p>}
+  </div>
 
-<input
-  name="ngaySinh"
-  value={form.ngaySinh}
-  onChange={handleInputForm}
-  onKeyDown={(e) => e.preventDefault()} 
-  type="date"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Ngày sinh */}
+  <div>
+    <input
+      name="ngaySinh"
+      value={form.ngaySinh}
+      onChange={handleInputForm}
+      // onKeyDown={(e) => e.preventDefault()}
+      type="date"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.ngaySinh && <p className="text-red-500 text-sm mt-1">{errors.ngaySinh}</p>}
+  </div>
 
-<input
-  name="viTri"
-  value={form.viTri}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Vị Trí Thực tập"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Vị trí */}
+  <div>
+   <select
+    name="viTri"
+    value={form.viTri}
+    onChange={handleInputForm}
+    className="input border border-gray-200 rounded-md p-4 w-full"
+  >
+    <option value="">-- Chọn vị trí --</option>
+    {danhSachViTri.map((viTri) => (
+      <option key={viTri.id} value={viTri.tenViTri}>
+        {viTri.tenViTri}
+      </option>
+    ))}
+  </select>
+    {errors.viTri && <p className="text-red-500 text-sm mt-1">{errors.viTri}</p>}
+  </div>
 
-<input
-  name="nganh"
-  value={form.nganh}
-  onChange={handleInputForm}
-  type="text"
-  placeholder="Chuyên Ngành"
-  className="input border border-gray-200 rounded-md p-4"
-/>
+  {/* Ngành */}
+  <div>
+    <input
+      name="nganh"
+      value={form.nganh}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Chuyên Ngành"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.nganh && <p className="text-red-500 text-sm mt-1">{errors.nganh}</p>}
+  </div>
 
-<input
-  name="email"
-  value={form.email}
-  onChange={handleInputForm}
-  type="email"
-  placeholder="Thêm Email"
-  className="input border border-gray-200 rounded-md p-4 col-span-1"
-/>
+  {/* Email */}
+  <div>
+    <input
+      name="email"
+      value={form.email}
+      onChange={handleInputForm}
+      type="email"
+      placeholder="Thêm Email"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+  </div>
 
-        </form>
+  {/* Thời gian TT */}
+  <div>
+    <input
+      name="thoiGianTT"
+      value={form.thoiGianTT}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Thời gian thực tập"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.thoiGianTT && <p className="text-red-500 text-sm mt-1">{errors.thoiGianTT}</p>}
+  </div>
+
+  {/* Tên giảng viên */}
+  <div>
+    <input
+      name="tenGiangVien"
+      value={form.tenGiangVien}
+      onChange={handleInputForm}
+      type="text"
+      placeholder="Giảng Viên Hướng Dẫn"
+      className="input border border-gray-200 rounded-md p-4 w-full"
+    />
+    {errors.tenGiangVien && <p className="text-red-500 text-sm mt-1">{errors.tenGiangVien}</p>}
+  </div>
+</form>
+
 
         {/* Upload CV */}
         <div className="mt-6">
@@ -392,7 +529,7 @@ const handleInputForm = (e) => {
 
         {/* Buttons */}
         <div className="flex justify-end gap-4 mt-6">
-          <button className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">
+          <button onClick={clearForm} className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">
             Hủy Bỏ
           </button>
           <button
