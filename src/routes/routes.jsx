@@ -44,6 +44,9 @@ import TaskStudent from "../components/student/task/taskStudent";
 import TaskPanelStudent from "../components/student/task/taskPanelStudent";
 import SwapSchedule from "../components/SwapSchedule";
 import SchoolAndPosition from "../components/schoolAndPosition";
+import AddSchoolAndPostion from "../components/addSchoolAndPosition";
+import SchoolPanel from "../components/schoolPanel";
+import ViTriPanel from "../components/viTriPanel";
 const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
@@ -225,10 +228,30 @@ const protectedRoutes = [
           {
             path: "addInfo",
             element: <SchoolAndPosition />,
+            children: [
+              { 
+                index: true,
+                element: <Navigate to="add" replace />
+              },
+              {
+                path:"add",
+                element: <AddSchoolAndPostion/>
+              },
+              {
+                path:"list-schools",
+                element: <SchoolPanel/>
+              },
+              {
+                path:"list-positions",
+                element: <ViTriPanel/>
+              },
+
+            ]
           },
           {
             path: "settings",
             element: <Settings />,
+
           },
         ],
       },

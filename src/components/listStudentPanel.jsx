@@ -5,7 +5,6 @@ import { RiEyeLine } from "react-icons/ri";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import avatar from "../assets/images/avatar.png";
-import Pagination from "../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
 import { useEffect, useState } from "react";
@@ -16,6 +15,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
 import { useUser } from "../context/userContext";
 import Swal from 'sweetalert2';
+import Pagination from "./Pagination";
 
 function ListStudentPanel() {
       const [perPage, setPerPage] = useState(10)
