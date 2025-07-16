@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiChevronLeft, BiChevronRight, BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
 import dayjs from "dayjs";
@@ -59,14 +59,16 @@ const ScheduleCard = ({ event, onDelete }) => {
   );
 };
 
-const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = false }) => {
+const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = false,  onMonthYearChange = () => {} }) => {
   // const [year, month] = [2025, 7]; 
   const today = dayjs();
   const [currentMonth, setCurrentMonth] = useState(today.month()); // 0-indexed
   const [currentYear, setCurrentYear] = useState(today.year());
   const calendar = generateCalendar(currentYear, currentMonth); 
 
-
+  useEffect(() => {
+    onMonthYearChange(currentMonth, currentYear);
+  }, [currentMonth, currentYear]);
   return (
     <>
 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-4 mt-4 px-2">

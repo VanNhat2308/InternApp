@@ -15,8 +15,11 @@ import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
 import { useUser } from "../context/userContext";
+import Swal from 'sweetalert2';
 
 function ListStudentPanel() {
+      const [perPage, setPerPage] = useState(10)
+      const [totalRecords, setTotalRecords] = useState(0)
       const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
       const navigate = useNavigate()
       const { showDialog } = useDialog();
@@ -38,7 +41,7 @@ function ListStudentPanel() {
     .get(`/sinhviens/lay-danh-sach-sinh-vien`, {
       params: {
         page: currentPage,
-        per_page: 10,
+        per_page: perPage,
         search: searchTerm,
         vi_tri: filters.viTri,
         truong: filters.Truong,
@@ -47,7 +50,8 @@ function ListStudentPanel() {
     })
     .then((res) => {
       setStudent(res.data.data.data);
-      setTotalPages(res.data.data.last_page);
+      setTotalPages(res.data.data.last_page)
+      setTotalRecords(res.data.data.total)
     })
     .catch((err) => console.log(err))
     .finally(() => setLoading(false));
@@ -111,7 +115,7 @@ useEffect(() => {
   }, 500); // debounce 500ms
 
   return () => clearTimeout(delayDebounce);
-}, [searchTerm, currentPage, filters]);
+}, [searchTerm, currentPage, filters, perPage]);
 
 
  
@@ -144,13 +148,64 @@ useEffect(() => {
   }
 }
  const nameUser = localStorage.getItem('user')
+ const [selectedStudents, setSelectedStudents] = useState([]);
+const selectedAll = students.length > 0 && selectedStudents.length === students.length;
+const handleSelectOne = (id) => {
+  setSelectedStudents((prev) =>
+    prev.includes(id)
+      ? prev.filter((sid) => sid !== id)
+      : [...prev, id]
+  );
+};
+const handleSelectAll = () => {
+  if (selectedAll) {
+    setSelectedStudents([]);
+  } else {
+    const allIds = students.map((s) => s.maSV);
+    setSelectedStudents(allIds);
+  }
+};
+const handleDeleteSelected = () => {
+  showDialog({
+    title: "Xác nhận xóa nhiều sinh viên",
+    content: `Bạn có chắc chắn muốn xóa ${selectedStudents.length} sinh viên này không?`,
+    confirmText: "Xóa",
+    cancelText: "Hủy",
+    onConfirm: async () => {
+      try {
+        await axiosClient.post("/sinhviens/xoa-nhieu", {
+          ids: selectedStudents,
+        });
+
+        fetchStudents();
+        setSelectedStudents([]);
+
+        Swal.fire({
+          icon: "success",
+          title: "Đã xóa thành công!",
+          text: `${selectedStudents.length} sinh viên đã được xóa.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi khi xóa!",
+          text: err?.response?.data?.message || "Đã xảy ra lỗi trong quá trình xóa.",
+        });
+      }
+    },
+  });
+};
+
+
   return (
     <>
      {isMobile ? <ResponNav /> : <Header>
        <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
-    <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
+    <div className="p-4 w-full max-w-screen h-fit lg:h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
   {/* Search */}
@@ -182,6 +237,17 @@ useEffect(() => {
     <FaSlidersH className="text-base" />
     <span className="text-sm font-medium">Lọc</span>
   </button>
+
+  {/* xóa */}
+  {selectedStudents.length > 0 && (
+  <button
+    onClick={handleDeleteSelected}
+    className="w-full sm:w-auto flex items-center bg-red-500 text-white justify-center gap-2 px-4 py-2 rounded-lg border hover:bg-red-600 transition cursor-pointer"
+  >
+    Xóa {selectedStudents.length} sinh viên
+  </button>
+)}
+
 </div>
 
       {/* table */}
@@ -196,10 +262,18 @@ useEffect(() => {
     <span className="sr-only">Loading...</span>
 </div>
         </div>
-      ) : (<div className="overflow-x-auto mt-10">
+      ) : (<div className="overflow-x-auto mt-10 max-h-[600px]">
          <table className="lg:w-full min-w-[800px] text-sm table-auto">
-            <thead className="text-left text-gray-500 border-b border-b-gray-300">
+            <thead className="sticky top-0 bg-white text-left text-gray-500 border-b border-b-gray-300 z-10">
               <tr>
+                <th>
+  <input
+    type="checkbox"
+    checked={selectedAll}
+    onChange={handleSelectAll}
+  />
+</th>
+
                 <th className="py-2 ">Tên sinh viên</th>
                 <th>MSSV</th>
                 <th>Vị trí</th>
@@ -212,6 +286,14 @@ useEffect(() => {
               {students.map((s, idx) => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
+                    <td>
+  <input
+    type="checkbox"
+    checked={selectedStudents.includes(s.maSV)}
+    onChange={() => handleSelectOne(s.maSV)}
+  />
+</td>
+
                     <td className="py-2 flex gap-2 items-center">
                       <img 
                       src={avatar}
@@ -255,6 +337,20 @@ useEffect(() => {
             </tbody>
           </table>
         </div>)}
+        <div className="flex items-center gap-2 my-4">
+  <input
+    id="perPage"
+    type="number"
+    min={1}
+    value={perPage}
+    onChange={(e) => setPerPage(Number(e.target.value))}
+    className="border border-gray-300 px-2 py-1 w-20 rounded"
+  />
+  <span className="text-sm text-gray-600">
+  trên {totalRecords} bản ghi
+  </span>
+</div>
+
       <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
 
     </div>

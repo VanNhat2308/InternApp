@@ -18,6 +18,7 @@ import "./css/navbar.css";
 import { useSidebar } from "../context/sidebarContext";
 import { useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { FaFolderPlus } from "react-icons/fa6";
 const navItems = [
   { label: "Dashboard", icon: <FaTh />, active: true, linkTo: "dashboard" },
   { label: "Danh sách", icon: <FaList />, active: false, linkTo: "list" },
@@ -52,6 +53,13 @@ const navItems = [
     icon: <FaFlag />,
     danger: true,
     linkTo: "feedback",
+  },
+  {
+    label: "Trường & Vị trí",
+    active: false,
+    icon: <FaFolderPlus  />,
+    danger: false,
+    linkTo: "addInfo",
   },
   { label: "Cài đặt", active: false, icon: <FaCog />, linkTo: "settings" },
 ];

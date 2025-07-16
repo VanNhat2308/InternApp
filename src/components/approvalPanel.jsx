@@ -174,7 +174,7 @@ function ApprovalPanel() {
                       <img src={avatar} className="w-7" alt="ava" />
                       {s?.sinh_vien?.hoTen}
                     </td>
-                    <td>{s.ngayNop}</td>
+                    <td>{new Date(s.ngayNop).toLocaleDateString("vi-VN")}</td>
                     <td>{s?.sinh_vien?.viTri}</td>
                     <td>{s?.sinh_vien?.truong?.tenTruong}</td>
                     <td>

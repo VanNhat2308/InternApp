@@ -43,6 +43,7 @@ import DiaryDetails from "../components/student/diary/diaryDetails";
 import TaskStudent from "../components/student/task/taskStudent";
 import TaskPanelStudent from "../components/student/task/taskPanelStudent";
 import SwapSchedule from "../components/SwapSchedule";
+import SchoolAndPosition from "../components/schoolAndPosition";
 const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
@@ -220,6 +221,10 @@ const protectedRoutes = [
                 element:<ChatDetails/>
               }
             ]
+          },
+          {
+            path: "addInfo",
+            element: <SchoolAndPosition />,
           },
           {
             path: "settings",
