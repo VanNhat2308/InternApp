@@ -107,7 +107,7 @@ function ViTriPanel() {
           <tbody>
             {positions.map((pos) => (
               <tr key={pos.id} className="bg-white border-b border-gray-200">
-                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{pos.id}</td>
+                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">{pos.id}</td>
                 <td className="px-6 py-4">
                   {editingId === pos.id ? (
                     <input

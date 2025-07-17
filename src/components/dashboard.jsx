@@ -12,6 +12,7 @@ import UpdatedDate from "./updatedDate";
 import { useUser } from "../context/userContext";
 import { Link } from "react-router-dom";
 import { useAdminDashboardData } from "../hooks/useAdminDashboardData";
+import Avatar from "react-avatar";
 
 const Dashboard = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -157,10 +158,16 @@ const Dashboard = () => {
                 <tbody>
                   {data.students.map((s, idx) => (
                     <tr key={idx} className="border-b border-b-gray-300">
-                      <td className="py-2 flex gap-2 items-center">
-                        <img src={avatar} className="w-7" alt="ava" />
-                        {s.sinh_vien.tenDangNhap}
-                      </td>
+                    <td className="py-2">
+  <div className="flex items-center gap-2">
+    <Avatar name={s.sinh_vien.hoTen} round size="32" />
+    <div className="flex flex-col">
+      <span className="font-medium">{s.sinh_vien.hoTen}</span>
+      <span className="text-sm text-gray-500">{s.sinh_vien.email}</span>
+    </div>
+  </div>
+</td>
+
 
                       <td>{s.sinh_vien.viTri}</td>
                       <td>{s?.gio_bat_dau}</td>

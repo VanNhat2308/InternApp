@@ -16,6 +16,7 @@ import axiosClient from "../service/axiosClient";
 import { useUser } from "../context/userContext";
 import Swal from 'sweetalert2';
 import Pagination from "./Pagination";
+import Avatar from "react-avatar";
 
 function ListStudentPanel() {
       const [perPage, setPerPage] = useState(10)
@@ -266,7 +267,7 @@ const handleDeleteSelected = () => {
          <table className="lg:w-full min-w-[800px] text-sm table-auto">
             <thead className="sticky top-0 bg-white text-left text-gray-500 border-b border-b-gray-300 z-10">
               <tr>
-                <th>
+                <th className="text-center">
   <input
     type="checkbox"
     checked={selectedAll}
@@ -285,53 +286,63 @@ const handleDeleteSelected = () => {
             <tbody>
               {students.map((s, idx) => {
                 return (
-                  <tr key={idx} className="border-b border-b-gray-300">
-                    <td>
-  <input
-    type="checkbox"
-    checked={selectedStudents.includes(s.maSV)}
-    onChange={() => handleSelectOne(s.maSV)}
-  />
-</td>
+                <tr key={idx} className="border-b border-b-gray-300 text-sm">
+  {/* Checkbox */}
+  <td className="px-2 text-center align-middle">
+    <input
+      type="checkbox"
+      checked={selectedStudents.includes(s.maSV)}
+      onChange={() => handleSelectOne(s.maSV)}
+    />
+  </td>
 
-                    <td className="py-2 flex gap-2 items-center">
-                      <img 
-                      src={avatar}
-                      // src={s.duLieuKhuonMat ? `${apiBaseURL}/${s.duLieuKhuonMat}`:avatar}
-                      className="w-7" alt="ava" />
-                      {s.hoTen}
-                    </td>
-                    <td>{s.maSV}</td>
-                    <td>{s.viTri}</td>
-                    <td>{s.truong.tenTruong}</td>
-                    <td>
-                      {" "}
-                      <span
-                        className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
-                          s.trangThai
-                        )}`}
-                      >
-                        {s.trangThai}
-                      </span>
-                    </td>
-                    <td className="flex gap-2">
-                      <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
-                          <RiEyeLine />
-                      </button>
-                      <button
-                      onClick={()=>{
-                        handleEdit(s.maSV)
-                      }}
-                      className="text-xl cursor-pointer">
-                          <CiEdit />
-                      </button>
-                      <button 
-                      onClick={() => handleOpenDialog(s.maSV)}
-                      className="text-xl cursor-pointer">
-                         <RiDeleteBin6Line />
-                      </button>
-                    </td>
-                  </tr>
+  {/* Avatar, Họ tên, Email */}
+  <td className="py-2 px-2 align-middle">
+    <div className="flex items-center gap-2">
+      <Avatar name={s.hoTen} round size="32" />
+      <div className="flex flex-col">
+        <span className="font-medium">{s.hoTen}</span>
+        <span className="text-sm text-gray-500">{s.email}</span>
+      </div>
+    </div>
+  </td>
+
+  {/* Mã sinh viên */}
+  <td className="px-2 align-middle">{s.maSV}</td>
+
+  {/* Vị trí */}
+  <td className="px-2 align-middle">{s.viTri}</td>
+
+  {/* Tên trường */}
+  <td className="px-2 align-middle">{s.truong.tenTruong}</td>
+
+  {/* Trạng thái */}
+  <td className="px-2 align-middle">
+    <span
+      className={`px-2 py-1 rounded-sm text-xs font-medium ${statusStyle(
+        s.trangThai
+      )}`}
+    >
+      {s.trangThai}
+    </span>
+  </td>
+
+  {/* Hành động */}
+  <td className="px-2">
+    <div className="flex gap-2">
+      <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
+        <RiEyeLine />
+      </button>
+      <button onClick={() => handleEdit(s.maSV)} className="text-xl cursor-pointer">
+        <CiEdit />
+      </button>
+      <button onClick={() => handleOpenDialog(s.maSV)} className="text-xl cursor-pointer">
+        <RiDeleteBin6Line />
+      </button>
+    </div>
+  </td>
+</tr>
+
                 );
               })}
             </tbody>

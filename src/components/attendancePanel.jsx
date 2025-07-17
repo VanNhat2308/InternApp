@@ -11,6 +11,7 @@ import Header from "../components/header";
 import { useDialog } from "../context/dialogContext";
 import axiosClient from "../service/axiosClient";
 import { BsFillPeopleFill } from "react-icons/bs";
+import Avatar from "react-avatar";
 
 function AttendancePanel() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -140,7 +141,7 @@ useEffect(() => {
           <p className="text-gray-500">{userRole==='Student'? 'Danh sách lịch sử điểm danh của sinh viên' :'Xem Thời Gian Điểm Danh Của Sinh Viên'}</p>
         </Header>
       )}
-   <div className="p-4 w-full max-w-screen h-fit lg:h-screen mt-10 rounded-xl shadow border border-[#ECECEE]">
+   <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
   {/* Filter bar */}
   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-4">
     {/* Left: Title */}
@@ -200,10 +201,15 @@ useEffect(() => {
               {students.map((s, idx) => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
-                    <td className="py-2 flex gap-2 items-center">
-                      <img src={avatar} className="w-7" alt="ava" />
-                      {s?.sinh_vien?.hoTen}
-                    </td>
+                      <td className="py-2 px-2 align-middle">
+    <div className="flex items-center gap-2">
+      <Avatar name={s?.sinh_vien?.hoTen} round size="32" />
+      <div className="flex flex-col">
+        <span className="font-medium">{s?.sinh_vien?.hoTen}</span>
+        <span className="text-sm text-gray-500">{s?.sinh_vien?.email}</span>
+      </div>
+    </div>
+  </td>
                     <td>{s.maSV}</td>
                     <td>{s.viTri}</td>
                     <td>{s?.sinh_vien?.viTri}</td>

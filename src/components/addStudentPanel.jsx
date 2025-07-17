@@ -138,7 +138,6 @@ const handleSubmitForm = async () => {
     console.log("Gửi thành công:", res.data);
     setToast(true);
   } catch (error) {
-    // ✅ Alert lỗi rõ ràng từ response
     const message =
       error.response?.data?.message ||
       error.response?.data?.errors?.avatar?.[0] ||

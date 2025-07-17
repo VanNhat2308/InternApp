@@ -3,7 +3,7 @@ import { FaSlidersH } from "react-icons/fa";
 import { RiEyeLine } from "react-icons/ri";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import avatar from "../assets/images/avatar.png";
-import Pagination from "../components/pagination";
+
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
 import { useEffect, useState } from "react";
@@ -11,6 +11,8 @@ import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
 import { IoSwapHorizontal } from "react-icons/io5";
+import Pagination from "./Pagination";
+import Avatar from "react-avatar";
 function SchedulePanel() {
       const navigate = useNavigate()
       const { showDialog } = useDialog();
@@ -168,13 +170,15 @@ useEffect(() => {
               {students.map((s, idx) => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
-                    <td className="py-2 flex gap-2 items-center">
-                      <img 
-                      src={avatar}
-                      // src={s.duLieuKhuonMat ? `${apiBaseURL}/${s.duLieuKhuonMat}`:avatar}
-                      className="w-7" alt="ava" />
-                      {s.hoTen}
-                    </td>
+                    <td className="py-2 px-2 align-middle">
+    <div className="flex items-center gap-2">
+      <Avatar name={s.hoTen} round size="32" />
+      <div className="flex flex-col">
+        <span className="font-medium">{s.hoTen}</span>
+        <span className="text-sm text-gray-500">{s.email}</span>
+      </div>
+    </div>
+  </td>
                     <td>{s.maSV}</td>
                     <td>{s.viTri}</td>
                     <td>{s.truong.tenTruong}</td>
@@ -188,13 +192,13 @@ useEffect(() => {
                         {s.trangThai}
                       </span>
                     </td>
-                    <td className="flex gap-2">
+                    <td>
                       <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
                           <RiEyeLine />
                       </button>
                       <button 
                       onClick={() => handleOpenDialog(s.maSV)}
-                      className="text-xl cursor-pointer">
+                      className="text-xl cursor-pointer mx-2">
                          <RiDeleteBin6Line />
                       </button>
                       <button 

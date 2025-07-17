@@ -10,6 +10,7 @@ import { useDialog } from "../context/dialogContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
+import Avatar from "react-avatar";
 
 function ApprovalPanel() {
   const { toggleFilter } = useFilter();
@@ -170,10 +171,15 @@ function ApprovalPanel() {
               {students.map((s, idx) => {
                 return (
                   <tr key={idx} className="border-b border-b-gray-300">
-                    <td className="py-2 flex gap-2 items-center">
-                      <img src={avatar} className="w-7" alt="ava" />
-                      {s?.sinh_vien?.hoTen}
-                    </td>
+                     <td className="py-2 px-2 align-middle">
+    <div className="flex items-center gap-2">
+      <Avatar name={s?.sinh_vien?.hoTen} round size="32" />
+      <div className="flex flex-col">
+        <span className="font-medium">{s?.sinh_vien?.hoTen}</span>
+        <span className="text-sm text-gray-500">{s?.sinh_vien?.email}</span>
+      </div>
+    </div>
+  </td>
                     <td>{new Date(s.ngayNop).toLocaleDateString("vi-VN")}</td>
                     <td>{s?.sinh_vien?.viTri}</td>
                     <td>{s?.sinh_vien?.truong?.tenTruong}</td>
@@ -187,10 +193,10 @@ function ApprovalPanel() {
                         {s.trangThai}
                       </span>
                     </td>
-                    <td className="flex gap-2">
+                    <td>
                       <button
                         onClick={() => handleView(s.maSV)}
-                        className="text-xl cursor-pointer"
+                        className="text-xl cursor-pointer mr-2"
                       >
                         <RiEyeLine />
                       </button>

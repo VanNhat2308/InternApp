@@ -3,6 +3,7 @@ import { FiSearch } from "react-icons/fi";
 import avatar from "../assets/images/avatar.png";
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
+import Avatar from "react-avatar";
 
 function FeedbackPanel() {
   const [messages, setMessages] = useState({});
@@ -78,11 +79,7 @@ function FeedbackPanel() {
             className={`flex items-center justify-between cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg transition`}
           >
             <div className="flex items-center gap-3">
-              <img
-                src={avatar}
-                alt="avatar"
-                className="w-10 h-10 rounded-full object-cover"
-              />
+              <Avatar name={msg.name} round size="32" />
               <div className="flex flex-col">
                 <span className="font-medium text-sm md:text-base">{msg.name}</span>
                 <span className="text-sm text-gray-500 truncate max-w-[180px]">

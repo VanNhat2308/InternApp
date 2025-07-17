@@ -6,9 +6,11 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { FaSlidersH } from "react-icons/fa";
 import { RiDeleteBin6Line, RiEyeLine } from "react-icons/ri";
-import Pagination from "./pagination";
+
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
+import Pagination from "./Pagination";
+import Avatar from "react-avatar";
 
 function ReportPanel() {
       const {toggleFilter} = useFilter()
@@ -65,97 +67,7 @@ function ReportPanel() {
 
 
 
-//       const applications = [
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Phạm Văn A',
-//     date: '05/05/2025',
-//     position: 'Graphic Designer',
-//     university: 'VLU',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Lê Thị B',
-//     date: '05/05/2025',
-//     position: 'Business Analyst',
-//     university: 'UEF',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Trần Văn C',
-//     date: '05/05/2025',
-//     position: 'Tester',
-//     university: 'UEF',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Lê Văn D',
-//     date: '04/04/2025',
-//     position: 'Front-end Developer',
-//     university: 'VLU',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Nguyễn Văn Z',
-//     date: '04/04/2025',
-//     position: 'Back-end Developer',
-//     university: 'UEH',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Trần Văn Q',
-//     date: '04/04/2025',
-//     position: 'Back-end Developer',
-//     university: 'UEH',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Trần Văn B',
-//     date: '02/02/2025',
-//     position: 'Digital Marketing',
-//     university: 'VLU',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Phạm Văn ABC',
-//     date: '02/02/2025',
-//     position: 'Graphic Designer',
-//     university: 'UEL',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Phạm Văn A',
-//     date: '28/04/2025',
-//     position: 'Graphic Designer',
-//     university: 'VLU',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Phạm Văn A',
-//     date: '28/04/2025',
-//     position: 'Graphic Designer',
-//     university: 'VLU',
-//   },
-//   {
-//     avatar: avatar,
-//     mssv:21117081,
-//     name: 'Phạm Văn A',
-//     date: '28/04/2025',
-//     position: 'Graphic Designer',
-//     university: 'VLU',
-//   },
-// ];
-  
+
 
 // Đồng bộ mỗi khi filterValues thay đổi
 useEffect(() => {
@@ -246,17 +158,23 @@ useEffect(() => {
                       {students.map((a, idx) => {
                         return (
                           <tr key={idx} className="border-b border-b-gray-300">
-                            <td className="py-2 flex gap-2 items-center">
-                              <img src={avatar} className="w-7" alt="ava" />
-                              {a?.sinh_vien?.hoTen}
-                            </td>
+                              <td className="py-2 px-2 align-middle">
+    <div className="flex items-center gap-2">
+      <Avatar name={a?.sinh_vien?.hoTen} round size="32" />
+      <div className="flex flex-col">
+        <span className="font-medium">{a?.sinh_vien?.hoTen}</span>
+        <span className="text-sm text-gray-500">{a?.sinh_vien?.email}</span>
+      </div>
+    </div>
+  </td>
+                  
                             <td>{a?.sinh_vien?.maSV}</td>
                             <td>{a?.sinh_vien.viTri}</td>
                             <td>{a?.sinh_vien?.truong?.tenTruong}</td>
                             <td>{new Date(a.ngayTao).toLocaleDateString("vi-VN")}</td>
                            
-                            <td className="flex gap-2">
-                              <button onClick={() => handleView(a.maBC)} className="text-xl cursor-pointer">
+                            <td>
+                              <button onClick={() => handleView(a.maBC)} className="text-xl mr-2 cursor-pointer">
                                   <RiEyeLine />
                               </button>
     

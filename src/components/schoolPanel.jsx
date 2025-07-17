@@ -4,6 +4,8 @@ import Pagination from "./Pagination";
 import Swal from "sweetalert2";
 import { FaEdit, FaCheck, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { FaDeleteLeft, FaTrashCan } from "react-icons/fa6";
+import { IoCamera } from "react-icons/io5";
+import Avatar from "react-avatar";
 
 function SchoolPanel() {
   const [schools, setSchools] = useState([]);
@@ -14,6 +16,15 @@ const [editingId, setEditingId] = useState(null);
 const [editedData, setEditedData] = useState({});
 const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(false)
+const [logoFile, setLogoFile] = useState(null);
+const handleLogoChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setLogoFile(file);
+    setEditedData((prev) => ({ ...prev, logo: file }));
+  }
+};
+
 
   const fetchSchools = () => {
     setLoading(true)
@@ -59,24 +70,44 @@ const handleEdit = (school) => {
     }));
   };
 
-const handleUpdate = async () => {
-  // Kiểm tra thay đổi
-  const isUnchanged = JSON.stringify(editedData) === JSON.stringify(originalData);
 
-  if (isUnchanged) {
+const handleUpdate = async () => {
+  const isUnchanged = JSON.stringify(editedData) === JSON.stringify(originalData);
+  if (isUnchanged && !logoFile) {
     Swal.fire("Không có thay đổi nào!", "Bạn chưa thay đổi thông tin nào.", "info");
     return;
   }
 
   try {
-    await axiosClient.put(`/truongs/${editingId}`, editedData);
+    let logoUrl = editedData.logo;
+
+    if (logoFile) {
+      const formData = new FormData();
+      formData.append("logo", logoFile);
+
+      const uploadRes = await axiosClient.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      logoUrl = uploadRes.data?.paths?.logo;
+    }
+
+    await axiosClient.put(`/truongs/${editingId}`, {
+      ...editedData,
+      logo: logoUrl,
+    });
+
     Swal.fire("Cập nhật thành công!", "", "success");
     setEditingId(null);
+    setEditedData({});
+    setLogoFile(null);
     fetchSchools();
   } catch (err) {
     Swal.fire("Cập nhật thất bại", err?.response?.data?.message || "Lỗi không xác định", "error");
   }
 };
+
+
 
 const handleDelete = (id) => {
   Swal.fire({
@@ -121,9 +152,10 @@ const handleDelete = (id) => {
       :(
         <>
       <div className="relative overflow-x-auto">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-200 ">
             <tr>
+              <th className="px-6 py-3 text-left">Logo</th>
               <th className="px-6 py-3 text-left">Mã Trường</th>
               <th className="px-6 py-3 text-left">Tên Trường</th>
               <th className="px-6 py-3 text-left">Mô Tả</th>
@@ -132,8 +164,49 @@ const handleDelete = (id) => {
           </thead>
           <tbody>
             {schools.map((school) => (
-              <tr key={school.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <tr key={school.id} className="bg-white border-b border-gray-200">
+<td className="px-6 py-4">
+  {editingId === school.id ? (
+    <div className="flex flex-col">
+      <label htmlFor="logo-upload" className="cursor-pointer relative">
+        {editedData.logo ? (
+          <img
+            src={
+              typeof editedData.logo === "string"
+                ? import.meta.env.VITE_API_BASE_URL + "/" + editedData.logo
+                : URL.createObjectURL(editedData.logo)
+            }
+            alt="Logo preview"
+            className="w-16 h-16 rounded-xl object-cover border border-gray-300 shadow"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-xl bg-blue-100 border border-blue-300 flex items-center justify-center">
+            <IoCamera className="text-2xl text-blue-600" />
+          </div>
+        )}
+        <input
+          id="logo-upload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleLogoChange}
+        />
+      </label>
+    </div>
+  ) : school.logo ? (
+    <img
+      src={`${import.meta.env.VITE_API_BASE_URL}/${school.logo}`}
+      alt="Logo"
+      className="w-12 h-12 object-cover rounded"
+    />
+  ) : (
+    <span className="text-gray-400 italic">Chưa có</span>
+  )}
+</td>
+
+
+
+                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                   {editingId === school.id ? (
                     <input
                       value={editedData.maTruong}
@@ -166,7 +239,7 @@ const handleDelete = (id) => {
                     school.moTa
                   )}
                 </td>
-                <td className="px-6 py-4 flex justify-center">
+                <td className="px-6 py-4">
                   {editingId === school.id ? (
   <div className="flex items-center gap-2">
     <button
@@ -186,7 +259,7 @@ const handleDelete = (id) => {
     </button>
   </div>
 ) : (
-                <div className="flex gap-2 w-fit">
+                <div className="flex gap-2 h-full">
   {/* Nút chỉnh sửa */}
   <button
     onClick={() => handleEdit(school)}
@@ -222,6 +295,7 @@ const handleDelete = (id) => {
       />
       </>
       )}
+
     </div>
   );
 }

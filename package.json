@@ -19,6 +19,7 @@
     "postcss": "^8.5.4",
     "pusher-js": "^8.4.0",
     "react": "^19.1.0",
+    "react-avatar": "^5.0.4",
     "react-big-calendar": "^1.19.2",
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.1.0",
