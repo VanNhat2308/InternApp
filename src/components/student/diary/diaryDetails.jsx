@@ -298,7 +298,7 @@ const handleSaveEdit = () => {
               {editIndex === idx ? (
                 <>
                   <input
-                    className="col-span-3 border rounded px-2 py-1"
+                    className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
                     placeholder={task.tenCongViec}
                     value={editTask.tenCongViec ?? ""}
                     onChange={(e) =>
@@ -306,7 +306,7 @@ const handleSaveEdit = () => {
                     }
                   />
                   <input
-                    className="col-span-5 border rounded px-2 py-1"
+                    className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
                     placeholder={task.ketQua}
                     value={editTask.ketQua ?? ""}
                     onChange={(e) =>
@@ -314,7 +314,7 @@ const handleSaveEdit = () => {
                     }
                   />
                   <select
-                    className="col-span-2 border rounded px-2 py-1"
+                    className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
                     value={editTask.tienDo ?? ""}
                     onChange={(e) =>
                       setEditTask({ ...editTask, tienDo: e.target.value })
@@ -362,7 +362,7 @@ const handleSaveEdit = () => {
           ))}
 
           {showInput && (
-            <div className="grid grid-cols-12 gap-2 py-2 items-center border-b text-sm">
+            <div className="grid grid-cols-12 gap-2 py-2 items-center border-b border-gray-300 text-sm focus:outline-none">
               <input
                 type="text"
                 placeholder="Nhập tên công việc"
@@ -370,7 +370,7 @@ const handleSaveEdit = () => {
                 onChange={(e) =>
                   setTaskInput({ ...taskInput, tenCongViec: e.target.value })
                 }
-                className="col-span-3 border rounded px-2 py-1"
+                className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
               />
               <input
                 type="text"
@@ -379,14 +379,14 @@ const handleSaveEdit = () => {
                 onChange={(e) =>
                   setTaskInput({ ...taskInput, ketQua: e.target.value })
                 }
-                className="col-span-5 border rounded px-2 py-1"
+                className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
               />
               <select
                 value={taskInput.tienDo ?? ""}
                 onChange={(e) =>
                   setTaskInput({ ...taskInput, tienDo: e.target.value })
                 }
-                className="col-span-2 border rounded px-2 py-1 "
+                className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
               >
                 <option value="Hoàn thành" className="text-green-500">
                   Hoàn thành

@@ -115,7 +115,7 @@ function ApprovalPanel() {
       onChange={(e) => setSearchTerm(e.target.value)}
       type="text"
       placeholder="Tìm kiếm"
-      className="w-full border border-gray-300 pl-10 pr-4 py-3 rounded-lg transition-all duration-300"
+      className="w-full border border-gray-300 pl-10 pr-4 py-3 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
   </div>
@@ -157,9 +157,9 @@ function ApprovalPanel() {
       ) : (
         <div className="overflow-x-auto mt-10">
           <table className="lg:w-full min-w-[800px] text-sm table-auto">
-            <thead className="text-left text-gray-500 border-b border-b-gray-300">
+            <thead className="text-left bg-gray-100 text-gray-500 border-b border-b-gray-300">
               <tr>
-                <th className="py-2 ">Tên sinh viên</th>
+                <th className="py-2 pl-3">Tên sinh viên</th>
                 <th>Ngày gửi</th>
                 <th>Vị trí ứng tuyển</th>
                 <th>Trường</th>

@@ -295,7 +295,7 @@ const validateForm = () => {
   <input
           type="text"
           placeholder="Nhập Họ Tên"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.hoTen || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, hoTen: e.target.value })
@@ -310,7 +310,7 @@ const validateForm = () => {
               onChange={(e) =>
             setStudentData({ ...studentData, truong: e.target.value })}
           
-              className="input border border-gray-200 rounded-md p-4 w-full"
+              className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
             >
               <option value="">-- Chọn trường --</option>
               {danhSachTruong.map((truong) => (
@@ -327,7 +327,7 @@ const validateForm = () => {
         <input
           type="text"
           placeholder="Quê Quán"
-          className="border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.diaChi || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, diaChi: e.target.value })
@@ -340,7 +340,7 @@ const validateForm = () => {
         <input
           type="text"
           placeholder="Nhập Số Điện Thoại"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.soDienThoai || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, soDienThoai: e.target.value })
@@ -352,7 +352,7 @@ const validateForm = () => {
       <div>
         <input
           type="date"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.ngaySinh || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, ngaySinh: e.target.value })
@@ -368,7 +368,7 @@ const validateForm = () => {
                onChange={(e) =>
             setStudentData({ ...studentData, viTri: e.target.value })
                    }
-               className="input border border-gray-200 rounded-md p-4 w-full"
+               className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
              >
                <option value="">-- Chọn vị trí --</option>
                {danhSachViTri.map((viTri) => (
@@ -385,7 +385,7 @@ const validateForm = () => {
         <input
           type="text"
           placeholder="Chuyên Ngành"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.nganh || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, nganh: e.target.value })
@@ -398,7 +398,7 @@ const validateForm = () => {
         <input
           type="email"
           placeholder="Thêm Email"
-          className="input border border-gray-200 rounded-md p-4 col-span-1 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.email || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, email: e.target.value })
@@ -411,7 +411,7 @@ const validateForm = () => {
         <input
           type="text"
           placeholder="Thời gian thực tập"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.thoiGianTT || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, thoiGianTT: e.target.value })
@@ -423,7 +423,7 @@ const validateForm = () => {
         <input
           type="text"
           placeholder="Giảng viên hướng dẫn"
-          className="input border border-gray-200 rounded-md p-4 w-full"
+          className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={studentData.tenGiangVien || ""}
           onChange={(e) =>
             setStudentData({ ...studentData, tenGiangVien: e.target.value })

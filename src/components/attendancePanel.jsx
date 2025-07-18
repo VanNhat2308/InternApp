@@ -145,7 +145,6 @@ useEffect(() => {
   {/* Filter bar */}
   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-4">
     {/* Left: Title */}
-    <h1 className="text-xl font-bold text-gray-800">Điểm danh hôm nay</h1>
 
     {/* Right: Search + Filter */}
     <div className="flex flex-col sm:flex-row gap-3 flex-1 lg:justify-end">
@@ -154,19 +153,12 @@ useEffect(() => {
         <input
           type="text"
           placeholder="Tìm kiếm..."
-          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
         />
         <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
       </div>
 
-      {/* Filter button */}
-      <button
-        onClick={toggleFilter}
-        className="flex items-center justify-center gap-2 border border-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-      >
-        <FaSlidersH />
-        <span>Lọc</span>
-      </button>
+    
     </div>
   </div>
 
@@ -185,11 +177,11 @@ useEffect(() => {
 </div>
         </div>
                )
-        :(<div className="overflow-x-auto mt-10">
+        :(<div className="overflow-x-auto mt-5">
           <table className=" min-w-[800px] w-full text-sm table-auto">
-            <thead className="text-left text-gray-500 border-b border-b-gray-300">
+            <thead className="bg-gray-100 text-left text-gray-500 border-b border-b-gray-300">
               <tr>
-                <th className="py-2 ">Tên sinh viên</th>
+                <th className="py-2 pl-3">Tên sinh viên</th>
                 <th>MSSV</th>
                 <th>Vị trí</th>
                 <th>Thời gian</th>
@@ -211,8 +203,9 @@ useEffect(() => {
     </div>
   </td>
                     <td>{s.maSV}</td>
-                    <td>{s.viTri}</td>
-                    <td>{s?.sinh_vien?.viTri}</td>
+                    <td>{s.sinh_vien.viTri}</td>
+                    <td>{s.gio_bat_dau}</td>
+                   
                     <td>
                       {" "}
                       <span

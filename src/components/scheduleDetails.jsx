@@ -272,7 +272,12 @@ function ScheduleDetails() {
             reason: reason,
           });
 
-          setToastV2(true);
+          Swal.fire({
+  icon: 'success',
+  title: 'Thành công!',
+  text: 'Đã gửi yêu cầu đổi lịch thành công.',
+  confirmButtonText: 'OK'
+})
           return true;
         } catch (error) {
           console.error("❌ Gửi yêu cầu thất bại:", error);

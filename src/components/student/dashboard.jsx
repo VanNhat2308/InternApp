@@ -283,7 +283,7 @@ useEffect(() => {
 
 
   return (
-    <div className="lg:p-6 flex-1 space-y-6">
+    <div className="flex-1 space-y-6">
       {isToast ? (
         <Toast onClose={() => setToast(false)}>
           <div className="flex items-center gap-3">
@@ -379,7 +379,7 @@ useEffect(() => {
                 <h4 className="font-semibold text-lg">Tổng quan điểm danh</h4>
                 <button className="text-blue-600 text-sm">Xem Tất Cả</button>
               </div>
-              <table className="w-full min-w-[600px] text-sm">
+              <table className="w-full min-w-[550px] text-sm">
                 <thead className="text-left text-gray-500 border-b border-b-gray-300">
                   <tr>
                     <th className="py-2 text-left">Ngày</th>

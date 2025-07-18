@@ -153,6 +153,9 @@ function tinhThoiGianLamViec(gioBatDau, gioKetThuc) {
 
   return `${hours} giờ ${minutes} phút`;
 }
+const name = localStorage.getItem('hoTen')
+const viTri = localStorage.getItem('viTri')
+const email = localStorage.getItem('email')
 
   return(
     <>
@@ -172,14 +175,14 @@ function tinhThoiGianLamViec(gioBatDau, gioKetThuc) {
         className="w-20 aspect-square rounded-md border border-gray-300 object-cover"
       />
       <div>
-        <h1 className="text-xl font-bold">{diemdanh[0]?.sinh_vien?.hoTen}</h1>
+        <h1 className="text-xl font-bold">{name || 'Nguyen Van A'}</h1>
         <h4 className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
           <RiShoppingBag3Line className="text-lg" />
-          {diemdanh[0]?.sinh_vien?.viTri}
+          {viTri || 'unknow'}
         </h4>
         <h4 className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
           <MdOutlineEmail className="text-lg" />
-          {diemdanh[0]?.sinh_vien?.email}
+          {email || 'unknow@gmail.com'}
         </h4>
       </div>
     </div>

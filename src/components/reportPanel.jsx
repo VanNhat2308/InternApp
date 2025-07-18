@@ -117,7 +117,7 @@ useEffect(() => {
                     type="text"
                     placeholder="Tìm kiếm"
                     onChange={(e)=>setSearchTerm(e.target.value)}
-                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-3 lg:py-4 rounded-md lg:rounded-lg transition-all duration-300"
+                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-3 lg:py-4 rounded-md lg:rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
                   />
         
                   <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
@@ -142,11 +142,11 @@ useEffect(() => {
 </div>
         </div>
                )
-               :(<div className="overflow-x-auto mt-10">
+               :(<div className="overflow-x-auto mt-5">
                  <table className="lg:w-full min-w-[800px] text-sm table-auto">
-                    <thead className="text-left text-gray-500 border-b border-b-gray-300">
+                    <thead className="bg-gray-100 text-left text-gray-500 border-b border-b-gray-300">
                       <tr>
-                        <th className="py-2 ">Tên sinh viên</th>
+                        <th className="py-2 pl-3">Tên sinh viên</th>
                         <th>MSSV</th>
                         <th>Vị trí</th>
                         <th>Trường</th>

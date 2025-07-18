@@ -244,7 +244,7 @@ function AddSchoolAndPostion() {
           <input
             type="text"
             placeholder="Mã Trường"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
             value={schoolData.maTruong}
             onChange={(e) =>
               setSchoolData({ ...schoolData, maTruong: e.target.value })
@@ -253,7 +253,7 @@ function AddSchoolAndPostion() {
           <input
             type="text"
             placeholder="Tên Trường"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
             value={schoolData.tenTruong}
             onChange={(e) =>
               setSchoolData({ ...schoolData, tenTruong: e.target.value })
@@ -261,7 +261,7 @@ function AddSchoolAndPostion() {
           />
           <textarea
             placeholder="Mô tả"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
             value={schoolData.moTa}
             onChange={(e) =>
               setSchoolData({ ...schoolData, moTa: e.target.value })
@@ -285,7 +285,7 @@ function AddSchoolAndPostion() {
           <input
             type="text"
             placeholder="Tên Vị trí"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
             value={position}
             onChange={(e) => setPosition(e.target.value)}
           />

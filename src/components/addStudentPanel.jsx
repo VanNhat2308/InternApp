@@ -319,7 +319,8 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Nhập Họ Tên"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+ className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+
     />
     {errors.hoTen && <p className="text-red-500 text-sm mt-1">{errors.hoTen}</p>}
   </div>
@@ -331,7 +332,7 @@ const handleInputForm = (e) => {
     name="maTruong"
     value={form.maTruong}
     onChange={handleInputForm}
-    className="input border border-gray-200 rounded-md p-4 w-full"
+    className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
   >
     <option value="">-- Chọn trường --</option>
     {danhSachTruong.map((truong) => (
@@ -351,7 +352,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Quê Quán"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.diaChi && <p className="text-red-500 text-sm mt-1">{errors.diaChi}</p>}
   </div>
@@ -364,7 +365,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Nhập Số Điện Thoại"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.soDienThoai && <p className="text-red-500 text-sm mt-1">{errors.soDienThoai}</p>}
   </div>
@@ -377,7 +378,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       // onKeyDown={(e) => e.preventDefault()}
       type="date"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.ngaySinh && <p className="text-red-500 text-sm mt-1">{errors.ngaySinh}</p>}
   </div>
@@ -388,7 +389,7 @@ const handleInputForm = (e) => {
     name="viTri"
     value={form.viTri}
     onChange={handleInputForm}
-    className="input border border-gray-200 rounded-md p-4 w-full"
+    className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
   >
     <option value="">-- Chọn vị trí --</option>
     {danhSachViTri.map((viTri) => (
@@ -408,7 +409,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Chuyên Ngành"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.nganh && <p className="text-red-500 text-sm mt-1">{errors.nganh}</p>}
   </div>
@@ -421,7 +422,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="email"
       placeholder="Thêm Email"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
   </div>
@@ -434,7 +435,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Thời gian thực tập"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.thoiGianTT && <p className="text-red-500 text-sm mt-1">{errors.thoiGianTT}</p>}
   </div>
@@ -447,7 +448,7 @@ const handleInputForm = (e) => {
       onChange={handleInputForm}
       type="text"
       placeholder="Giảng Viên Hướng Dẫn"
-      className="input border border-gray-200 rounded-md p-4 w-full"
+      className="input border border-gray-200 rounded-md p-4 w-full focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
     />
     {errors.tenGiangVien && <p className="text-red-500 text-sm mt-1">{errors.tenGiangVien}</p>}
   </div>

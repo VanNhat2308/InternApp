@@ -2,27 +2,20 @@ import React, { useEffect, useState } from "react";
 import { BiChevronLeft, BiChevronRight, BiTrash } from "react-icons/bi";
 import { MdTimer } from "react-icons/md";
 import dayjs from "dayjs";
-const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-// Sample data with actual dates
-// const sampleEvents = [
-//   { id: 1, date: "2025-07-02", time: "08:00", duration: 2 },
-//   { id: 2, date: "2025-07-02", time: "13:00", duration: 3 },
-//   { id: 3, date: "2025-07-15", time: "09:30", duration: 1.5 },
-//   { id: 4, date: "2025-07-21", time: "10:00", duration: 2 },
-//   { id: 5, date: "2025-07-25", time: "14:00", duration: 1 },
-// ];
 
 const generateCalendar = (year, month) => {
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const firstDay = new Date(year, month - 1, 1).getDay(); // Sunday = 0
+  const daysInMonth = new Date(year, month, 0).getDate(); // Tổng số ngày trong tháng
+  const firstDay = new Date(year, month - 1, 1).getDay(); // Ngày đầu tháng: 0 = Chủ Nhật
+  const adjustedFirstDay = (firstDay + 6) % 7; // Tuần bắt đầu từ Thứ Hai
+
   const calendar = [];
   let dayCounter = 1;
 
   for (let i = 0; i < 6; i++) {
     const week = new Array(7).fill(null);
     for (let j = 0; j < 7; j++) {
-      if ((i === 0 && j < (firstDay === 0 ? 6 : firstDay - 1)) || dayCounter > daysInMonth) continue;
+      if (i === 0 && j < adjustedFirstDay) continue;
+      if (dayCounter > daysInMonth) break;
       week[j] = dayCounter++;
     }
     calendar.push(week);
@@ -31,6 +24,9 @@ const generateCalendar = (year, month) => {
 
   return calendar;
 };
+
+
+
 
 const ScheduleCard = ({ event, onDelete }) => {
   const startTime = dayjs(`2025-07-01T${event.time}`);
@@ -64,7 +60,7 @@ const ScheduleMonthGrid = ({ events = [], onDeleteById = () => {}, loading = fal
   const today = dayjs();
   const [currentMonth, setCurrentMonth] = useState(today.month()); // 0-indexed
   const [currentYear, setCurrentYear] = useState(today.year());
-  const calendar = generateCalendar(currentYear, currentMonth); 
+  const calendar = generateCalendar(currentYear, currentMonth + 1); 
 
   useEffect(() => {
     onMonthYearChange(currentMonth, currentYear);

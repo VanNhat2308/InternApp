@@ -263,9 +263,9 @@ const handleDeleteSelected = () => {
     <span className="sr-only">Loading...</span>
 </div>
         </div>
-      ) : (<div className="overflow-x-auto mt-10 max-h-[600px]">
+      ) : (<div className="overflow-x-auto mt-5 max-h-[610px]">
          <table className="lg:w-full min-w-[800px] text-sm table-auto">
-            <thead className="sticky top-0 bg-white text-left text-gray-500 border-b border-b-gray-300 z-10">
+            <thead className="sticky top-0 bg-gray-100 text-left text-gray-500 border-b border-b-gray-300 z-10">
               <tr>
                 <th className="text-center">
   <input

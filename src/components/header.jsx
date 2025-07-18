@@ -56,7 +56,7 @@ const userRole = localStorage.getItem('role')
               <input
   type="text"
   placeholder="Tìm kiếm"
-  className="w-8 sm:w-20 md:w-64 border h-full border-gray-300 pl-8 pr-4 px-4 py-1 rounded-lg transition-all duration-300"
+  className="w-8 sm:w-20 md:w-64 border h-full border-gray-300 pl-8 pr-4 px-4 py-1 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
 />
 
               <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2"/>
