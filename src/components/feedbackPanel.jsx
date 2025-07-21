@@ -71,7 +71,7 @@ function FeedbackPanel() {
     </svg>
     <span className="sr-only">Loading...</span>
 </div>
-        </div>):(<div className="space-y-3 max-h-[65vh] overflow-y-auto">
+        </div>):(<div className="space-y-3 max-h-[97vh] overflow-y-auto">
         {Object.values(messages).map((msg) => (
           <div
             key={msg.id}

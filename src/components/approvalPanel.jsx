@@ -155,7 +155,7 @@ function ApprovalPanel() {
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto mt-10">
+        <div className="overflow-x-auto mt-5">
           <table className="lg:w-full min-w-[800px] text-sm table-auto">
             <thead className="text-left bg-gray-100 text-gray-500 border-b border-b-gray-300">
               <tr>

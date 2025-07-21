@@ -124,14 +124,40 @@ const handleSubmit = async (e) => {
       cV: cv,
     };
 
-    await axiosClient.post("/sinhviens", finalForm);
+    // Đăng ký sinh viên
+    const res = await axiosClient.post("/sinhviens", finalForm);
+    const maSV = res.data?.data?.maSV || res.data?.maSV;
 
-    Swal.fire({
-      icon: "success",
-      title: "Đăng ký thành công!",
-      showConfirmButton: false,
-      timer: 2000,
+    // Gọi API tạo hồ sơ
+    const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+
+    await axiosClient.post("/hoso", {
+      maSV,
+      ngayNop: today,
+      // Không cần truyền trangThai nếu mặc định trong backend là "Chờ duyệt"
     });
+
+let secondsToGo = 3;
+
+Swal.fire({
+  icon: "success",
+  title: "Đăng ký và tạo hồ sơ thành công!",
+  html: `Chuyển đến trang đăng nhập sau <b>${secondsToGo}</b> giây...`,
+  timer: secondsToGo * 1000,
+  showConfirmButton: false,
+  didOpen: () => {
+    const content = Swal.getHtmlContainer().querySelector("b");
+    const timerInterval = setInterval(() => {
+      secondsToGo--;
+      if (content) content.textContent = secondsToGo;
+      if (secondsToGo <= 0) clearInterval(timerInterval);
+    }, 1000);
+  },
+}).then(() => {
+  navigate("/login-sinhvien");
+});
+
+
   } catch (err) {
     Swal.fire({
       icon: "error",
@@ -140,6 +166,7 @@ const handleSubmit = async (e) => {
     });
   }
 };
+
 
 
   return (

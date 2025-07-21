@@ -12,6 +12,7 @@ import axiosClient from "../service/axiosClient";
 import { FaFileAlt } from "react-icons/fa";
 import dayjs from "dayjs";
 import "dayjs/locale/vi"; 
+import Swal from "sweetalert2";
 dayjs.locale("vi");
 
 function ApprovalDetails() {
@@ -73,26 +74,51 @@ function ApprovalDetails() {
     return "text-red-500";
   };
   // update
-  const handleApprove = async () => {
+ const handleApprove = async () => {
+ 
     try {
       await axiosClient.post(`sinhviens/duyet-ho-so/${students.maSV}`);
-      await fetchData(); // reload data mới nhất từ server
-      setToast(true);
-    } catch (error) {
-      console.error("Lỗi khi duyệt hồ sơ:", error);
-    }
-  };
+      await fetchData();
 
-  const handleReject = async () => {
+      Swal.fire({
+        icon: "success",
+        title: "Hồ sơ đã được duyệt!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi khi duyệt hồ sơ!",
+        text: error.message || "Vui lòng thử lại.",
+      });
+    }
+  
+};
+
+ const handleReject = async () => {
     try {
       await axiosClient.delete(`sinhviens/${students.maSV}`);
       setToastV2(true);
-      // Option: navigate sau delay
+
+      Swal.fire({
+        icon: "success",
+        title: "Đã từ chối hồ sơ!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
       setTimeout(() => navigate("/admin/approval/approval-list"), 1000);
     } catch (error) {
-      console.error("Lỗi khi từ chối (xoá sinh viên):", error);
-    }
-  };
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi khi từ chối!",
+        text: error.message || "Vui lòng thử lại.",
+      });
+    
+  }
+};
+
 
   return (
 <>
