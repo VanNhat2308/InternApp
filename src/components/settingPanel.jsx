@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import axiosClient from "../service/axiosClient";
+import Swal from "sweetalert2";
 function SettingPanel() {
   const [tab, setTab] = useState("admin");
 
@@ -38,17 +39,79 @@ function AdminAccountForm() {
   const [form, setForm] = useState({
     hoTen: "",
     email: "",
-    matKhau: "",
+    password: "",
   });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Tạo tài khoản admin:", form);
-    // Gửi dữ liệu đến backend ở đây
-  };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+   // Validate
+  if (!form.hoTen.trim()) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Họ tên không được để trống!",
+    });
+  }
+  if (form.hoTen.length < 6) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Họ tên không được nhỏ hơn 6 ký tự!",
+    });
+  }
+
+  if (!form.email.trim()) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Email không được để trống!",
+    });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.email)) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Email không hợp lệ!",
+    });
+  }
+
+  if (!form.password.trim()) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Mật khẩu không được để trống!",
+    });
+  }
+
+  if (form.password.length < 6) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Mật khẩu phải có ít nhất 6 ký tự!",
+    });
+  }
+  try {
+    const response = await axiosClient.post("/admin", form)
+    .then(
+    Swal.fire({
+      icon: "success",
+      title: "Tạo tài khoản admin thành công!",
+      showConfirmButton: false,
+      timer: 2000,
+    }));
+  } catch (error) {
+    console.error("Lỗi khi tạo admin:", error);
+    
+    Swal.fire({
+      icon: "error",
+      title: "Tạo tài khoản admin thất bại!",
+      text: error?.response?.data?.message || "Vui lòng kiểm tra lại thông tin.",
+      confirmButtonText: "Đóng",
+    });
+  }
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
@@ -78,7 +141,7 @@ function AdminAccountForm() {
         <label className="block text-sm font-medium mb-1">Mật khẩu</label>
         <input
           type="password"
-          name="matKhau"
+          name="password"
           value={form.password}
           onChange={handleChange}
           className="w-full border  border-gray-300 rounded p-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:shadow-md"
@@ -96,6 +159,7 @@ function AdminAccountForm() {
 }
 
 function LoginHistory() {
+  const [logs, setLogs] = useState([])
   const loginLogs = [
     { id: 1, email: "admin1@example.com", time: "2025-07-20 14:23", ip: "192.168.1.10" },
     { id: 2, email: "admin2@example.com", time: "2025-07-19 09:12", ip: "192.168.1.12" },
