@@ -1,9 +1,7 @@
 import { FiSearch } from "react-icons/fi";
 import { useFilter } from "../context/filteContext";
 import { FaSlidersH } from "react-icons/fa";
-import avatar from "../assets/images/avatar.png";
 import { RiDeleteBin6Line, RiEyeLine } from "react-icons/ri";
-import { CiEdit } from "react-icons/ci";
 import Pagination from "./pagination";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { useDialog } from "../context/dialogContext";
@@ -11,9 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import Avatar from "react-avatar";
+import { FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
 
 function ApprovalPanel() {
-  const { toggleFilter } = useFilter();
+  const { toggleFilter,setDate } = useFilter();
   const { showDialog } = useDialog();
   const navigate = useNavigate();
   const [students, setStudent] = useState([]);
@@ -41,6 +40,9 @@ function ApprovalPanel() {
       return "Không xác định";
   }
 }
+   useEffect(() => {
+  setDate(true)
+}, []);
 
 
   const fetchStudents = () => {
@@ -252,44 +254,47 @@ function ApprovalPanel() {
   <div className="mt-10">
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
-        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-          <li className="me-2">
-            <button
-              onClick={() => setActiveTab("pending")}
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
-                activeTab === "pending"
-                  ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
-                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-              }`}
-            >
-              Hồ sơ chưa duyệt
-            </button>
-          </li>
-          <li className="me-2">
-            <button
-              onClick={() => setActiveTab("approved")}
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
-                activeTab === "approved"
-                  ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
-                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-              }`}
-            >
-              Hồ sơ đã duyệt
-            </button>
-          </li>
-          <li className="me-2">
-            <button
-              onClick={() => setActiveTab("rejected")}
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
-                activeTab === "rejected"
-                  ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
-                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-              }`}
-            >
-              Hồ sơ đã từ chối
-            </button>
-          </li>
-        </ul>
+      <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+  <li className="me-2">
+    <button
+      onClick={() => setActiveTab("pending")}
+      className={`cursor-pointer inline-flex items-center gap-1 p-4 border-b-2 rounded-t-lg ${
+        activeTab === "pending"
+          ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
+          : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+      }`}
+    >
+      <FiClock className="text-base" />
+      Hồ sơ chưa duyệt
+    </button>
+  </li>
+  <li className="me-2">
+    <button
+      onClick={() => setActiveTab("approved")}
+      className={`cursor-pointer inline-flex items-center gap-1 p-4 border-b-2 rounded-t-lg ${
+        activeTab === "approved"
+          ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
+          : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+      }`}
+    >
+      <FiCheckCircle className="text-base" />
+      Hồ sơ đã duyệt
+    </button>
+  </li>
+  <li className="me-2">
+    <button
+      onClick={() => setActiveTab("rejected")}
+      className={`cursor-pointer inline-flex items-center gap-1 p-4 border-b-2 rounded-t-lg ${
+        activeTab === "rejected"
+          ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
+          : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+      }`}
+    >
+      <FiXCircle className="text-base" />
+      Hồ sơ đã từ chối
+    </button>
+  </li>
+</ul>
       </div>
 
       {/* Nội dung tương ứng tab */}

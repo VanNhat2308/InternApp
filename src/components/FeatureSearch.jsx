@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Tippy from '@tippyjs/react/headless';
-import { FiSearch } from 'react-icons/fi';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
+import * as Popover from "@radix-ui/react-popover";
 
 const maSV = localStorage.getItem('maSV');
 const role = localStorage.getItem('role');
 
-// 🔷 Admin routes
 const adminFeatures = [
   { label: 'Thêm sinh viên', path: '/admin/list/add-student' },
   { label: 'Danh sách sinh viên', path: '/admin/list/student-list' },
@@ -21,7 +20,6 @@ const adminFeatures = [
   { label: 'Cài đặt', path: '/admin/settings/AdminSetting' }
 ];
 
-// 🟢 Student routes
 const studentFeatures = [
   { label: 'Nhật ký thực tập', path: '/student/diary/diary-list' },
   { label: 'Xem lịch thực tập', path: `/student/schedule/schedule-list/${maSV}` },
@@ -31,31 +29,51 @@ const studentFeatures = [
   { label: 'Cài đặt', path: '/student/settings' }
 ];
 
-const features = role === 'admin' ? adminFeatures : studentFeatures;
+const features = role === 'Admin' ? adminFeatures : studentFeatures;
+
 
 function FeatureSearch() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [isComposing, setIsComposing] = useState(false);
   const navigate = useNavigate();
 
-  const filtered = features.filter(feature =>
+  const filtered = features.filter((feature) =>
     feature.label.toLowerCase().includes(search.toLowerCase())
   );
 
+  const showContent = search.length > 0 && filtered.length > 0 && !isComposing;
+
   return (
-    <div className="h-full relative">
-      <Tippy
-        interactive
-        visible={search.length > 0 && filtered.length > 0}
-        placement="bottom-start"
-        render={() => (
-          <div className="bg-white shadow-md rounded-md w-64 border border-gray-200 mt-1 z-50">
+    <Popover.Root open>
+      <Popover.Trigger asChild>
+        <div className="relative w-8 sm:w-20 md:w-64 h-full">
+          <input
+            type="text"
+            placeholder="Tìm kiếm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
+            className="w-full border h-full border-gray-300 pl-8 pr-4 py-1 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+          />
+          <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2 text-gray-500" />
+        </div>
+      </Popover.Trigger>
+
+      <Popover.Content
+        side="bottom"
+        align="start"
+        className="bg-white shadow-md rounded-md w-64  mt-1 z-50"
+      >
+        {showContent && (
+          <div>
             {filtered.map((item, idx) => (
               <div
                 key={idx}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
                   navigate(item.path);
-                  setSearch('');
+                  setSearch("");
                 }}
               >
                 {item.label}
@@ -63,20 +81,8 @@ function FeatureSearch() {
             ))}
           </div>
         )}
-      >
-        <div className="w-8 sm:w-20 md:w-64 h-full">
-          <input
-            type="text"
-            placeholder="Tìm kiếm"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full border h-full border-gray-300 pl-8 pr-4 py-1 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-          />
-          <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2 text-gray-500" />
-        </div>
-      </Tippy>
-    </div>
+      </Popover.Content>
+    </Popover.Root>
   );
 }
-
-export default FeatureSearch;
+export default FeatureSearch

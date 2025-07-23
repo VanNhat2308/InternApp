@@ -587,7 +587,7 @@ const handleDelete = (id) => {
     
         </div>
     <div className="p-2 lg:0">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-blue-700">
+      <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-green-700">
         <FaUniversity /> Thêm Trường
       </h2>
       <div className="flex justify-start mb-6">
@@ -600,7 +600,7 @@ const handleDelete = (id) => {
                 className="w-24 h-24 rounded-xl object-cover border border-gray-300 shadow"
               />
             ) : (
-              <div className="w-24 h-24 rounded-xl bg-blue-100 border border-blue-300 flex items-center justify-center">
+              <div className="w-24 h-24 rounded-xl bg-green-100 border border-green-300 flex items-center justify-center">
                 <IoCamera className="text-2xl" />
               </div>
             )}
@@ -618,7 +618,7 @@ const handleDelete = (id) => {
         <input
           type="text"
           placeholder="Mã Trường"
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
+          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={schoolData.maTruong}
           onChange={(e) =>
             setSchoolData({ ...schoolData, maTruong: e.target.value })
@@ -627,7 +627,7 @@ const handleDelete = (id) => {
         <input
           type="text"
           placeholder="Tên Trường"
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
+          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={schoolData.tenTruong}
           onChange={(e) =>
             setSchoolData({ ...schoolData, tenTruong: e.target.value })
@@ -635,7 +635,7 @@ const handleDelete = (id) => {
         />
         <textarea
           placeholder="Mô tả"
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 focus:shadow-md"
+          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           value={schoolData.moTa}
           onChange={(e) =>
             setSchoolData({ ...schoolData, moTa: e.target.value })
@@ -643,7 +643,7 @@ const handleDelete = (id) => {
         ></textarea>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Lưu Trường
         </button>

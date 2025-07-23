@@ -1,6 +1,6 @@
 import { FiSearch } from "react-icons/fi";
 import { FaSlidersH } from "react-icons/fa";
-import { RiEyeLine } from "react-icons/ri";
+import { RiCalendarScheduleLine, RiEyeLine } from "react-icons/ri";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import avatar from "../assets/images/avatar.png";
 
@@ -22,13 +22,13 @@ function SchedulePanel() {
       const [totalPages, setTotalPages] = useState(1); 
       const [loading, setLoading] = useState(false)
       const [searchTerm, setSearchTerm] = useState('');
-      const { filterValues } = useFilter();
+      const { filterValues, setDate } = useFilter();
       const [activeTab, setActiveTab] = useState("lich");
       // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
       const [filters,setFilters] = useState({
         viTri:'',
         Truong:'',
-        KyThucTap:''
+        date:''
       })
       const fetchStudents = () => {
   setLoading(true);
@@ -40,7 +40,7 @@ function SchedulePanel() {
         search: searchTerm,
         vi_tri: filters.viTri,
         truong: filters.Truong,
-        ky_thuc_tap: filters.KyThucTap,
+        date: filters.date,
       },
     })
     .then((res) => {
@@ -89,13 +89,13 @@ function SchedulePanel() {
 useEffect(() => {
   const selectedPositions = Object.keys(filterValues.positions || {}).filter(key => filterValues.positions[key]);
   const selectedUniversities = Object.keys(filterValues.universities || {}).filter(key => filterValues.universities[key]);
-  const term = filterValues.term !== "Tất cả" ? filterValues.term : '';
+  const date = filterValues.date !== "Tất cả" ? filterValues.term : '';
 
   
   setFilters({
     viTri: selectedPositions.join(','),
     Truong: selectedUniversities.join(','),
-    KyThucTap: term
+    date: date
   });
 }, [filterValues]);
 
@@ -121,6 +121,10 @@ useEffect(() => {
     status === "Đang thực tập"
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
+
+         useEffect(() => {
+  setDate(false)
+}, []);
   return (
     <>
      <div className="mt-5">
@@ -130,26 +134,30 @@ useEffect(() => {
           <li className="me-2">
             <button
               onClick={() => setActiveTab("lich")}
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
+              className={`cursor-pointer inline-block p-4 border-b-2 rounded-t-lg ${
                 activeTab === "lich"
                   ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
               }`}
             >
-              Lịch thực tập
+            <div className="flex items-center gap-2">
+              <RiCalendarScheduleLine /> Lịch thực tập
+            </div>
             </button>
           </li>
     
           <li className="me-2">
             <button
               onClick={() => setActiveTab("doiLich")}
-              className={`inline-block p-4 border-b-2 rounded-t-lg ${
+              className={`cursor-pointer inline-block p-4 border-b-2 rounded-t-lg ${
                 activeTab === "doiLich"
                   ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
               }`}
             >
-              Yêu Cầu Đổi Lịch
+                <div className="flex items-center gap-2">
+              <IoSwapHorizontal />  Yêu Cầu Đổi Lịch
+            </div>
             </button>
           </li>
         </ul>
@@ -233,16 +241,12 @@ useEffect(() => {
                       <button onClick={() => handleView(s.maSV)} className="text-xl cursor-pointer">
                           <RiEyeLine />
                       </button>
-                      <button 
+                      {/* <button 
                       onClick={() => handleOpenDialog(s.maSV)}
                       className="text-xl cursor-pointer mx-2">
                          <RiDeleteBin6Line />
-                      </button>
-                      <button 
-                      onClick={() => handleSwapInfo(s.maSV)}
-                      className="text-xl cursor-pointer">
-                         <IoSwapHorizontal />
-                      </button>
+                      </button> */}
+                    
                     </td>
                   </tr>
                 );

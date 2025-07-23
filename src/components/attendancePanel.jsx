@@ -153,7 +153,7 @@ useEffect(() => {
         <input
           type="text"
           placeholder="Tìm kiếm..."
-          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
+          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
         />
         <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
       </div>

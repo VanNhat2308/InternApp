@@ -1,59 +1,42 @@
 import { useState, useEffect, useCallback } from "react";
+import Select from "react-select";
 import { useFilter } from "../context/filteContext";
 import { useDanhSachTruong } from "../hooks/useDanhSachTruong";
 import { useDanhSachViTri } from "../hooks/useDanhSachViTri";
-
-function CheckboxGroup({ title, data = [], state = {}, groupName, onToggle }) {
-  return (
-    <div className="border-b border-gray-200 pb-3">
-      <h3 className="font-medium mb-1">{title}</h3>
-      <div className="grid grid-cols-2 gap-1">
-        {data.map((item) => (
-          <label key={item} className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              checked={state[item] || false}
-              onChange={() => onToggle(groupName, item)}
-            />
-            {item}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
+import "react-datepicker/dist/react-datepicker.css";
 
 function Filter() {
-  const { setShowFilter, setFilterValues, filterValues } = useFilter();
-
+  const { isDate,setShowFilter, setFilterValues, filterValues } = useFilter();
   const { data: truongs = [], isLoading: loadingTruongs } = useDanhSachTruong();
   const { data: viTris = [], isLoading: loadingViTris } = useDanhSachViTri();
+  const [selectedPositions, setSelectedPositions] = useState([]);
+  const [selectedUniversities, setSelectedUniversities] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
-  const [positions, setPositions] = useState({});
-  const [universities, setUniversities] = useState({});
+useEffect(() => {
+  if (!truongs.length || !viTris.length) return;
 
-  useEffect(() => {
-    const viTriState = Object.fromEntries(
-      viTris.map((item) => [item.tenViTri, filterValues.positions?.[item.tenViTri] || false])
-    );
-    const truongState = Object.fromEntries(
-      truongs.map((item) => [item.tenTruong, filterValues.universities?.[item.tenTruong] || false])
-    );
+  const mappedPositions = viTris
+    .filter((i) => filterValues.positions?.[i.tenViTri])
+    .map((i) => ({ value: i.tenViTri, label: i.tenViTri }));
 
-    setPositions(viTriState);
-    setUniversities(truongState);
-  }, [truongs, viTris, filterValues]);
+  const mappedUniversities = truongs
+    .filter((i) => filterValues.universities?.[i.tenTruong])
+    .map((i) => ({ value: i.tenTruong, label: i.maTruong }));
 
-  const handleCheckbox = useCallback((group, key) => {
-    if (group === "position") {
-      setPositions((prev) => ({ ...prev, [key]: !prev[key] }));
-    } else if (group === "university") {
-      setUniversities((prev) => ({ ...prev, [key]: !prev[key] }));
-    }
-  }, []);
+  setSelectedPositions(mappedPositions);
+  setSelectedUniversities(mappedUniversities);
+  setSelectedDate(filterValues.date || null);
+}, [truongs, viTris]);
 
   const handleApply = () => {
-    setFilterValues({ positions, universities });
+    const positions = Object.fromEntries(
+      selectedPositions.map((i) => [i.value, true])
+    );
+    const universities = Object.fromEntries(
+      selectedUniversities.map((i) => [i.value, true])
+    );
+    setFilterValues({ positions, universities, date: selectedDate });
     setShowFilter(false);
   };
 
@@ -62,12 +45,54 @@ function Filter() {
   };
 
   const handleClear = () => {
-    setPositions({});
-    setUniversities({});
+    setSelectedPositions([]);
+    setSelectedUniversities([]);
+    setSelectedDate(null);
   };
 
   const isLoading = loadingTruongs || loadingViTris;
 
+  const customStyles = {
+  control: (base, state) => ({
+    ...base,
+    borderColor: state.isFocused ? '#86efac' : '#d1d5db', // xanh nhạt khi focus, xám khi bình thường
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(34,197,94,0.3)' : 'none',
+    borderRadius: '0.5rem', // rounded-lg
+    padding: '0.25rem 0.5rem',
+    minHeight: '2.5rem', // h-10
+    '&:hover': {
+      borderColor: '#86efac',
+    },
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? '#f3f4f6' : 'white', // hover:bg-gray-100
+    color: 'black',
+    cursor: 'pointer',
+  }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: '0.5rem',
+    marginTop: '0.25rem',
+    zIndex: 100, // giống như Tippy
+  }),
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: '#d1fae5', // bg-green-100
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    color: '#065f46', // text-green-800
+  }),
+  multiValueRemove: (base) => ({
+    ...base,
+    color: '#065f46',
+    ':hover': {
+      backgroundColor: '#6ee7b7', // hover:bg-green-300
+      color: 'white',
+    },
+  }),
+};
   return (
     <div
       style={{
@@ -85,20 +110,63 @@ function Filter() {
           <div className="text-center py-6 text-gray-500">Đang tải dữ liệu...</div>
         ) : (
           <>
-            <CheckboxGroup
-              title="Vị Trí"
-              data={viTris.map((i) => i.tenViTri)}
-              state={positions}
-              groupName="position"
-              onToggle={handleCheckbox}
-            />
-            <CheckboxGroup
-              title="Trường đại học"
-              data={truongs.map((i) => i.maTruong)}
-              state={universities}
-              groupName="university"
-              onToggle={handleCheckbox}
-            />
+            <div>
+              <label className="font-medium">Vị trí</label>
+              <Select
+                isMulti
+                value={selectedPositions}
+                onChange={setSelectedPositions}
+                options={viTris.map((i) => ({
+                  value: i.tenViTri,
+                  label: i.tenViTri,
+                }))}
+                styles={customStyles}
+              />
+            </div>
+
+            <div>
+              <label className="font-medium">Trường Đại học</label>
+              <Select
+              className="focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                isMulti
+                value={selectedUniversities}
+                onChange={setSelectedUniversities}
+                options={truongs.map((i) => ({
+                  value: i.tenTruong,
+                  label: i.maTruong,
+                }))}
+                styles={customStyles}
+              />
+            </div>
+
+            {(!isDate? "":<div className="flex flex-col">
+              <label className="font-medium">Chọn ngày</label>
+              <input
+  type="date"
+  value={selectedDate || ''}
+  onChange={(e) => setSelectedDate(e.target.value)}
+  className="
+    w-full
+    rounded-lg
+    border
+  border-gray-300
+    px-3
+    py-3
+    focus:outline-none
+    focus:ring-2
+    focus:ring-green-200
+    focus:border-green-300
+    focus:shadow-md
+    transition
+    duration-150
+    text-gray-700
+    placeholder-gray-400
+  "
+  placeholder="Chọn ngày"
+/>
+
+            </div>)}
+
             <button
               className="bg-gray-100 text-red-500 px-4 py-2 rounded-xl w-full"
               onClick={handleClear}

@@ -5,16 +5,17 @@ const FilterContext = createContext();
 
 export const FilterProvider = ({ children }) => {
     const [isFilter,setShowFilter] = useState(false)
+    const [isDate,setDate] = useState(false)
     const [filterValues, setFilterValues] = useState({
     positions: {},
     universities: {},
-    term: "Tất cả",
+    date:''
   });
 
   const toggleFilter = () => setShowFilter(prev => !prev);
 
   return (
-    <FilterContext.Provider value={{ isFilter,toggleFilter,setShowFilter,filterValues,setFilterValues}}>
+    <FilterContext.Provider value={{ isDate,setDate,isFilter,toggleFilter,setShowFilter,filterValues,setFilterValues}}>
       {children}
     </FilterContext.Provider>
   );

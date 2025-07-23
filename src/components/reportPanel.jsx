@@ -21,7 +21,7 @@ function ReportPanel() {
       const [totalPages, setTotalPages] = useState(1)
       const [loading, setLoading] = useState(false)
       const [searchTerm, setSearchTerm] = useState('')
-      const { filterValues } = useFilter();
+      const { filterValues, setDate } = useFilter();
       // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
       const [filters,setFilters] = useState({
               viTri:'',
@@ -105,6 +105,9 @@ useEffect(() => {
           const handleView = (id) => {
   navigate(`/admin/report/report-details/${id}`);
 };
+   useEffect(() => {
+  setDate(true)
+}, []);
 
     return ( 
 

@@ -29,7 +29,7 @@ function ListStudentPanel() {
       const [totalPages, setTotalPages] = useState(1); 
       const [loading, setLoading] = useState(false)
       const [searchTerm, setSearchTerm] = useState('');
-      const { filterValues } = useFilter();
+      const { filterValues,setDate } = useFilter();
       const apiBaseURL = import.meta.env.VITE_API_BASE_URL
       const [filters,setFilters] = useState({
         viTri:'',
@@ -198,7 +198,9 @@ const handleDeleteSelected = () => {
     },
   });
 };
-
+   useEffect(() => {
+  setDate(false)
+}, []);
 
   return (
     <>
@@ -224,7 +226,7 @@ const handleDeleteSelected = () => {
   {/* Nút Thêm sinh viên */}
   <button
     onClick={handleNavigate}
-    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+    className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
   >
     <GoPlusCircle className="text-lg" />
     <span className="text-sm font-medium">Thêm sinh viên</span>
@@ -233,7 +235,7 @@ const handleDeleteSelected = () => {
   {/* Nút Lọc */}
   <button
     onClick={toggleFilter}
-    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+    className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
   >
     <FaSlidersH className="text-base" />
     <span className="text-sm font-medium">Lọc</span>
