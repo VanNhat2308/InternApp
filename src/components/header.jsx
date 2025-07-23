@@ -5,6 +5,7 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
+import FeatureSearch from './FeatureSearch';
 function Header({children}) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -52,15 +53,7 @@ const userRole = localStorage.getItem('role')
         </div>
         <div className="flex h-full gap-4 items-center">
             {/* input search */}
-          <div className="h-full relative">
-              <input
-  type="text"
-  placeholder="Tìm kiếm"
-  className="w-8 sm:w-20 md:w-64 border h-full border-gray-300 pl-8 pr-4 px-4 py-1 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-/>
-
-              <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2"/>
-          </div>
+         <FeatureSearch/>
           {/* notify */}
           <div onClick={handleNotify} className={` cursor-pointer aspect-square flex items-center justify-center rounded-md h-full text-2xl ${isNotifyActive?'bg-green-100':'bg-gray-200'}`}>
 <IoNotificationsOutline className={`${isNotifyActive?'text-green-500':''}`} />

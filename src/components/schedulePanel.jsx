@@ -13,6 +13,7 @@ import axiosClient from "../service/axiosClient";
 import { IoSwapHorizontal } from "react-icons/io5";
 import Pagination from "./Pagination";
 import Avatar from "react-avatar";
+import SwapSchedule from "./SwapSchedule";
 function SchedulePanel() {
       const navigate = useNavigate()
       const { showDialog } = useDialog();
@@ -22,6 +23,7 @@ function SchedulePanel() {
       const [loading, setLoading] = useState(false)
       const [searchTerm, setSearchTerm] = useState('');
       const { filterValues } = useFilter();
+      const [activeTab, setActiveTab] = useState("lich");
       // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
       const [filters,setFilters] = useState({
         viTri:'',
@@ -121,7 +123,42 @@ useEffect(() => {
       : "text-red-600 bg-red-100";
   return (
     <>
-    <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-md lg:rounded-xl shadow border border-[#ECECEE]">
+     <div className="mt-5">
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab("lich")}
+              className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                activeTab === "lich"
+                  ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
+                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+              }`}
+            >
+              Lịch thực tập
+            </button>
+          </li>
+    
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab("doiLich")}
+              className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                activeTab === "doiLich"
+                  ? "text-green-600 border-green-600 dark:text-green-500 dark:border-green-500"
+                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+              }`}
+            >
+              Yêu Cầu Đổi Lịch
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* Nội dung tương ứng tab */}
+      <div className="mt-6">
+        {activeTab === "lich" && (
+          <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow-md border border-[#ECECEE]">
       {/* filter bar */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
         {/* search */}
@@ -155,7 +192,7 @@ useEffect(() => {
 </div>
         </div>
       ) : (<div className="overflow-x-auto mt-5">
-         <table className="lg:w-full min-w-[800px] text-sm table-auto">
+         <table className="w-full min-w-[800px] text-sm table-auto">
             <thead className="text-left bg-gray-100 text-gray-500 border-b border-b-gray-300">
               <tr>
                 <th className="py-2 pl-3">Tên sinh viên</th>
@@ -216,6 +253,14 @@ useEffect(() => {
       <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
 
     </div>
+        )}
+        {activeTab === "doiLich" && (
+          <SwapSchedule/>
+        )}
+     
+      </div>
+    </div>
+  
     </>
   );
 }

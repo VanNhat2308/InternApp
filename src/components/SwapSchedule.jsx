@@ -2,21 +2,30 @@ import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
+import Pagination from "./Pagination";
+import { FiSearch } from "react-icons/fi";
 
 function SwapSchedule() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const idSlug = useParams()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(''); 
 
   const fetchRequests = async () => {
+    setLoading(true)
     try {
-    const res = await axiosClient.get("/schedule-swaps", {
-  params: {
-    maSV: idSlug,
-  },
-});
+    const res = await axiosClient.get("/schedule-swaps",{
+      params:{
+        page: currentPage,
+        per_page: 10,
+        search: searchTerm,
+        
+      }
+    });
 
-      setRequests(res.data);
+      setRequests(res.data.data);
+      setTotalPages(res.data.last_page)
     } catch (error) {
       console.error("Lỗi khi lấy danh sách yêu cầu:", error);
     } finally {
@@ -66,12 +75,31 @@ const getStatusLabel = (status) => {
 
 
   useEffect(() => {
+      const delayDebounce = setTimeout(() => {
     fetchRequests();
-  }, []);
+  }, 500); 
+
+  return () => clearTimeout(delayDebounce);
+  }, [currentPage,searchTerm]);
 
   return (
     <div className="flex-1">
-      {loading ? (
+
+       <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow-md border border-[#ECECEE]">
+            
+         {/* Search */}
+         <div className="relative flex-1">
+           <input
+             value={searchTerm}
+             onChange={(e) => setSearchTerm(e.target.value)}
+             type="text"
+             placeholder="Tìm kiếm theo tên"
+             className="w-full border border-gray-200 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+           />
+           <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+         </div>
+     
+             {loading ? (
         <div className="flex justify-center items-center py-10">
         <div role="status">
     <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,73 +110,81 @@ const getStatusLabel = (status) => {
 </div>
         </div>
       ) : (
-       <table className="w-full border border-gray-300 rounded-md overflow-hidden text-sm mt-7">
-  <thead>
-    <tr className="bg-gray-100 text-gray-700">
-      <th className="border border-gray-300 px-3 py-2 text-left">STT</th>
-      <th className="border border-gray-300 px-3 py-2 text-left">Mã SV</th>
-      <th className="border border-gray-300 px-3 py-2 text-left">Ca hiện tại</th>
-      <th className="border border-gray-300 px-3 py-2 text-left">Ca muốn đổi</th>
-      <th className="border border-gray-300 px-3 py-2 text-left">Lý do</th>
-      <th className="border border-gray-300 px-3 py-2 text-left">Hình thức</th>
-      <th className="border border-gray-300 px-3 py-2 text-center">Trạng thái</th>
-      <th className="border border-gray-300 px-3 py-2 text-center">Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    {requests.length === 0 ? (
-      <tr>
-        <td colSpan="8" className="text-center py-4 text-gray-500">
-          Không có yêu cầu nào.
-        </td>
-      </tr>
-    ) : (
-      requests.map((req, index) => (
-        <tr key={req.id} className="hover:bg-gray-50 transition-colors">
-          <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
-          <td className="border border-gray-300 px-3 py-2">{req.maSV}</td>
-          <td className="border border-gray-300 px-3 py-2">
-            {dayjs(req.old_date).format("DD/MM/YYYY")} ({req.old_shift})
-          </td>
-          <td className="border border-gray-300 px-3 py-2">
-            {req.change_type === "nghi"
-              ? "Nghỉ"
-              : `${dayjs(req.new_date).format("DD/MM/YYYY")} (${req.new_shift})`}
-          </td>
-          <td className="border border-gray-300 px-3 py-2">{req.reason}</td>
-          <td className="border border-gray-300 px-3 py-2">
-            {req.change_type === "doi" ? "Đổi ca" : "Nghỉ"}
-          </td>
-          <td className="border border-gray-300 px-3 py-2 text-center capitalize">
-            {getStatusLabel(req.status)}
-          </td>
-          <td className="border border-gray-300 px-3 py-2 text-center space-x-2">
-            {req.status === "pending" ? (
-              <>
-                <button
-                  onClick={() => handleApprove(req.id)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
-                >
-                  Duyệt
-                </button>
-                <button
-                  onClick={() => handleReject(req.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs"
-                >
-                  Từ chối
-                </button>
-              </>
-            ) : (
-              <span className="text-gray-400 text-xs italic">Đã xử lý</span>
-            )}
-          </td>
-        </tr>
-      ))
-    )}
-  </tbody>
-</table>
-
+       
+         <>
+           <div className="overflow-x-auto max-w-screen">
+             <table className="min-w-[800px] w-full border border-gray-300 rounded-md text-sm mt-3">
+               <thead>
+                 <tr className="bg-gray-100 text-gray-700">
+                   <th className="border border-gray-300 px-3 py-2 text-left">Mã SV</th>
+                   <th className="border border-gray-300 px-3 py-2 text-left">Họ Tên</th>
+                   <th className="border border-gray-300 px-3 py-2 text-left">Ca hiện tại</th>
+                   <th className="border border-gray-300 px-3 py-2 text-left">Ca muốn đổi</th>
+                   <th className="border border-gray-300 px-3 py-2 text-left">Lý do</th>
+                   <th className="border border-gray-300 px-3 py-2 text-left">Hình thức</th>
+                   <th className="border border-gray-300 px-3 py-2 text-center">Trạng thái</th>
+                   <th className="border border-gray-300 px-3 py-2 text-center">Hành động</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {requests.length === 0 ? (
+                   <tr>
+              <td colSpan="8" className="text-center py-4 text-gray-500">
+                Không có yêu cầu nào.
+              </td>
+                   </tr>
+                 ) : (
+                   requests.map((req, index) => (
+              <tr key={req.id} className="hover:bg-gray-50 transition-colors">
+                <td className="border border-gray-300 px-3 py-2">{req.maSV}</td>
+                <td className="border border-gray-300 px-3 py-2">{req.sinh_vien.hoTen || 'unknow'}</td>
+                <td className="border border-gray-300 px-3 py-2">
+                  {dayjs(req.old_date).format("DD/MM/YYYY")} ({req.old_shift})
+                </td>
+                <td className="border border-gray-300 px-3 py-2">
+                  {req.change_type === "nghi"
+                    ? "Nghỉ"
+                    : `${dayjs(req.new_date).format("DD/MM/YYYY")} (${req.new_shift})`}
+                </td>
+                <td className="border border-gray-300 px-3 py-2">{req.reason}</td>
+                <td className="border border-gray-300 px-3 py-2">
+                  {req.change_type === "doi" ? "Đổi ca" : "Nghỉ"}
+                </td>
+                <td className="border border-gray-300 px-3 py-2 text-center capitalize">
+                  {getStatusLabel(req.status)}
+                </td>
+                <td className="border border-gray-300 px-3 py-2 text-center space-x-2">
+                  {req.status === "pending" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove(req.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
+                      >
+                        Duyệt
+                      </button>
+                      <button
+                        onClick={() => handleReject(req.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs"
+                      >
+                        Từ chối
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-400 text-xs italic">Đã xử lý</span>
+                  )}
+                </td>
+              </tr>
+                   ))
+                 )}
+               </tbody>
+             </table>
+           </div>
+            <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
+         </>
       )}
+       </div>
+
+
     </div>
   );
 }

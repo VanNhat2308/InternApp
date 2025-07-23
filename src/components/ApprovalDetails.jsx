@@ -31,20 +31,20 @@ function ApprovalDetails() {
       confirmText: "Có, duyệt hồ sơ",
       cancelText: "Không, tôi muốn kiểm tra lại",
       onConfirm: () => {
-        handleApprove();
+        handleApprove('Đã duyệt');
       },
     });
   };
   const handleOpenDialogDel = () => {
     showDialog({
-      title: "Xóa hồ sơ sinh viên",
+      title: "Từ chối hồ sơ sinh viên",
       content:
-        "Sau khi xóa hồ sơ, dữ liệu sinh viên sẽ xóa khỏi hệ thống. Hãy kiểm tra kỹ trước khi ấn",
+        "Hãy kiểm tra kỹ trước khi ấn",
       icon: <BsFillPeopleFill />,
-      confirmText: "xóa",
+      confirmText: "Từ chối",
       cancelText: "Không, tôi muốn kiểm tra lại",
       onConfirm: () => {
-        handleReject();
+          handleApprove('Đã từ chối');
       },
     });
   };
@@ -74,18 +74,33 @@ function ApprovalDetails() {
     return "text-red-500";
   };
   // update
- const handleApprove = async () => {
+ const handleApprove = async (status) => {
  
     try {
-      await axiosClient.post(`sinhviens/duyet-ho-so/${students.maSV}`);
+      await axiosClient.post(`sinhviens/duyet-ho-so/${students.maSV}`,
+        {
+        status
+        
+      });
       await fetchData();
-
-      Swal.fire({
+      if(status=='Đã duyệt')
+    {
+    Swal.fire({
         icon: "success",
         title: "Hồ sơ đã được duyệt!",
         timer: 1500,
         showConfirmButton: false,
       });
+    }
+    else  
+    {
+         Swal.fire({
+        icon: "success",
+        title: "Đã từ chối hồ sơ!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -118,6 +133,64 @@ function ApprovalDetails() {
     
   }
 };
+
+
+function renderTrangThai(trangThai) {
+  switch (trangThai) {
+    case "Đã duyệt":
+      return (
+        <div className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white  bg-green-400 rounded-full border border-gray-200 hover:bg-green-500  focus:z-10 focus:ring-4 focus:ring-gray-100"
+        >
+          Đã duyệt
+        </div>
+      );
+    case "Đã từ chối":
+      return (
+        <button
+onClick={async () => {
+  const result = await Swal.fire({
+    title: "Bạn có chắc muốn khôi phục hồ sơ?",
+    text: "Hồ sơ sẽ được chuyển về trạng thái 'Chờ duyệt'.",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Khôi phục",
+    cancelButtonText: "Hủy",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await handleApprove("Chờ duyệt");
+
+      Swal.fire({
+        icon: "success",
+        title: "Khôi phục thành công!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Đã xảy ra lỗi khi khôi phục!",
+      });
+    }
+  }
+}}
+
+  className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700"
+>
+  Khôi phục
+</button>
+
+      );
+    default:
+      return null;
+  }
+}
+
+// Sử dụng trong JSX:
+{renderTrangThai(students?.ho_so?.trangThai)}
 
 
   return (
@@ -173,10 +246,8 @@ function ApprovalDetails() {
       </div>
 
       {/* Buttons */}
-      {students?.ho_so?.trangThai === "Đã duyệt" ? (
-        <div className="p-3 rounded-lg bg-green-500 text-white text-center text-lg font-bold">
-          Đã duyệt
-        </div>
+      {["Đã duyệt", "Đã từ chối"].includes(students?.ho_so?.trangThai) ? (
+       renderTrangThai(students?.ho_so?.trangThai)
       ) : (
         <div className="flex gap-2">
           <button
