@@ -3,8 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import * as Popover from "@radix-ui/react-popover";
 
-const maSV = localStorage.getItem('maSV');
-const role = localStorage.getItem('role');
+
+
+
+function FeatureSearch() {
+  const [search, setSearch] = useState("");
+  const [isComposing, setIsComposing] = useState(false);
+  const navigate = useNavigate();
+  const maSV = localStorage.getItem('maSV');
+  const role = localStorage.getItem('role');
 
 const adminFeatures = [
   { label: 'Thêm sinh viên', path: '/admin/list/add-student' },
@@ -30,12 +37,6 @@ const studentFeatures = [
 ];
 
 const features = role === 'Admin' ? adminFeatures : studentFeatures;
-
-
-function FeatureSearch() {
-  const [search, setSearch] = useState("");
-  const [isComposing, setIsComposing] = useState(false);
-  const navigate = useNavigate();
 
   const filtered = features.filter((feature) =>
     feature.label.toLowerCase().includes(search.toLowerCase())

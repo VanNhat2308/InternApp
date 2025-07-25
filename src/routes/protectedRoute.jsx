@@ -10,11 +10,11 @@ const ProtectedRoute = () => {
   }
 
   // Nếu đã đăng nhập nhưng vào sai nhánh
-  if (role === 'admin' && !location.pathname.startsWith('/admin')) {
+  if (role === 'Admin' && !location.pathname.startsWith('/admin')) {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  if (role === 'sinhvien' && !location.pathname.startsWith('/student')) {
+  if (role === 'Student' && !location.pathname.startsWith('/student')) {
     return <Navigate to="/student/dashboard" replace />;
   }
 

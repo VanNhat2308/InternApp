@@ -11,7 +11,7 @@ import TaskCard from "./taskCard";
 import { useEffect, useRef, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import Pagination from "./pagination";
-
+import Swal from 'sweetalert2';
 function TaskPanel() {
     const { showDialog,hideDialog } = useDialog()
     const {isToast,setToast} = useToast()
@@ -41,26 +41,27 @@ function TaskPanel() {
 
 const formRef = useRef();
 
-  const handleOpenDialog = () => {
-      showDialog({
-        title: "Tạo Task",
-        customContent:(<TaskForm ref={formRef}/>),
-        confirmTextV2: "Áp dụng",
-        cancelText: "Xóa",
-      onConfirmV2: async () => {
-    const confirmed = window.confirm("Sau khi bạn ấn tạo task thì task mới sẽ được tạo và gửi đến sinh viên. Bạn có chắc?");
-    if (!confirmed) return;
-
-  const success = await formRef.current?.submitTask();
-  if (success) {
-    hideDialog();
-    setToast(true);
-    fetchStudents(); 
-  }
-},
-
-             });
-           };
+const handleOpenDialog = () => {
+  showDialog({
+    title: "Tạo Task",
+    customContent: <TaskForm ref={formRef} />,
+    cancelText: "Xóa",
+    onValidatedConfirm: async () => {
+      const success = await formRef.current?.submitTask();
+      if (success) {
+        hideDialog();
+          await Swal.fire({
+    icon: 'success',
+    title: 'Tạo task thành công',
+    text: 'Task mới đã được gửi đến sinh viên.',
+    confirmButtonText: 'OK',
+  });
+        fetchStudents();
+      }
+      return false
+    },
+  });
+};
     
             
 useEffect(() => {

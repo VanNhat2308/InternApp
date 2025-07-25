@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from 'react';
 const DialogContext = createContext();
 
 export const DialogProvider = ({ children }) => {
-    const [isShowDialog,setShowDialog] = useState(false)
+  const [isShowDialog,setShowDialog] = useState(false)
   const [dialog, setDialog] = useState(null); // null hoặc { title, content, onConfirm, onCancel, confirmText, cancelText }
 
   const showDialog = (config) => setDialog(config);

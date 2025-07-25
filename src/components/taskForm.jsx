@@ -5,6 +5,7 @@ import { FaLayerGroup } from 'react-icons/fa6';
 import { MdPeopleAlt } from 'react-icons/md';
 import axiosClient from '../service/axiosClient'; 
 import Select from "react-select";
+import Swal from 'sweetalert2';
 
 const priorities = ['Thấp', 'Trung bình', 'Cao'];
 
@@ -17,6 +18,8 @@ const TaskForm = ({ref}) => {
   const [deadline, setDeadline] = useState('');
   const [studentOpen, setStudentOpen] = useState(false);
   const [priorityOpen, setPriorityOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+
 
   // Gọi API lấy danh sách sinh viên
   useEffect(() => {
@@ -37,35 +40,48 @@ const TaskForm = ({ref}) => {
     fetchStudents();
   }, []);
 
- useImperativeHandle(ref, () => ({
-    async submitTask() {
-      if (!taskName || !description || !selectedStudent || !selectedPriority || !deadline) {
-        alert('Vui lòng nhập đầy đủ thông tin!');
-        return false;
-      }
+useImperativeHandle(ref, () => ({
+  async submitTask() {
+    const newErrors = {};
 
-      const payload = {
-        tieuDe: taskName,
-        noiDung: description,
-        maSV: selectedStudent.map(s => s.value),
-        doUuTien: selectedPriority,
-        hanHoanThanh:deadline,
-      };
+    if (!taskName.trim()) newErrors.taskName = "Tên task không được để trống";
+    if (!description.trim()) newErrors.description = "Mô tả không được để trống";
+    if (selectedStudent.length === 0) newErrors.selectedStudent = "Chọn ít nhất 1 sinh viên";
+    if (!selectedPriority) newErrors.selectedPriority = "Vui lòng chọn độ ưu tiên";
+    if (!deadline) {
+  newErrors.deadline = "Deadline không được bỏ trống";
+} else if (new Date(deadline) < new Date()) {
+  newErrors.deadline = "Deadline không được nhỏ hơn ngày hiện tại";
+}
 
-      try {
-        await axiosClient.post('/tasks', payload);
-        alert('Tạo task thành công!');
-        return true;
-      } catch (error) {
-        console.error('Lỗi khi tạo task:', error);
-        alert('Tạo task thất bại!');
-        return false;
-      }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return false;
     }
-  }));
+
+    const payload = {
+      tieuDe: taskName,
+      noiDung: description,
+      maSV: selectedStudent.map((s) => s.value),
+      doUuTien: selectedPriority,
+      hanHoanThanh: deadline,
+      nguoiGiao: localStorage.getItem("user") || "Admin",
+    };
+
+    try {
+      await axiosClient.post("/tasks", payload);
+      return true;
+    } catch (error) {
+      console.error("Lỗi khi tạo task:", error);
+      return false;
+    }
+  },
+}));
 
   return (
-    <div className="mb-10">
+    <div className="mb-3">
       {/* Tên Task */}
       <div>
         <label className="block text-sm font-medium mb-1">Tên Task</label>
@@ -81,21 +97,23 @@ const TaskForm = ({ref}) => {
             <BiTask />
           </div>
         </div>
+        {errors.taskName && <p className="text-red-500 text-sm mt-1">{errors.taskName}</p>}
       </div>
 
       {/* Mô tả Task */}
-      <div className="mt-2">
+      <div className="my-1">
         <label className="block text-sm font-medium mb-1">Mô Tả Task</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Nhập Mô Tả"
-          className="w-full mb-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
         ></textarea>
+        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
       </div>
 
       {/* Chọn Sinh Viên */}
-     <div className="mb-4">
+     <div className="mb-1">
   <label className="block text-sm font-medium mb-1">Sinh Viên Thực Hiện</label>
   <Select
    classNames={{
@@ -120,10 +138,11 @@ const TaskForm = ({ref}) => {
     className="react-select-container"
     classNamePrefix="react-select"
   />
+  {errors.selectedStudent && <p className="text-red-500 text-sm mt-1">{errors.selectedStudent}</p>}
 </div>
 
       {/* Chọn Độ Ưu Tiên */}
-      <div className="relative mb-2">
+      <div className="relative mb-1">
         <label className="block text-sm font-medium mb-1">Độ Ưu Tiên</label>
         <button
           type="button"
@@ -164,6 +183,7 @@ const TaskForm = ({ref}) => {
             ))}
           </div>
         )}
+        {errors.selectedPriority && <p className="text-red-500 text-sm mt-1">{errors.selectedPriority}</p>}
       </div>
 
       {/* Deadline */}
@@ -172,9 +192,11 @@ const TaskForm = ({ref}) => {
         <input
           type="date"
           value={deadline}
+           min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setDeadline(e.target.value)}
           className="w-full border-gray-300 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
         />
+        {errors.deadline && <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>}
       </div>
 
     
