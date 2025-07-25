@@ -4,6 +4,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import { FaLayerGroup } from 'react-icons/fa6';
 import { MdPeopleAlt } from 'react-icons/md';
 import axiosClient from '../service/axiosClient'; 
+import Select from "react-select";
 
 const priorities = ['Thấp', 'Trung bình', 'Cao'];
 
@@ -11,7 +12,7 @@ const TaskForm = ({ref}) => {
   const [taskName, setTaskName] = useState('');
   const [description, setDescription] = useState('');
   const [students, setStudents] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState([]);
   const [selectedPriority, setSelectedPriority] = useState('');
   const [deadline, setDeadline] = useState('');
   const [studentOpen, setStudentOpen] = useState(false);
@@ -46,7 +47,7 @@ const TaskForm = ({ref}) => {
       const payload = {
         tieuDe: taskName,
         noiDung: description,
-        maSV: selectedStudent.value,
+        maSV: selectedStudent.map(s => s.value),
         doUuTien: selectedPriority,
         hanHoanThanh:deadline,
       };
@@ -74,7 +75,7 @@ const TaskForm = ({ref}) => {
             value={taskName}
             onChange={(e) => setTaskName(e.target.value)}
             placeholder="Nhập Tên Task"
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
           />
           <div className="absolute left-3 top-[50%] transform -translate-y-1/2 text-green-500 text-2xl">
             <BiTask />
@@ -89,53 +90,37 @@ const TaskForm = ({ref}) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Nhập Mô Tả"
-          className="w-full mb-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full mb-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
         ></textarea>
       </div>
 
       {/* Chọn Sinh Viên */}
-      <div className="relative mb-2">
-        <label className="block text-sm font-medium mb-1">Sinh Viên Thực Hiện</label>
-        <button
-          type="button"
-          onClick={() => setStudentOpen(!studentOpen)}
-          className="w-full flex justify-between border-gray-300 items-center px-4 py-2 border rounded-lg focus:outline-none"
-        >
-          <span className="text-left text-gray-700">
-            {selectedStudent?.label || (
-              <div className="flex items-center gap-2">
-                <MdPeopleAlt className="text-xl text-green-600" />
-                <span>Chọn Sinh Viên</span>
-              </div>
-            )}
-          </span>
-          <span><FaChevronDown /></span>
-        </button>
-        {studentOpen && (
-          <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg p-2 shadow z-10 max-h-60 overflow-auto">
-            {students.map((student) => (
-              <div
-                key={student.value}
-                onClick={() => {
-                  setSelectedStudent(student);
-                  setStudentOpen(false);
-                }}
-                className="mb-2 hover:bg-gray-100 cursor-pointer"
-              >
-                <label className="flex items-center justify-between p-2 border border-gray-300 rounded-md cursor-pointer">
-                  <span>{student.label}</span>
-                  <input
-                    type="radio"
-                    checked={selectedStudent?.value === student.value}
-                    onChange={() => {}}
-                    className="accent-green-500"
-                  />
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
+     <div className="mb-4">
+  <label className="block text-sm font-medium mb-1">Sinh Viên Thực Hiện</label>
+  <Select
+   classNames={{
+       control: ({ isFocused }) =>
+      isFocused
+        ? '!outline-none !ring-2 !ring-green-300 !border !border-gray-300'
+        : '!outline-none ',
+
+    valueContainer: () => '!max-h-20 !overflow-y-auto',
+  }}
+  
+    options={students}
+    value={selectedStudent}
+    onChange={(selected) => setSelectedStudent(selected)}
+    isMulti 
+    placeholder={
+      <div className="flex items-center gap-2 text-gray-500">
+        <MdPeopleAlt className="text-xl text-green-600" />
+        <span>Chọn Sinh Viên</span>
       </div>
+    }
+    className="react-select-container"
+    classNamePrefix="react-select"
+  />
+</div>
 
       {/* Chọn Độ Ưu Tiên */}
       <div className="relative mb-2">
@@ -143,7 +128,7 @@ const TaskForm = ({ref}) => {
         <button
           type="button"
           onClick={() => setPriorityOpen(!priorityOpen)}
-          className="w-full border-gray-300 flex justify-between items-center px-4 py-2 border rounded-lg focus:outline-none"
+          className="w-full border-gray-300 flex justify-between items-center px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
         >
           <span className="text-left text-gray-700">
             {selectedPriority || (
@@ -188,7 +173,7 @@ const TaskForm = ({ref}) => {
           type="date"
           value={deadline}
           onChange={(e) => setDeadline(e.target.value)}
-          className="w-full border-gray-300 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border-gray-300 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
         />
       </div>
 

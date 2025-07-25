@@ -196,7 +196,7 @@ function ApprovalPanel() {
               <tbody>
                 {students.map((s, idx) => {
                   return (
-                    <tr key={idx} className="border-b border-b-gray-300">
+                    <tr key={idx} className="border-b border-b-gray-300 hover:bg-gray-100 transition duration-150">
                        <td className="py-2 px-2 align-middle">
       <div className="flex items-center gap-2">
         <Avatar name={s?.sinh_vien?.hoTen} round size="32" />
@@ -251,7 +251,7 @@ function ApprovalPanel() {
  
   return (
     <>
-  <div className="mt-10">
+  <div className="mt-5">
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">

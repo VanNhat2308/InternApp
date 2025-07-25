@@ -30,7 +30,7 @@ useEffect(() => {
       params: {
         date: date ? format(date, 'yyyy-MM-dd') : null,
         page: currentPage,
-        per_page: 10,
+        per_page: 15,
       },
     })
     .then((res) => {
@@ -153,9 +153,9 @@ function tinhThoiGianLamViec(gioBatDau, gioKetThuc) {
 
   return `${hours} giờ ${minutes} phút`;
 }
-const name = localStorage.getItem('hoTen')
-const viTri = localStorage.getItem('viTri')
-const email = localStorage.getItem('email')
+const name = localStorage.getItem('hoTen') ? localStorage.getItem('hoTen') : diemdanh[0]?.sinh_vien?.hoTen
+const viTri = localStorage.getItem('viTri') ? localStorage.getItem('viTri') : diemdanh[0]?.sinh_vien?.viTri
+const email = localStorage.getItem('email') ? localStorage.getItem('email') : diemdanh[0]?.sinh_vien?.email
 
   return(
     <>
@@ -223,8 +223,8 @@ const email = localStorage.getItem('email')
         <tr>
           <th className="py-2 text-left">Ngày</th>
           <th className="text-left">Thời gian làm việc</th>
-          <th className="text-left">Giờ bắt đầu</th>
           <th className="text-left">Giờ điểm danh</th>
+          <th className="text-left">Giờ kết thúc</th>
           <th className="text-left">Trạng thái</th>
           <th className="text-left">Hành động</th>
         </tr>
@@ -236,8 +236,8 @@ const email = localStorage.getItem('email')
               {new Date(item.ngay_diem_danh).toLocaleDateString("vi-VN")}
             </td>
             <td>{tinhThoiGianLamViec(item.gio_bat_dau, item.gio_ket_thuc)}</td>
-            <td>8:00 AM</td>
-            <td>{formatTo12Hour(item.gio_bat_dau)}</td>
+             <td>{formatTo12Hour(item.gio_bat_dau)}</td>
+            <td>{formatTo12Hour(item.gio_ket_thuc)}</td>
             <td>
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${statusStyle(

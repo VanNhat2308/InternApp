@@ -40,7 +40,7 @@ export default function AttendanceChart() {
       <div className="flex justify-between items-center mb-4">
         <h4 className="font-semibold">Tổng quan điểm danh</h4>
         <select
-          className="border rounded px-2 py-1 text-sm"
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
           value={selectedWeek}
           onChange={(e) => setSelectedWeek(e.target.value)}
         >

@@ -26,7 +26,7 @@ function ReportPanel() {
       const [filters,setFilters] = useState({
               viTri:'',
               Truong:'',
-              KyThucTap:''
+              date:''
             })
            const fetchStudents = () => {
   setLoading(true);
@@ -38,7 +38,7 @@ function ReportPanel() {
         search: searchTerm,
         vi_tri: filters.viTri,
         truong: filters.Truong,
-        ky_thuc_tap: filters.KyThucTap,
+        date: filters.date,
       },
     })
     .then((res) => {
@@ -73,13 +73,13 @@ function ReportPanel() {
 useEffect(() => {
   const selectedPositions = Object.keys(filterValues.positions || {}).filter(key => filterValues.positions[key]);
   const selectedUniversities = Object.keys(filterValues.universities || {}).filter(key => filterValues.universities[key]);
-  const term = filterValues.term !== "Tất cả" ? filterValues.term : '';
+  const selectedDate = filterValues.date || '';
 
   
   setFilters({
     viTri: selectedPositions.join(','),
     Truong: selectedUniversities.join(','),
-    KyThucTap: term
+    date: selectedDate
   });
 }, [filterValues]);
 
@@ -111,7 +111,7 @@ useEffect(() => {
 
     return ( 
 
-            <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-md lg:rounded-xl shadow border border-[#ECECEE]">
+            <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow border border-[#ECECEE]">
               {/* filter bar */}
               <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
                 {/* search */}
@@ -160,7 +160,7 @@ useEffect(() => {
                     <tbody>
                       {students.map((a, idx) => {
                         return (
-                          <tr key={idx} className="border-b border-b-gray-300">
+                          <tr key={idx} className="border-b border-b-gray-300 hover:bg-gray-100 transition duration-150">
                               <td className="py-2 px-2 align-middle">
     <div className="flex items-center gap-2">
       <Avatar name={a?.sinh_vien?.hoTen} round size="32" />

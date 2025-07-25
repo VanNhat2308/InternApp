@@ -208,7 +208,7 @@ const handleDeleteSelected = () => {
        <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
-    <div className="p-4 w-full max-w-screen h-fit lg:h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
+    <div className="p-4 w-full max-w-screen h-fit lg:h-fit mt-5 rounded-xl shadow border border-[#ECECEE]">
       {/* filter bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
   {/* Search */}
@@ -217,8 +217,8 @@ const handleDeleteSelected = () => {
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
       type="text"
-      placeholder="Tìm kiếm"
-      className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+      placeholder="Tìm kiếm theo tên, mã sinh viên,..."
+      className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-200 transition"
     />
     <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
   </div>
@@ -288,7 +288,7 @@ const handleDeleteSelected = () => {
             <tbody>
               {students.map((s, idx) => {
                 return (
-                <tr key={idx} className="border-b border-b-gray-300 text-sm">
+                <tr key={idx} className="border-b border-b-gray-300 text-sm hover:bg-gray-100 transition duration-150">
   {/* Checkbox */}
   <td className="px-2 text-center align-middle">
     <input

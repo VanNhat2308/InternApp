@@ -151,6 +151,8 @@ useEffect(() => {
       {/* Search input */}
       <div className="relative flex-1">
         <input
+          value={searchTerm}
+          onChange={(e)=>{setSearchTerm(e.target.value)}}
           type="text"
           placeholder="Tìm kiếm..."
           className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
@@ -192,7 +194,7 @@ useEffect(() => {
             <tbody>
               {students.map((s, idx) => {
                 return (
-                  <tr key={idx} className="border-b border-b-gray-300">
+                  <tr key={idx} className="border-b border-b-gray-300 hover:bg-gray-100 transition duration-150">
                       <td className="py-2 px-2 align-middle">
     <div className="flex items-center gap-2">
       <Avatar name={s?.sinh_vien?.hoTen} round size="32" />

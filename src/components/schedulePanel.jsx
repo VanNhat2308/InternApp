@@ -1,8 +1,6 @@
 import { FiSearch } from "react-icons/fi";
 import { FaSlidersH } from "react-icons/fa";
 import { RiCalendarScheduleLine, RiEyeLine } from "react-icons/ri";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import avatar from "../assets/images/avatar.png";
 
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
@@ -89,7 +87,7 @@ function SchedulePanel() {
 useEffect(() => {
   const selectedPositions = Object.keys(filterValues.positions || {}).filter(key => filterValues.positions[key]);
   const selectedUniversities = Object.keys(filterValues.universities || {}).filter(key => filterValues.universities[key]);
-  const date = filterValues.date !== "Tất cả" ? filterValues.term : '';
+  const date = filterValues.date || '';
 
   
   setFilters({
@@ -214,7 +212,7 @@ useEffect(() => {
             <tbody>
               {students.map((s, idx) => {
                 return (
-                  <tr key={idx} className="border-b border-b-gray-300">
+                  <tr key={idx} className="border-b border-b-gray-300 hover:bg-gray-100 transition duration-150">
                     <td className="py-2 px-2 align-middle">
     <div className="flex items-center gap-2">
       <Avatar name={s.hoTen} round size="32" />

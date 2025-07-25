@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { IoCamera } from "react-icons/io5";
 import Pagination from "./Pagination";
 import { FaTrashCan } from "react-icons/fa6";
+import { FiSearch } from "react-icons/fi";
 function AddSchoolAndPostion() {
+      const [searchTermPos, setSearchTermPos] = useState('');
+      const [searchTermSchool, setSearchTermSchool] = useState('');
       const navigate = useNavigate()
       const [avatarFile, setAvatarFile] = useState(null);
       const [avatarFilePreview, setAvatarFilePreview] = useState(null);
@@ -193,6 +196,7 @@ const handleLogoChange = (e) => {
         params: {
           page: currentPage,
           per_page: perPage,
+          search: searchTermSchool
         },
       })
       .then((res) => {
@@ -207,7 +211,7 @@ const handleLogoChange = (e) => {
 
   useEffect(() => {
     fetchSchools();
-  }, [currentPage]);
+  }, [currentPage,searchTermSchool]);
 
 const handleEdit = (school) => {
   setEditingId(school.id);
@@ -301,7 +305,7 @@ const handleDelete = (id) => {
     setLoading(true)
     axiosClient
       .get("/vi-tris/ds", {
-        params: { page: currentPage, per_page: perPage },
+        params: { page: currentPage, per_page: perPage,search: searchTermPos },
       })
       .then((res) => {
         setPositions(res.data.data.data);
@@ -315,7 +319,7 @@ const handleDelete = (id) => {
 
     useEffect(() => {
     fetchPositions();
-  }, [currentPagePos]);
+  }, [currentPagePos,searchTermPos]);
 
  const handleEditPos = (pos) => {
     setEditingId(pos.id);
@@ -367,7 +371,7 @@ const handleDelete = (id) => {
 
     return ( 
     <>
-<div className="border-b border-gray-200 dark:border-gray-700 mt-10 ml-2 mb-5 lg:my-7">
+<div className="border-b border-gray-200 dark:border-gray-700 mt-5 ml-2 mb-5 lg:my-7">
   <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
     <li className="me-2">
       <button
@@ -422,9 +426,21 @@ const handleDelete = (id) => {
 
 
 
+
     {isAddingSchool ? (
   // FORM THÊM TRƯỜNG
   <div className="lg:border border-gray-300 lg:p-4 rounded-md lg:shadow">
+        {/* Search */}
+          <div className="relative flex-1 mb-5 w-full">
+            <input
+              value={searchTermSchool}
+              onChange={(e) => setSearchTermSchool(e.target.value)}
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 transition"
+            />
+            <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+          </div>
      <div className="w-full">
           
             {loading? (
@@ -441,6 +457,7 @@ const handleDelete = (id) => {
           :(
             <div className="max-w-screen">
           <div className="relative overflow-x-auto max-h-[500px] overflow-y-auto">
+       
   <table className=" min-w-[700px] w-full text-sm text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-200 ">
                 <tr>
@@ -453,7 +470,7 @@ const handleDelete = (id) => {
               </thead>
               <tbody>
                 {schools.map((school) => (
-                  <tr key={school.id} className="bg-white border-b border-gray-200">
+                  <tr key={school.id} className="bg-white border-b border-gray-200 hover:bg-gray-100 transition duration-150">
     <td className="px-6 py-4">
       {editingId === school.id ? (
         <div className="flex flex-col">
@@ -654,6 +671,17 @@ const handleDelete = (id) => {
 ) : (
   // FORM THÊM VỊ TRÍ
   <div className="lg:border border-gray-300 lg:p-4 rounded-md lg:shadow">
+     {/* Search */}
+          <div className="relative flex-1 mb-5 w-full">
+            <input
+              value={searchTermPos}
+              onChange={(e) => setSearchTermPos(e.target.value)}
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 transition"
+            />
+            <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+          </div>
      <div className="w-full">
       {loading? (
             <div className="flex justify-center items-center py-10">
@@ -678,7 +706,7 @@ const handleDelete = (id) => {
           </thead>
           <tbody>
             {positions.map((pos) => (
-              <tr key={pos.id} className="bg-white border-b border-gray-200">
+              <tr key={pos.id} className="bg-white border-b border-gray-200 hover:bg-gray-100 transition duration-150">
                 <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">{pos.id}</td>
                 <td className="px-6 py-4">
                   {editingId === pos.id ? (
