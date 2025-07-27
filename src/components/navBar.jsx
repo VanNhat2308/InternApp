@@ -144,7 +144,7 @@ const Navbar = () => {
   to={`/admin/${item.linkTo}`}
   key={index}
   className={({ isActive }) => `
-    flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 transition
+    flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 transition 
     ${isActive ? "bg-green-200 text-green-700 font-semibold border-l-2 border-l-green-400" : ""}
     hover:bg-green-100
     ${isCollapsed ? "justify-center" : ""}

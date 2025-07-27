@@ -1,4 +1,3 @@
-import { LuShoppingBag } from "react-icons/lu";
 import { AiOutlineMessage } from "react-icons/ai";
 import { TfiTimer } from "react-icons/tfi";
 import { FaFlag, FaRegCalendarAlt } from "react-icons/fa";
@@ -24,103 +23,108 @@ function TaskCard({ task }) {
 const getStatusColor = (trangThai) => {
   switch (trangThai) {
     case "Chưa nộp":
-      return "#FCD34D"; // vàng pastel
+      return "#FACC15"; // vàng dịu, nổi bật hơn (#FCD34D -> #FACC15)
     case "Đã nộp":
-      return "#6EE7B7"; // xanh bạc hà
+      return "#22C55E"; // xanh lá nhẹ, rõ hơn (#6EE7B7 -> #22C55E)
     case "Nộp trễ":
-      return "#FCA5A5"; // đỏ nhạt
+      return "#F87171"; // đỏ hồng nhẹ nhưng rõ (#FCA5A5 -> #F87171)
     default:
-      return "#E5E7EB"; // xám
+      return "#D1D5DB"; // xám nhạt (giữ nguyên tone sáng hơn)
   }
 };
 
 const getPriorityColor = (p) => {
   switch (p) {
     case "Cao":
-      return "#EF4444"; // đỏ tươi (danger)
+      return "#DC2626"; // đỏ cảnh báo rõ hơn (#EF4444 -> #DC2626)
     case "Trung bình":
-      return "#F59E0B"; // vàng tươi (warning)
+      return "#F59E0B"; // giữ nguyên vì đã phù hợp
     case "Thấp":
-      return "#10B981"; // xanh ngọc (success)
+      return "#10B981"; // giữ nguyên xanh ngọc
     default:
       return "#9CA3AF"; // xám trung tính
   }
 };
 
+task.thanhVien = [
+  { avatar: defaulAvatar },
+  { avatar: defaulAvatar },
+  { avatar: defaulAvatar },
+  { avatar: defaulAvatar },
+ 
+]
 
-  return (
- <div
-  className="p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:shadow-lg transition-all duration-300"
-  onClick={handleClick}
->
-  {/* Trạng thái */}
-  <div className="flex items-center gap-2 mb-2">
+return (
     <div
-      className="w-3 h-3 rounded-full"
-      style={{ backgroundColor: getStatusColor(task.trangThai) }}
-    ></div>
-    <span className="text-sm font-medium text-gray-700">{task.trangThai}</span>
-  </div>
-
-  {/* Nội dung task */}
-  <div className="bg-gray-50 p-3 rounded-lg">
-    <div className="flex items-start gap-3">
-      <div className="bg-green-100 p-2 rounded-md text-green-600">
-        <LuShoppingBag className="text-xl" />
-      </div>
-      <div className="flex flex-col flex-1">
-        <h2 className="text-base font-semibold text-gray-800 truncate">{task.tieuDe}</h2>
-        <span className="flex items-center text-sm text-gray-500 gap-1 mt-1">
-          <AiOutlineMessage className="text-base" />
-          2 bình luận
+      onClick={handleClick}
+      className="p-4 rounded-2xl border border-gray-200 bg-white hover:shadow-md transition cursor-pointer"
+    >
+      {/* Tiêu đề + Trạng thái */}
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-lg font-semibold text-gray-800 truncate">{task.tieuDe}</h2>
+        <span
+          className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0"
+          style={{
+            backgroundColor: getStatusColor(task.trangThai),
+            color: "#fff",
+          }}
+        >
+          {task.trangThai}
         </span>
       </div>
-    </div>
 
-    {/* Tag trạng thái + độ ưu tiên */}
-    <div className="flex gap-2 mt-4 flex-wrap">
-      <div
-        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium"
-        style={{
-          backgroundColor: getStatusColor(task.trangThai),
-          color: "#fff",
-        }}
-      >
-        <TfiTimer />
-        {task.trangThai}
+      {/* Ưu tiên & Hạn nộp */}
+      <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
+        <div className="flex items-center gap-2">
+          <FaFlag className="text-sm" />
+          <span style={{ color: getPriorityColor(task.doUuTien) }}>
+            {task.doUuTien}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <FaRegCalendarAlt className="text-sm" />
+          {new Date(task.hanHoanThanh).toLocaleDateString("vi-VN")}
+        </div>
       </div>
 
-      <div
-        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-white"
-        style={{
-          backgroundColor: getPriorityColor(task.doUuTien),
-        }}
-      >
-        <FaFlag />
-        {task.doUuTien}
+      {/* Progress bar */}
+      <div className="mt-4 h-2 bg-gray-200 rounded-full">
+        <div
+          className={`h-full rounded-full`}
+          style={{
+            width: task.trangThai === "Đã nộp" ? "100%" : "70%",
+            backgroundColor: "#10B981",
+          }}
+        ></div>
       </div>
-    </div>
 
-    {/* Progress bar */}
-    <div className="h-1 bg-green-400/50 rounded-full mt-4">
-      <div className={`h-full ${task.trangThai==='Đã nộp'?'w-full' :'w-[70%]'}  bg-green-500 rounded-full`}></div>
-    </div>
+      {/* Bình luận + Avatar */}
+    <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+  <span className="flex items-center gap-1">
+    <AiOutlineMessage className="text-base" />
+    {task.soBinhLuan || 0} bình luận
+  </span>
 
-    {/* Footer: hạn + avatar */}
-    <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
-      <div className="flex items-center gap-1">
-        <FaRegCalendarAlt className="text-base" />
-        {new Date(task.hanHoanThanh).toLocaleDateString("vi-VN")}
-      </div>
+  {/* Nhóm avatar */}
+  <div className="flex -space-x-2">
+    {task?.sinh_viens?.slice(0, 3).map((tv, index) => (
       <img
+        key={index}
+        // src={tv.duLieuKhuonMat || defaulAvatar}
         src={defaulAvatar}
-        alt="task avatar"
-        className="w-6 h-6 rounded-full object-cover"
+        alt="avatar"
+        className="w-6 h-6 rounded-full border-2 border-white object-cover"
       />
-    </div>
+    ))}
+    {task.thanhVien?.length > 3 && (
+      <span className="w-6 h-6 rounded-full bg-gray-300 text-xs flex items-center justify-center text-white border-2 border-white">
+        +{task.thanhVien.length - 3}
+      </span>
+    )}
   </div>
 </div>
 
+    </div>
   );
 }
 
