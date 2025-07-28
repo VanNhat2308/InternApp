@@ -123,7 +123,7 @@ const Navbar = () => {
       <nav className="flex-1">
         {navItems.map((item, index) => (
       <NavLink
-  to={`/Student/${item.linkTo}`}
+  to={`/student/${item.linkTo}`}
   key={index}
   className={({ isActive }) => `
     flex items-center px-4 py-3 rounded-tr-lg rounded-br-lg mb-2 transition

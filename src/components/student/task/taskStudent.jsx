@@ -10,71 +10,129 @@ import UploadSection from "../../UploadSelection";
 import { BsEyeFill, BsListTask } from "react-icons/bs";
 import { useDialog } from "../../../context/dialogContext";
 import dayjs from "dayjs";
+import Swal from "sweetalert2";
+import { MdUploadFile } from "react-icons/md";
 function TaskStudent() {
- const navigate = useNavigate()
+ const { idSlug } = useParams();
+  const navigate = useNavigate();
+  const { showDialog } = useDialog();
 
- const [btnStatus, setBtnStatus] = useState(false)
- const {idSlug} = useParams()
- const [task,setTask] = useState({})
- const maSV = localStorage.getItem('maSV')
- useEffect(()=>{
-  axiosClient.get(`tasks/${idSlug}`)
-  .then((res)=>{
-    setTask(res.data.data)
-    if(res.data.data.diemSo!==null){
-      SetScore(true)
+  const apiBaseURL = import.meta.env.VITE_API_BASE_URL;
+  const maSV = localStorage.getItem("maSV");
+
+  const [task, setTask] = useState({});
+  const [taskUpload, setTaskUpload] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [btnStatus, setBtnStatus] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(false)
+  // Fetch Task
+  const fetchTask = async () => {
+    try {
+      const res = await axiosClient.get(`tasks/${idSlug}`);
+      const taskData = res.data.data;
+      setTask(taskData);
+
+      if (taskData.tepDinhKem) {
+        setTaskUpload({
+          name: taskData.tepDinhKem.split("/").pop(),
+          url: `${apiBaseURL}/${taskData.tepDinhKem}`,
+        });
+        setProgress(100);
+        setBtnStatus(true);
+      }
+
+      if (["Đã nộp", "Nộp trễ"].includes(taskData.trangThai)) {
+        setBtnStatus(true);
+      }
+    } catch (error) {
+      console.error("Lỗi khi fetch task:", error);
     }
-  })
-  .catch((err)=>{
-    console.log(err);
-  })
- },[])
-const getStatusColor = (trangThai) => {
-  switch (trangThai) {
-    case "Chưa nộp":
-      return "#FCD34D"; // vàng pastel
-    case "Đã nộp":
-      return "#6EE7B7"; // xanh bạc hà
-    case "Nộp trễ":
-      return "#FCA5A5"; // đỏ nhạt
-    default:
-      return "#E5E7EB"; // xám
+  };
+
+  // Fetch Comments
+  const fetchTaskComments = async () => {
+    try {
+      const res = await axiosClient.get(`/task-comments/${idSlug}`);
+      setComments(res.data);
+    } catch (error) {
+      console.error("Lỗi khi fetch nhận xét:", error);
+    }
+  };
+
+  // Submit Comment
+  const handleSubmitComment = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      await axiosClient.post("/task-comments", {
+        task_id: idSlug,
+        noi_dung: newComment,
+        user_type: "App\\Models\\SinhVien",
+        user_id: maSV,
+      });
+
+      await fetchTaskComments();
+      setNewComment("");
+    } catch (error) {
+      alert("Gửi nhận xét thất bại.");
+    }
+  };
+
+  // Upload File
+  const handleUpload = async () => {
+    const formData = new FormData();
+    if (taskUpload) formData.append("task", taskUpload);
+
+    try {
+      const res = await axiosClient.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (e) => {
+          const percent = Math.round((e.loaded * 100) / e.total);
+          setProgress(percent);
+        },
+      });
+
+      return res.data.paths || res.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.avatar?.[0] ||
+        error.response?.data?.errors?.cv?.[0] ||
+        error.message ||
+        "Đã xảy ra lỗi không xác định.";
+      alert("Lỗi upload: " + message);
+      throw error;
+    }
+  };
+
+  // Confirm Upload Task
+const handleConfirmUpTask = async () => {
+  if (!taskUpload) {
+    Swal.fire({
+      icon: "warning",
+      title: "Thiếu tệp đính kèm",
+      text: "Vui lòng chọn file để nộp trước khi hoàn thành task!",
+    });
+    return;
   }
-};
 
-const getPriorityColor = (p) => {
-  switch (p) {
-    case "Cao":
-      return "#EF4444"; // đỏ tươi (danger)
-    case "Trung bình":
-      return "#F59E0B"; // vàng tươi (warning)
-    case "Thấp":
-      return "#10B981"; // xanh ngọc (success)
-    default:
-      return "#9CA3AF"; // xám trung tính
-  }
-};
-
-
-const handleComfirmUpTask = async () => {
   try {
-    if (!taskUpload) {
-      alert("Vui lòng chọn file để nộp trước khi hoàn thành task!");
-      return;
-    }
-
     const res = await handleUpload();
-    const filePath = res?.task
+    const filePath = res?.task;
 
     if (!filePath) {
-      alert("Tệp không được tải lên thành công. Vui lòng thử lại.");
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi tải tệp",
+        text: "Tệp không được tải lên thành công. Vui lòng thử lại.",
+      });
       return;
     }
 
-        // Kiểm tra ngày hiện tại so với hạn hoàn thành
-    const today = dayjs(); // ngày hôm nay
-    const deadline = dayjs(task.hanHoanThanh); // ngày hạn
-
+    const today = dayjs();
+    const deadline = dayjs(task.hanHoanThanh);
     const status = today.isAfter(deadline, "day") ? "Nộp trễ" : "Đã nộp";
 
     await axiosClient.put(`/tasks/${idSlug}/update-status`, {
@@ -82,39 +140,43 @@ const handleComfirmUpTask = async () => {
       tepDinhKem: filePath,
     });
 
-    setBtnStatus(true); // Đánh dấu đã hoàn thành
-    alert("Đã hoàn thành task!");
+    setBtnStatus(true);
+
+    Swal.fire({
+      icon: "success",
+      title: "Thành công",
+      text: "Đã hoàn thành task!",
+    });
+
+    fetchTask(); // reload lại task
   } catch (error) {
     console.error("Lỗi khi hoàn thành task:", error);
-    alert("Có lỗi khi cập nhật task. Vui lòng thử lại.");
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi cập nhật",
+      text: "Có lỗi khi cập nhật task. Vui lòng thử lại.",
+    });
   }
 };
 
-
-
-
-  const {showDialog} = useDialog()
-    //  dialog
+  // Mở dialog xác nhận
   const handleOpenDialog = () => {
     showDialog({
       title: "Hoàn thành task",
       content:
-        "Sau khi bạn ấn hoàn thành task sẽ được đánh dấu hoàn tất và không thể chỉnh sửa. Vui lòng kiểm tra kỹ thông tin trước khi ấn",
+        "Sau khi bạn ấn hoàn thành, task sẽ được đánh dấu hoàn tất và không thể chỉnh sửa. Vui lòng kiểm tra kỹ thông tin trước khi nộp.",
       icon: <BsListTask />,
       confirmText: "Hoàn thành",
       cancelText: "Không, tôi muốn kiểm tra lại",
-      onConfirm: handleComfirmUpTask
-  })}
+      onConfirm: handleConfirmUpTask,
+    });
+  };
 
-
-    const [taskUpload, setTaskUpload] = useState(null);
-  const [progress, setProgress] = useState(0);
-
+  // Chọn file
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setTaskUpload(selectedFile);
-      // Giả lập progress (bạn thay bằng logic upload thật nếu cần)
       let value = 0;
       const interval = setInterval(() => {
         value += 10;
@@ -124,118 +186,81 @@ const handleComfirmUpTask = async () => {
     }
   };
 
+  // Xóa file
   const handleRemove = () => {
     setTaskUpload(null);
     setProgress(0);
   };
 
-
-  // upload
-  const handleUpload = async () => {
-    const formData = new FormData();
-  
-    if (taskUpload) formData.append("task", taskUpload);
-  
-    try {
-      const res = await axiosClient.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (e) => {
-          const percent = Math.round((e.loaded * 100) / e.total);
-          setProgress(percent);
-        },
-      });
-  
-      console.log("Response data upload:", res.data);
-  
-      const { avatar, cv, task } = res.data.paths || res.data;
-  
-      return { avatar, cv, task };
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.errors?.avatar?.[0] ||
-        error.response?.data?.errors?.cv?.[0] ||
-        error.message ||
-        "Đã xảy ra lỗi không xác định.";
-  
-      alert("Lỗi upload: " + message);
-      throw error;
+  // Trạng thái màu
+  const getStatusColor = (trangThai) => {
+    switch (trangThai) {
+      case "Chưa nộp":
+        return "#ff6600";
+      case "Đã nộp":
+        return "#6EE7B7";
+      case "Nộp trễ":
+        return "#FCA5A5";
+      default:
+        return "#E5E7EB";
     }
   };
-  
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "Cao":
+        return "#EF4444";
+      case "Trung bình":
+        return "#F59E0B";
+      case "Thấp":
+        return "#10B981";
+      default:
+        return "#9CA3AF";
+    }
+  };
+
+  // Load dữ liệu khi khởi động
 useEffect(() => {
-  axiosClient.get(`tasks/${idSlug}`)
-    .then((res) => {
-      const taskData = res.data.data;
-      setTask(taskData);
-
-      // Nếu đã có file đính kèm => gán lại
-      if (taskData.tepDinhKem) {
-        setTaskUpload({
-          name: taskData.tepDinhKem.split('/').pop(), // Lấy tên file từ đường dẫn
-          url: `${import.meta.env.VITE_API_BASE_URL}/${taskData.tepDinhKem}`
-        });
-        setProgress(100);
-        setBtnStatus(true);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      if (idSlug) {
+        await fetchTask(); // Đảm bảo chờ fetch xong
+        await fetchTaskComments();
       }
+    } catch (error) {
+      console.error("Lỗi khi load dữ liệu:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (taskData.trangThai === "Đã nộp" || taskData.trangThai === "Nộp trễ") {
-        setBtnStatus(true);
-      }
-    });
-}, []);
-
-//comments
-const [comments, setComments] = useState([]);
-const fetchTaskComments = async (taskId) => {
-  try {
-    const res = await axiosClient.get(`/task-comments/${taskId}`);
-    return res.data;
-  } catch (error) {
-    console.error("Lỗi khi fetch nhận xét:", error);
-    return [];
-  }
-}
-
-useEffect(() => {
-  if (idSlug) {
-    fetchTaskComments(idSlug).then((data) => setComments(data));
-  }
+  loadData();
 }, [idSlug]);
 
-// push new comment
-
-const [newComment, setNewComment] = useState("");
-
-const handleSubmitComment = async () => {
-  if (!newComment.trim()) return;
-
-  try {
-    await axiosClient.post("/task-comments", {
-      task_id: idSlug,
-      noi_dung: newComment,
-      user_type: 'App\\Models\\SinhVien',
-      user_id: maSV
-    });
-
-    const updatedComments = await fetchTaskComments(idSlug);
-    setComments(updatedComments);
-    setNewComment("");
-  } catch (error) {
-    alert("Gửi nhận xét thất bại.");
-  }
-};
 
 
 
   return (
-  <div className="mt-8 p-4 border border-gray-300 bg-white rounded-xl shadow w-full">
+     
+   <>
+     {loading ? (<div className="flex justify-center items-center py-10">
+            <div role="status">
+        <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+        </svg>
+        <span className="sr-only">Loading...</span>
+    </div>
+            </div>
+              ) : (
+      <div className="mt-8 p-4 border border-gray-100 bg-white rounded-md w-full">
   {/* Header */}
-  <div className="flex flex-col md:flex-row justify-between gap-4 mb-6 pb-4 border-b border-gray-200">
+  <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200">
     {/* Left */}
-    <div className="flex gap-3">
+    <div className="flex gap-3 items-center">
       <div className="bg-gray-100 p-4 rounded-md h-fit">
-        <LuShoppingBag className="text-3xl" />
+        <MdUploadFile className="text-2xl" />
       </div>
       <div className="space-y-2">
         <h2 className="text-xl font-bold break-words">{task.tieuDe || 'tieu de'}</h2>
@@ -261,116 +286,156 @@ const handleSubmitComment = async () => {
     </div>
 
     {/* Delete button */}
-    <button
-      disabled={btnStatus}
-      onClick={handleOpenDialog}
-      className= {`cursor-pointer py-2 px-4  ${btnStatus ? 'bg-gray-400 text-black':'bg-green-500 text-white'} border border-gray-300 rounded-md text-sm hover:text-black flex items-center gap-2 self-start`}
-    >
-      { btnStatus ? <><FaCheckCircle /> Hoàn thành </>: <><FaUpload /> Nộp Task </> }
-    </button>
+    <div>
+   <button
+  type="button"
+  disabled={btnStatus}
+  onClick={handleOpenDialog}
+  className={`cursor-pointer py-2.5 px-5 me-2 mb-2 text-sm font-medium rounded-full border flex items-center gap-2 transition
+    ${btnStatus
+      ? 'text-gray-500 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600'
+      : 'text-gray-900 bg-white border-gray-200 hover:bg-gray-100 hover:text-green-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:text-white dark:hover:bg-green-700 dark:border-gray-600'
+    }`}
+>
+  {btnStatus ? <><FaCheckCircle /> Hoàn thành</> : <><FaUpload /> Nộp Task</>}
+</button>
+
+    </div>
   </div>
 
   {/* Description */}
   <div className="mb-6 border-b pb-5 border-gray-200">
-    <h3 className="font-bold text-lg mb-2">Mô tả</h3>
+    <h3 className="font-bold text-lg">Mô tả</h3>
     <p className="text-gray-600 text-base whitespace-pre-wrap">{task.noiDung || 'Noi dung'}</p>
   </div>
 
   {/* Người thực hiện */}
-  <div className="mb-6 border-b pb-5 border-gray-200">
-    <h3 className="font-bold text-lg mb-2">Thực Hiện</h3>
-    <div className="flex items-center gap-3">
-      <img src={avatar} alt="avatar" className="w-10 h-10 border rounded-full object-cover" />
-      <div>
-        <p className="font-semibold text-base">{task?.sinh_vien?.hoTen || "Jack"}</p>
-        <p className="text-green-500 text-sm">{task?.sinh_vien?.viTri || "FE credit"}</p>
-      </div>
-    </div>
-  </div>
-
-  {/* Chấm điểm */}
-  <div className="mb-6 border-b pb-5 border-gray-200">
-   {!taskUpload ? (
-    <>
-            <label
-              htmlFor="cv-upload"
-              className="block w-full lg:w-[60%] lg:mx-auto lg:my-5 border-2 border-dashed border-green-400 rounded p-6 text-center cursor-pointer hover:bg-green-50 transition"
-            >
-              <div className="flex justify-center mb-2">
-                <div className="bg-green-700 text-white p-2 rounded-md">
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h5v-2H4V5h12v10h-5v2h5a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
-                    <path d="M9 12h2V8h3l-4-4-4 4h3v4z" />
-                  </svg>
-                </div>
-              </div>
-              <p>
-                Drag & Drop or{" "}
-                <span className="text-green-600 underline">choose file</span> to
-                upload
-              </p>
-              <p className="text-xs text-gray-500">
-                supported formats: .jpeg, .pdf
-              </p>
-            </label>
-            <input
-  id="cv-upload"
-  type="file"
-  className="hidden"
-  onChange={handleFileChange}
-/> </>
-
-          ) : (
-            <div className="w-full lg:w-[60%] lg:mx-auto border border-green-400 rounded-lg p-4 relative bg-green-50">
-              <div className="flex items-center space-x-4">
-                <FaFileAlt className="text-orange-400" />
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{taskUpload.name}</p>
-                  <div className="w-full bg-gray-200 rounded h-2 mt-2">
-                    <div
-                      className="bg-green-500 h-2 rounded"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                </div>
-                 <div className="flex gap-1 items-center">
-                               <button
-  className="cursor-pointer text-green-500"
-  onClick={() => {
-    if (taskUpload instanceof File) {
-      // Nếu là File vừa upload
-      window.open(URL.createObjectURL(taskUpload), '_blank');
-    } else if (taskUpload?.url) {
-      // Nếu là link đã có
-      window.open(taskUpload.url, '_blank');
-    } else {
-      alert("Không thể xem file.");
-    }
-  }}
->
-  <BsEyeFill className="text-2xl" />
-</button>
-
-                                {taskUpload?.url ? "":(<button
-                                  className="text-red-500 hover:text-red-700 cursor-pointer"
-                                  onClick={handleRemove}
-                                  aria-label="Xóa file"
-                                >
-                                  <FaTrashCan className="w-5 h-5" />
-                                </button>)}
-                              </div>
+  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <h3 className="text-lg font-semibold mb-4">Thành viên thực hiện</h3>
+      {task.sinh_viens?.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {task.sinh_viens.map((sv) => (
+            <div key={sv.maSV} className="flex items-center gap-3 mb-4">
+              <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <p className="font-semibold">{sv.hoTen}</p>
+                <p className="text-green-600 text-sm">{sv.viTri}</p>
+                <p className="text-gray-400 text-xs">{sv.email}</p>
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <p className="italic text-sm text-gray-500">Chưa có sinh viên thực hiện</p>
+      )}
+    </div>
+
+  {/* Nộp bài */}
+<div className="mt-6 border-b border-t py-5 border-gray-200">
+  <h3 className="font-bold text-lg">Nộp Bài</h3>
+
+  {!taskUpload && !task?.tepDinhKem ? (
+    <>
+      <label
+        htmlFor="cv-upload"
+        className="block w-full lg:w-[60%] lg:mx-auto lg:my-5 border-2 border-dashed border-green-400 rounded p-6 text-center cursor-pointer hover:bg-green-50 transition"
+      >
+        <div className="flex justify-center mb-2">
+          <div className="bg-green-700 text-white p-2 rounded-md">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h5v-2H4V5h12v10h-5v2h5a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
+              <path d="M9 12h2V8h3l-4-4-4 4h3v4z" />
+            </svg>
+          </div>
+        </div>
+        <p>
+          Drag & Drop or <span className="text-green-600 underline">choose file</span> to upload
+        </p>
+        <p className="text-xs text-gray-500">supported formats: .jpeg, .pdf</p>
+      </label>
+
+      <input id="cv-upload" type="file" className="hidden" onChange={handleFileChange} />
+    </>
+  ) : (
+    <div className="w-full lg:w-[60%] lg:mx-auto border border-green-400 rounded-lg p-4 relative bg-green-50">
+      <div className="flex items-center space-x-4">
+        <FaFileAlt className="text-orange-400" />
+        <div className="flex-1">
+          <p className="font-medium text-sm">
+            {taskUpload?.name || task?.tepDinhKem?.split('/').pop()}
+          </p>
+
+          {/* Thanh tiến trình chỉ hiển thị khi upload */}
+          {taskUpload && (
+            <div className="w-full bg-gray-200 rounded h-2 mt-2">
+              <div
+                className="bg-green-500 h-2 rounded"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           )}
+        </div>
+
+        <div className="flex gap-1 items-center">
+          {/* Nút xem file */}
+          <button
+            className="cursor-pointer text-green-500"
+            onClick={() => {
+              if (taskUpload instanceof File) {
+                window.open(URL.createObjectURL(taskUpload), '_blank');
+              } else if (task?.tepDinhKem) {
+               window.open(`${apiBaseURL}/${task.tepDinhKem}`, "_blank");
+              } else {
+                alert('Không thể xem file.');
+              }
+            }}
+          >
+            <BsEyeFill className="text-xl" />
+          </button>
+
+          {/* Chỉ cho phép xóa nếu là file mới chọn, không phải file đã nộp trước đó */}
+          {!task.tepDinhKem && (
+            <button
+              className="text-red-500 hover:text-red-700 cursor-pointer"
+              onClick={handleRemove}
+              aria-label="Xóa file"
+            >
+              <FaTrashCan className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+  {/* điểm */}
+  <div className="border-b py-4 border-gray-200">
+    <h3 className="font-bold text-lg">Điểm Số</h3>
+   {!task.diemSo?
+   (
+  <p className="italic text-sm text-gray-500">Chưa chấm điểm</p>
+   )
+   :
+   (
+<p className="inline-block bg-gradient-to-br from-green-700 to-lime-600 text-white text-xl font-bold px-3 py-1 rounded-lg shadow-lg">
+  {task.diemSo||0}
+</p>
+
+
+
+
+
+   )
+
+   }
+
+
   </div>
 
   {/* Nhận xét */}
   <div>
-    <h3 className="font-bold text-lg mb-2">Nhận Xét</h3>
+    <h3 className="font-bold text-lg mb-3">Nhận Xét</h3>
 
     {/* Nhận xét đã có */}
    {comments.map((comment) => (
@@ -384,7 +449,7 @@ const handleSubmitComment = async () => {
       <p className="font-semibold">
         {comment.user?.hoTen || "Không rõ"}
         <span className="text-green-500 text-sm ml-2">
-          {comment.user_type.includes("Admin") ? "Admin" : "Sinh viên"}
+          {comment.user_type.includes("Admin") ? "Admin" : "Student"}
         </span>
       </p>
       <p className="text-gray-700">{comment.noi_dung}</p>
@@ -399,7 +464,7 @@ const handleSubmitComment = async () => {
       <div className="flex-1 relative">
   <textarea
   rows="4"
-  className="w-full border-2 border-gray-300 rounded-md p-2 pr-10 text-sm resize-none"
+  className="w-full border-1 border-gray-300 rounded-md p-2 pr-10 text-sm resize-none focus:outline-3 focus:outline-green-100"
   placeholder="Ghi phản hồi..."
   value={newComment}
   onChange={(e) => setNewComment(e.target.value)}
@@ -420,9 +485,10 @@ const handleSubmitComment = async () => {
       </div>
     </div>
   </div>
-</div>
-
-  );
+</div>)}
+</>
+)
+ 
 }
 
 export default TaskStudent;

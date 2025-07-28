@@ -23,7 +23,7 @@ function TaskCard({ task }) {
 const getStatusColor = (trangThai) => {
   switch (trangThai) {
     case "Chưa nộp":
-      return "#FACC15"; // vàng dịu, nổi bật hơn (#FCD34D -> #FACC15)
+      return "#ff6600"; // vàng dịu, nổi bật hơn (#FCD34D -> #FACC15)
     case "Đã nộp":
       return "#22C55E"; // xanh lá nhẹ, rõ hơn (#6EE7B7 -> #22C55E)
     case "Nộp trễ":
