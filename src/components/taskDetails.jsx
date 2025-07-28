@@ -6,6 +6,7 @@ import avatar from "../assets/images/avatar.png";
 import { useEffect, useRef, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import { useNavigate, useParams } from "react-router-dom";
+import { BsDownload } from "react-icons/bs";
 
 function TaskDetails() {
   const [task, setTask] = useState({});
@@ -141,11 +142,62 @@ function TaskDetails() {
             <p className="text-sm text-gray-500">supported formats: .jpeg, .pdf</p>
           </label>
         ) : (
-          <div className="bg-green-50 border border-green-400 rounded-lg p-4 flex items-center gap-4">
-            <FaFileAlt className="text-orange-400 text-xl" />
-            <p className="text-sm font-medium truncate">{task.tepDinhKem.split("/").pop()}</p>
-          </div>
-        )}
+          
+              <div className="w-full lg:w-[60%] lg:mx-auto space-y-3">
+                {task.tepDinhKem.map((fileObj, index) => {
+                  const stored = fileObj.path?.replace('tasks/', '');
+                  const original = fileObj.name?.split('/').pop() || "file";
+          
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 border border-gray-300 p-4 rounded"
+                    >
+                      <div className="flex items-start sm:items-center gap-3 flex-1">
+                        <FaFileAlt className="text-[#becea79a] text-4xl mt-1 sm:mt-0" />
+                        <div>
+                          <p className="text-lg font-medium">{original}</p>
+                          
+                            <div className="text-sm ">
+                            
+                              <span>Đã nộp lúc: {new Date(task.updated_at).toLocaleString("vi-VN")}</span>
+                            </div>
+              
+                        </div>
+                      </div>
+          
+                      <div className="flex items-center gap-3">
+          
+                          <button
+                            onClick={() => {
+                              window.open(
+                                `${import.meta.env.VITE_API_URL}/download/${stored}/${encodeURIComponent(original)}`,
+                                '_blank'
+                              );
+                            }}
+                            className="cursor-pointer text-green-400 hover:text-green-800 transition"
+                            title={`Tải xuống: ${original}`}
+                          >
+                            <BsDownload className="text-lg" />
+                          </button>
+                      
+          
+                        {/* {!task?.tepDinhKem && (
+                          <button
+                            onClick={() => handleRemove(index)}
+                            className="text-red-500 hover:text-red-700 transition"
+                            title="Xóa file"
+                          >
+                            <FaTrashCan className="text-lg" />
+                          </button>
+                        )} */}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+ 
       </div>
 
       {/* Chấm điểm */}
