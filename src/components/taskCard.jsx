@@ -102,7 +102,7 @@ return (
     <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
   <span className="flex items-center gap-1">
     <AiOutlineMessage className="text-base" />
-    {task.soBinhLuan || 0} bình luận
+    {task.task_comments_count || 0} bình luận
   </span>
 
   {/* Nhóm avatar */}

@@ -182,10 +182,10 @@ useEffect(() => {
 
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] border border-gray-300 rounded-md overflow-hidden lg:shadow mt-8">
+    <div className="flex flex-col md:flex-row border border-gray-100 rounded-md overflow-hidden mt-8">
       
       {/* Sidebar */}
-      <div className={`md:w-1/3 w-full ${showSidebar ? "block" : "hidden"} md:block md:border-r border-gray-300 p-4 overflow-y-auto`}>
+      <div className={`md:w-1/3 w-full ${showSidebar ? "block" : "hidden"} md:block md:border-r border-gray-100 p-4 overflow-y-auto`}>
         <div className="relative mb-3">
           <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2 text-gray-400" />
           <input
@@ -229,7 +229,7 @@ useEffect(() => {
       {/* Chat content */}
       <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-        <div className="p-4 border-b border-gray-300 flex flex-wrap gap-2 items-center justify-between bg-white">
+        <div className="p-4 border-b border-gray-100 flex flex-wrap gap-2 items-center justify-between bg-white">
           <div className="flex items-center gap-1">
             <button
               className="md:hidden px-2 py-1 rounded text-sm mr-2"
@@ -250,21 +250,26 @@ useEffect(() => {
           </div>
 
           {role === 'Student' ? "":(<button
-            className="group relative px-2 lg:px-4 py-2 flex items-center gap-2 border border-gray-300 rounded-md cursor-pointer hover:text-red-500"
-          >
-            <FaRegTrashCan className="text-lg" />
-            <span className="hidden lg:inline">Xóa</span>
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-gray-700 text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-all lg:hidden">
-              Xóa đoạn chat
-            </span>
-          </button>)}
+  type="button"
+  className="cursor-pointer group relative py-2.5 px-5 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-full hover:bg-gray-100 hover:text-red-600 transition-all focus:outline-none focus:ring-4 focus:ring-gray-100 flex items-center gap-2"
+>
+  <FaRegTrashCan className="text-base" />
+  <span className="hidden lg:inline">Xóa</span>
+
+  {/* Tooltip cho mobile */}
+  <span className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs bg-black text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 shadow-md lg:hidden">
+    Xóa đoạn chat
+  </span>
+</button>
+
+)}
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3"
           ref={messageContainerRef}
           onScroll={handleScroll}
-          style={{ maxHeight: "calc(100vh - 220px)" }} 
+          
         >
           {messages.map((msg, i) => {
             const isMe = msg.from_id == currentUser.id && msg.from_role == currentUser.from_role;

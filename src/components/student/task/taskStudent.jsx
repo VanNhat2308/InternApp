@@ -358,10 +358,16 @@ useEffect(() => {
     <div className="mb-6 lg:w-[60%] lg:mx-auto">
       <label
         htmlFor="file-upload"
-        className="block border-2 border-dashed border-green-400 rounded p-6 text-center cursor-pointer hover:bg-green-50 transition"
+        className="block border-2 border-dashed border-green-400 rounded p-6 cursor-pointer hover:bg-green-50 transition"
       >
-        <p className="text-green-700 font-medium">Click hoặc kéo file vào đây để tải lên</p>
-        <p className="text-xs text-gray-500 mt-1">Hỗ trợ nhiều file (PDF, hình ảnh...)</p>
+         <div className="flex flex-col items-center justify-center mb-2">
+           <svg className="w-6 h-6 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h5v-2H4V5h12v10h-5v2h5a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
+                    <path d="M9 12h2V8h3l-4-4-4 4h3v4z" />
+                  </svg>
+                   <p className="text-green-700 font-medium">Click hoặc kéo file vào đây để tải lên</p>
+                   <p className="text-xs text-gray-500 mt-1">Hỗ trợ nhiều file (PDF, hình ảnh...)</p>
+         </div>
       </label>
       <input
         id="file-upload"
@@ -381,50 +387,49 @@ useEffect(() => {
         const original = fileObj.name?.split('/').pop() || "file";
 
         return (
-          <div
-            key={index}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 border border-gray-300 p-4 rounded"
-          >
-            <div className="flex items-start sm:items-center gap-3 flex-1">
-              <FaFileAlt className="text-[#becea79a] text-4xl mt-1 sm:mt-0" />
-              <div>
-                <p className="text-lg font-medium">{original}</p>
-                {btnStatus && (
-                  <div className="text-sm ">
-                  
-                    <span>Đã nộp lúc: {new Date(task.updated_at).toLocaleString("vi-VN")}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+                          <div
+  key={index}
+  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition"
+>
+  {/* Left: File info */}
+  <div className="flex items-start sm:items-center gap-4 flex-1">
+    <FaFileAlt className="text-green-400 text-4xl mt-1 sm:mt-0" />
+    <div>
+      <p className="text-base font-semibold text-gray-800">{original}</p>
+      <p className="text-sm text-gray-500 mt-1">
+        Đã nộp lúc: {new Date(task.updated_at).toLocaleString("vi-VN")}
+      </p>
+    </div>
+  </div>
 
-            <div className="flex items-center gap-3">
-              {btnStatus && (
-                <button
-                  onClick={() => {
-                    window.open(
-                      `${import.meta.env.VITE_API_URL}/download/${stored}/${encodeURIComponent(original)}`,
-                      '_blank'
-                    );
-                  }}
-                  className="cursor-pointer text-green-400 hover:text-green-800 transition"
-                  title={`Tải xuống: ${original}`}
-                >
-                  <BsDownload className="text-lg" />
-                </button>
-              )}
+  {/* Right: Actions */}
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => {
+        window.open(
+          `${import.meta.env.VITE_API_URL}/download/${stored}/${encodeURIComponent(original)}`,
+          '_blank'
+        );
+      }}
+      className="flex items-center gap-1 text-green-600 hover:text-green-800 transition"
+      title={`Tải xuống: ${original}`}
+    >
+      <BsDownload className="text-xl" />
+      <span className="hidden sm:inline text-sm font-medium">Tải xuống</span>
+    </button>
 
-              {!task?.tepDinhKem && (
-                <button
-                  onClick={() => handleRemove(index)}
-                  className="text-red-500 hover:text-red-700 transition"
-                  title="Xóa file"
-                >
-                  <FaTrashCan className="text-lg" />
-                </button>
-              )}
-            </div>
-          </div>
+    {/* Nếu cần nút xóa thì bật lại bên dưới */}
+    {/* {!task?.tepDinhKem && (
+      <button
+        onClick={() => handleRemove(index)}
+        className="text-red-500 hover:text-red-700 transition"
+        title="Xóa file"
+      >
+        <FaTrashCan className="text-lg" />
+      </button>
+    )} */}
+  </div>
+</div>
         );
       })}
     </div>
