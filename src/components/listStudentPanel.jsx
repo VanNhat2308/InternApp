@@ -208,7 +208,7 @@ const handleDeleteSelected = () => {
        <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
-    <div className="p-4 w-full max-w-screen h-fit lg:h-fit mt-5 rounded-xl shadow border border-[#ECECEE]">
+    <div className="p-4 flex flex-col w-full max-w-screen lg:h-fit mt-5 rounded-md  border border-gray-100">
       {/* filter bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
   {/* Search */}
@@ -265,7 +265,7 @@ const handleDeleteSelected = () => {
     <span className="sr-only">Loading...</span>
 </div>
         </div>
-      ) : (<div className="overflow-x-auto mt-5 max-h-[610px]">
+      ) : (<div className="overflow-x-auto mt-5 flex-1">
          <table className="lg:w-full min-w-[800px] text-sm table-auto">
             <thead className="sticky top-0 bg-gray-100 text-left text-gray-500 border-b border-b-gray-300 z-10">
               <tr>
@@ -350,23 +350,25 @@ const handleDeleteSelected = () => {
             </tbody>
           </table>
         </div>)}
-        <div className="flex items-center gap-2 my-4">
-  <input
-    id="perPage"
-    type="number"
-    min={1}
-    value={perPage}
-    onChange={(e) => setPerPage(Number(e.target.value))}
-    className="border border-gray-300 px-2 py-1 w-20 rounded"
-  />
-  <span className="text-sm text-gray-600">
-  trên {totalRecords} bản ghi
-  </span>
-</div>
-
-      <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
-
-    </div>
+        <div className="flex flex-col md:flex-row justify-center items-center md:justify-between">
+          <div className="flex items-center gap-2 mt-4">
+            <input
+              id="perPage"
+              type="number"
+              min={1}
+              value={perPage}
+              onChange={(e) => setPerPage(Number(e.target.value))}
+              className="border border-gray-300 px-2 py-1 w-20 rounded"
+            />
+            <span className="text-sm text-gray-600">
+            trên {totalRecords} bản ghi
+            </span>
+          </div>
+          
+                <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
+          
+              </div>
+        </div>
     </>
   );
 }

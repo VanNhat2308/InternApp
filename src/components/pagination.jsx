@@ -10,7 +10,7 @@ const Pagination = ({ currentPage, setCurrentPage, totalPages = 1 }) => {
     const pages = [];
     const maxShown = 3; // số trang giữa được hiển thị
 
-    if (totalPages <= 7) {
+    if (totalPages <= 4) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
       pages.push(1); // trang đầu

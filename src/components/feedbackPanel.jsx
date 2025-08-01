@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FiMessageSquare, FiSearch } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
@@ -99,6 +99,11 @@ function FeedbackPanel() {
     console.error("Không thể tạo hội thoại", err);
   }
 };
+ 
+messages.forEach(e => {
+  console.log(e.unread);
+  
+});
 
 
   return (
@@ -172,7 +177,7 @@ function FeedbackPanel() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end text-xs text-gray-500 min-w-[60px]">
-                    {msg.unread && <div className="w-2 h-2 bg-red-500 rounded-full mb-1" />}
+                    {!msg.unread && <div className="w-2 h-2 bg-red-500 rounded-full mb-1" />}
                     <span>{msg.time}</span>
                   </div>
                 </div>
