@@ -30,7 +30,7 @@ function ResponNav() {
     return ( 
         <>
         <div className="h-[56px]" />
-    <div  style={{ background: 'rgba(34, 141, 63, 1)' }} className='fixed top-0 left-0 w-full z-1000'>
+    <div  style={{ background: 'rgba(34, 141, 63, 1)' }} className='fixed top-0 left-0 w-full z-3001'>
     <div className='flex items-center justify-between py-2 px-3'>
         <HiMiniBars3BottomRight onClick={toggleSidebar}/>
         <img src={pizitechLogo} className='w-15' alt="pizitech" />

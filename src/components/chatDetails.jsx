@@ -83,7 +83,7 @@ const handleFocusMarkAsRead = () => {
   if (hasMarkedAsRead.current || !selectedConversationId) return;
 
   axiosClient.post("/messages/mark-as-read", {
-    conversation_id: selectedConversationId,
+    conversation_id: Number(selectedConversationId),
     user_id: selectedUserId,
     user_role: role,
   });

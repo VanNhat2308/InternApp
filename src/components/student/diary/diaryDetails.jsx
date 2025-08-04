@@ -11,6 +11,7 @@ import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
+import Swal from "sweetalert2";
 dayjs.extend(isoWeek);
 import axiosClient from "../../../service/axiosClient";
 function DiaryDetails() {
@@ -18,6 +19,9 @@ function DiaryDetails() {
   const { idSlug } = useParams();
   const [showInput, setShowInput] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(dayjs().format("DD/MM/YYYY"));
+
+
   // const maSV = localStorage.getItem('maSV')
   const email = localStorage.getItem('email')
   const hoTen = localStorage.getItem('hoTen')
@@ -70,21 +74,74 @@ const handleStatusDiary = (id) => {
     .catch((err) => console.error(err));
 };
   
-
 const handleAddTask = () => {
   if (!taskInput.tenCongViec.trim() || !taskInput.ketQua.trim()) {
-    alert("Vui lòng nhập đầy đủ thông tin.");
+    Swal.fire({
+      icon: "warning",
+      title: "Thiếu thông tin",
+      text: "Vui lòng nhập đầy đủ tên công việc và kết quả.",
+    });
     return;
   }
 
-  axiosClient.post(`/nhat-ky/${idSlug}/chi-tiet`, taskInput)
-    .then(() => {
-      fetchTask(); 
-      setTaskInput({ tenCongViec: "", ketQua: "", tienDo: "Chưa xong" });
-      setShowInput(false);
-    })
-    .catch((err) => console.error(err));
+  if (!selectedDay) {
+    Swal.fire({
+      icon: "warning",
+      title: "Thiếu ngày thực hiện",
+      text: "Vui lòng chọn ngày thực hiện.",
+    });
+    return;
+  }
+
+  // Kiểm tra định dạng ngày (ví dụ: 'DD/MM/YYYY')
+  const dayRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+  if (!dayRegex.test(selectedDay)) {
+    Swal.fire({
+      icon: "error",
+      title: "Sai định dạng ngày",
+      text: "Ngày thực hiện phải theo định dạng DD/MM/YYYY.",
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: "Xác nhận thêm công việc?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Thêm",
+    cancelButtonText: "Huỷ",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const payload = {
+        ...taskInput,
+        ngayThucHien: selectedDay,
+      };
+
+      axiosClient.post(`/nhat-ky/${idSlug}/chi-tiet`, payload)
+        .then(() => {
+          fetchTask();
+          setTaskInput({ tenCongViec: "", ketQua: "", tienDo: "Chưa xong" });
+          setShowInput(false);
+
+          Swal.fire({
+            icon: "success",
+            title: "Đã thêm công việc!",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi!",
+            text: "Không thể thêm công việc. Vui lòng thử lại.",
+          });
+        });
+    }
+  });
 };
+
 
   
   const handleEditTask = (index) => {
@@ -96,19 +153,40 @@ const handleAddTask = () => {
     tienDo: task.tienDo || "Chưa xong",
   });
 };
-
 const handleDeleteTask = (index) => {
   const item = diary.chi_tiet_nhat_kies[index];
 
-  const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xoá công việc "${item.tenCongViec}" không?`);
-
-  if (!confirmDelete) return;
-
-  axiosClient
-    .delete(`/nhat-ky/${idSlug}/chi-tiet/${item.id}`)
-    .then(() => fetchTask())
-    .catch((err) => console.error(err));
+  Swal.fire({
+    title: `Xác nhận xoá`,
+    text: `Bạn có chắc chắn muốn xoá công việc "${item.tenCongViec}" không?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Xoá",
+    cancelButtonText: "Huỷ",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axiosClient
+        .delete(`/nhat-ky/${idSlug}/chi-tiet/${item.id}`)
+        .then(() => {
+          fetchTask();
+          Swal.fire({
+            title: "Đã xoá!",
+            text: "Công việc đã được xoá thành công.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire("Lỗi", "Xoá công việc thất bại.", "error");
+        });
+    }
+  });
 };
+
 
 
 const handleSaveEdit = () => {
@@ -155,19 +233,20 @@ const handleSaveEdit = () => {
     fetchTask()
   },[])
 
-  const today = dayjs().format("DD/MM/YYYY"); // hôm nay
-  const monday = dayjs().startOf("week").add(1, "day");
+const today = dayjs().format("DD/MM/YYYY");
+const monday = dayjs().startOf("isoWeek");
 
-  const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const day = monday.add(i, "day");
-    return {
-      label: `Thứ ${i + 2}`,
-      date: day.format("DD/MM"),
-      full: day.format("DD/MM/YYYY"),
-      isToday: day.format("DD/MM/YYYY") === today,
-    };
-  });
-
+const weekDays = Array.from({ length: 7 }, (_, i) => {
+  const day = monday.add(i, "day");
+  const fullDate = day.format("DD/MM/YYYY");
+  return {
+    label: `Thứ ${i + 2}`,
+    date: day.format("DD/MM"),
+    full: fullDate,
+    isToday: fullDate === today,
+    isSelected: fullDate === selectedDay,
+  };
+});
   const statusColor = (status) => {
     if (status === "Hoàn thành") return "text-green-500";
     if (status === "Chưa xong") return "text-yellow-500";
@@ -182,8 +261,15 @@ const handleSaveEdit = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+ const formatDateToISO = (dateStr) => {
+  const [day, month, year] = dateStr.split('/');
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+};
+
+  
   return (
-    <div className="flex-1">
+    <div>
       {isMobile ? (
         <ResponNav />
       ) : (
@@ -194,10 +280,10 @@ const handleSaveEdit = () => {
           </p>
         </Header>
       )}
-      <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+      <div className="border border-gray-100 lg:p-4 mt-5 rounded-md">
         <div className="flex flex-col items-center gap-4 pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
           {/* avatar + info */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-start">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-start mt-3">
             <img
               src={
                 // students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}` :
@@ -236,27 +322,30 @@ const handleSaveEdit = () => {
 
           </div>
         </div>
-        <div className="bg-white p-6">
+        <div className="bg-white lg:p-6 p-2 overflow-hidden max-w-[95vw]">
           <h2 className="text-xl font-bold mb-2">{tieuDe}</h2>
           <p className="text-gray-500 mb-4">  {diary?.ngayTao ? getWeekRange(diary.ngayTao) : ""}</p>
 
           {/* Calendar header */}
-          <div className="flex gap-2 mb-6">
-            {diary?.ngayTao &&
-  getWeekDates(diary.ngayTao).map((day, index) => (
-              <div
-                key={day.date}
-                  className={`text-center py-2 px-4 rounded-lg border border-gray-300 
-        ${day.isSelected ? "bg-blue-600 text-white" : 
-          day.isToday ? "bg-green-600 text-white" : "bg-gray-100"}`}
-              >
-                <div className="text-sm font-medium">{day.label}</div>
-                <div className="text-lg font-semibold">
-                  {day.date.split("/")[0]}
-                </div>
-              </div>
-            ))}
-          </div>
+   <div className="max-w-[680px] overflow-x-auto">
+  <div className="flex gap-2 min-w-[600px]">
+
+    {weekDays.map((day) => (
+      <div
+        key={day.full}
+        onClick={() => setSelectedDay(day.full)}
+        className={`cursor-pointer text-center py-2 px-4 rounded-lg border border-gray-300 transition
+          ${day.isSelected ? "bg-blue-600 text-white" :
+           day.isToday ? "bg-green-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}
+      >
+        <div className="text-sm font-medium">{day.label}</div>
+        <div className="text-lg font-semibold">{day.date.split('/')[0]}</div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
 
           {/* Table header */}
         {loading ? (
@@ -281,147 +370,149 @@ const handleSaveEdit = () => {
             <span className="sr-only">Loading...</span>
           </div>
         </div>
-      ):(<>
-       <div className="grid grid-cols-12 text-gray-500 text-sm font-medium border-b border-gray-300  pb-2">
-            <div className="col-span-3">Tên Công Việc</div>
-            <div className="col-span-5">Kết Quả Thực Hiện</div>
-            <div className="col-span-2">Tiến Độ</div>
-            <div className="col-span-2">Hành Động</div>
-          </div>
-
-          {/* Task rows */}
-          {diary?.chi_tiet_nhat_kies?.map((task, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-12 py-2 items-center border-b border-gray-300  text-sm"
-            >
-              {editIndex === idx ? (
-                <>
-                  <input
-                    className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-                    placeholder={task.tenCongViec}
-                    value={editTask.tenCongViec ?? ""}
-                    onChange={(e) =>
-                      setEditTask({ ...editTask, tenCongViec: e.target.value })
-                    }
-                  />
-                  <input
-                    className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-                    placeholder={task.ketQua}
-                    value={editTask.ketQua ?? ""}
-                    onChange={(e) =>
-                      setEditTask({ ...editTask, ketQua: e.target.value })
-                    }
-                  />
-                  <select
-                    className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-                    value={editTask.tienDo ?? ""}
-                    onChange={(e) =>
-                      setEditTask({ ...editTask, tienDo: e.target.value })
-                    }
-                  >
-                    <option value="Hoàn thành">Hoàn thành</option>
-                    <option value="Chưa xong">Chưa xong</option>
-                  </select>
-                  <div className="col-span-2 flex gap-2">
-                    <button onClick={handleSaveEdit} className="text-green-600">
-                      ✔
-                    </button>
-                    <button
-                      onClick={() => setEditIndex(null)}
-                      className="text-red-600"
-                    >
-                      ✖
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="col-span-3 font-medium text-gray-700">
-                    {task.tenCongViec ?? ""}
-                  </div>
-                  <div className="col-span-5 text-gray-600">{task.ketQua ?? ""}</div>
-                  <div
-                    className={`col-span-2 font-semibold ${statusColor(
-                      task.tienDo
-                    )}`}
-                  >
-                    {task.tienDo ?? ""}
-                  </div>
-                  <div className="col-span-2 flex gap-3">
-                    <button onClick={() => handleEditTask(idx)}>
-                      <CiEdit className="text-xl" />
-                    </button>
-                    <button onClick={() => handleDeleteTask(idx)}>
-                      <RiDeleteBin6Line className="text-xl" />
-                    </button>
-                  </div>
-                </>
-              )}
+      ):(
+      <div className="max-w-[650px] lg:max-w-screen overflow-auto mt-5 ">
+       <div className="w-full min-w-[600px]">
+         <div className="grid grid-cols-12 text-gray-500 text-sm font-medium border-b border-gray-300 pb-2 ">
+              <div className="col-span-3">Tên Công Việc</div>
+              <div className="col-span-5">Kết Quả Thực Hiện</div>
+              <div className="col-span-2">Tiến Độ</div>
+              <div className="col-span-2">Hành Động</div>
             </div>
-          ))}
-
-          {showInput && (
-            <div className="grid grid-cols-12 gap-2 py-2 items-center border-b border-gray-300 text-sm focus:outline-none">
-              <input
-                type="text"
-                placeholder="Nhập tên công việc"
-                value={taskInput.tenCongViec ?? ""}
-                onChange={(e) =>
-                  setTaskInput({ ...taskInput, tenCongViec: e.target.value })
-                }
-                className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-              />
-              <input
-                type="text"
-                placeholder="Nhập kết quả thực hiện"
-                value={taskInput.ketQua ?? ""}
-                onChange={(e) =>
-                  setTaskInput({ ...taskInput, ketQua: e.target.value })
-                }
-                className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
-              />
-              <select
-                value={taskInput.tienDo ?? ""}
-                onChange={(e) =>
-                  setTaskInput({ ...taskInput, tienDo: e.target.value })
-                }
-                className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+            {/* Task rows */}
+            {diary?.chi_tiet_nhat_kies?.filter(item => item.ngayThucHien === formatDateToISO(selectedDay)).map((task, idx) => (
+              <div
+                key={idx}
+                className="grid grid-cols-12 py-2 items-center border-b border-gray-300  text-sm"
               >
-                <option value="Hoàn thành" className="text-green-500">
-                  Hoàn thành
-                </option>
-                <option value="Chưa xong" className="text-yellow-500">
-                  Chưa xong
-                </option>
-              </select>
-              <div className="col-span-2 flex justify-end gap-2">
-                <button
-                  onClick={handleAddTask}
-                  className="text-green-600 font-medium"
-                >
-                  ✔
-                </button>
-                <button
-                  onClick={() => setShowInput(false)}
-                  className="text-red-600 font-medium"
-                >
-                  ✖
-                </button>
+                {editIndex === idx ? (
+                  <>
+                    <input
+                      className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                      placeholder={task.tenCongViec}
+                      value={editTask.tenCongViec ?? ""}
+                      onChange={(e) =>
+                        setEditTask({ ...editTask, tenCongViec: e.target.value })
+                      }
+                    />
+                    <input
+                      className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                      placeholder={task.ketQua}
+                      value={editTask.ketQua ?? ""}
+                      onChange={(e) =>
+                        setEditTask({ ...editTask, ketQua: e.target.value })
+                      }
+                    />
+                    <select
+                      className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                      value={editTask.tienDo ?? ""}
+                      onChange={(e) =>
+                        setEditTask({ ...editTask, tienDo: e.target.value })
+                      }
+                    >
+                      <option value="Hoàn thành">Hoàn thành</option>
+                      <option value="Chưa xong">Chưa xong</option>
+                    </select>
+                    <div className="col-span-2 flex gap-2">
+                      <button onClick={handleSaveEdit} className="text-green-600">
+                        ✔
+                      </button>
+                      <button
+                        onClick={() => setEditIndex(null)}
+                        className="text-red-600"
+                      >
+                        ✖
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="col-span-3 font-medium text-gray-700">
+                      {task.tenCongViec ?? ""}
+                    </div>
+                    <div className="col-span-5 text-gray-600">{task.ketQua ?? ""}</div>
+                    <div
+                      className={`col-span-2 font-semibold ${statusColor(
+                        task.tienDo
+                      )}`}
+                    >
+                      {task.tienDo ?? ""}
+                    </div>
+                    <div className="col-span-2 flex gap-3">
+                      <button onClick={() => handleEditTask(idx)}>
+                        <CiEdit className="text-xl" />
+                      </button>
+                      <button onClick={() => handleDeleteTask(idx)}>
+                        <RiDeleteBin6Line className="text-xl" />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          )}
-
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={() => setShowInput(true)}
-              className="cursor-pointer flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-100"
-            >
-              <FiPlus className="text-2xl" /> Thêm công việc
-            </button>
-          </div>
-        </>)
+            ))}
+            {showInput && (
+              <div className="grid grid-cols-12 gap-2 py-2 items-center border-b border-gray-300 text-sm focus:outline-none">
+                <input
+                  type="text"
+                  placeholder="Nhập tên công việc"
+                  value={taskInput.tenCongViec ?? ""}
+                  onChange={(e) =>
+                    setTaskInput({ ...taskInput, tenCongViec: e.target.value })
+                  }
+                  className="col-span-3 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                />
+                <input
+                  type="text"
+                  placeholder="Nhập kết quả thực hiện"
+                  value={taskInput.ketQua ?? ""}
+                  onChange={(e) =>
+                    setTaskInput({ ...taskInput, ketQua: e.target.value })
+                  }
+                  className="col-span-5 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                />
+                <select
+                  value={taskInput.tienDo ?? ""}
+                  onChange={(e) =>
+                    setTaskInput({ ...taskInput, tienDo: e.target.value })
+                  }
+                  className="col-span-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                >
+                  <option value="Hoàn thành" className="text-green-500">
+                    Hoàn thành
+                  </option>
+                  <option value="Chưa xong" className="text-yellow-500">
+                    Chưa xong
+                  </option>
+                </select>
+                <div className="col-span-2 flex justify-end gap-2">
+                  <button
+                    onClick={handleAddTask}
+                    className="text-green-600 font-medium"
+                  >
+                    ✔
+                  </button>
+                  <button
+                    onClick={() => setShowInput(false)}
+                    className="text-red-600 font-medium"
+                  >
+                    ✖
+                  </button>
+                </div>
+              </div>
+            )}
+           
+       </div>
+      
+        </div>)
         }
+          <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setShowInput(true)}
+                className="cursor-pointer flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-100"
+              >
+                <FiPlus className="text-2xl" /> Thêm công việc
+              </button>
+            </div>
         </div>
       </div>
     </div>
