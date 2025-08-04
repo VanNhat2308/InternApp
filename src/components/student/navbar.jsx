@@ -16,6 +16,7 @@ import ".././css/navbar.css";
 import { useSidebar } from "../../context/sidebarContext";
 import { useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
+import axiosClient from "../../service/axiosClient";
 const navItems = [
   { label: "Dashboard", icon: <FaTh />, active: true, linkTo: "dashboard" },
   {
@@ -50,7 +51,20 @@ const navItems = [
 const Navbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { isSidebarOpen, setSidebarOpen } = useSidebar();
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const user_role = localStorage.getItem('role')
+  const user_id = user_role =='Admin' ? localStorage.getItem('maAdmin'):localStorage.getItem('maSV')
 
+useEffect(() => {
+  axiosClient.get('/messages/has-unread', {
+    params: {
+      user_id: user_id,
+      user_role: user_role=="Admin"?'admin':'sinhvien',
+    },
+  }).then(res => {
+    setHasUnreadMessages(res.data.has_unread);
+  });
+}, [user_id, user_role]);
 
   const navRef = useRef();
   useEffect(() => {
@@ -133,7 +147,7 @@ const Navbar = () => {
   `}
 >
   <span className={`text-lg relative ${
-    item.danger
+   hasUnreadMessages
       ? "before:content-[''] before:bg-red-500 before:w-2 before:h-2 before:rounded-full before:absolute before:right-[-4px] before:top-[-2px]"
       : ""
   }`}>

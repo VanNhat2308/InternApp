@@ -139,6 +139,8 @@ const statusStyle = (checkInTime) => {
 
 
 function tinhThoiGianLamViec(gioBatDau, gioKetThuc) {
+  if(!gioBatDau || !gioKetThuc)
+    return '0 giờ'
   const [h1, m1] = gioBatDau.split(":").map(Number);
   const [h2, m2] = gioKetThuc.split(":").map(Number);
 

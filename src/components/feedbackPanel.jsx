@@ -75,6 +75,10 @@ function FeedbackPanel() {
       navigate(`/${role.toLowerCase()}/feedback/start/${receiverId}?receiverType=${receiverRole}`);
     }
   };
+  const convertID = ()=>{
+    localStorage.getItem('role') === 'Admin'?localStorage.getItem('maAdmin'):localStorage.getItem('maSV')
+
+  } 
   const handleStartConversation = async (targetId, targetRole) => {
   const fromId = localStorage.getItem(role === "Student" ? "maSV" : "maAdmin");
   const fromRole = role === "Student" ? "sinhvien" : "admin";
@@ -185,9 +189,9 @@ messages.forEach(e => {
             : (
               <>
 
-           {users.map((user) => (
+           {users.map((user,idx) => (
   <div
-    key={user.id}
+    key={idx}
     className="flex items-center justify-between gap-3 hover:bg-gray-100 px-3 py-2 rounded-lg transition"
   >
     {/* Bên trái: thông tin người dùng */}
@@ -203,7 +207,7 @@ messages.forEach(e => {
 
     {/* Bên phải: nút chat */}
     <button
-     onClick={() => handleStartConversation(user.maSV, role === "Student" ? "Admin" : "SinhVien")}
+     onClick={() => handleStartConversation(user.maSV || user.maAdmin, role === "Student" ? "Admin" : "SinhVien")}
 
       className="cursor-pointer text-blue-500 hover:text-blue-700 transition p-2"
       title="Trò chuyện"

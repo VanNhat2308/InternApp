@@ -19,8 +19,7 @@ export default function ChatDetails() {
   const [newMsg, setNewMsg] = useState("");
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [nameUser, setNameUser] = useState("Không rõ");
+  const [nameUser, setNameUser] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [loadingRecent, setLoadingRecent] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -66,6 +65,7 @@ export default function ChatDetails() {
       ? localStorage.getItem("maSV")
       : localStorage.getItem("maAdmin");
   const hasMarkedAsRead = useRef(false);
+  
   const swapUser = (r) => {
     switch (r) {
       case "Student":
@@ -80,7 +80,6 @@ export default function ChatDetails() {
 
 const handleFocusMarkAsRead = () => {
  const role = localStorage.getItem("role") === "Admin" ? 'sinhvien':'admin'
-  console.log(selectedConversationId);
   if (hasMarkedAsRead.current || !selectedConversationId) return;
 
   axiosClient.post("/messages/mark-as-read", {
@@ -97,7 +96,7 @@ useEffect(() => {
 }, [selectedConversationId]);
 
 
-  const currentUser = { id: id, name: "Tôi", from_role: swapUser(role) };
+  const currentUser = { id: Number(id), name: "Tôi", from_role: swapUser(role) };
 
   useEffect(() => {
     setSelectedConversationId(idSlug);
@@ -139,7 +138,7 @@ useEffect(() => {
 
   // Lấy tin nhắn của 1 conversation
 const fetchMessagesByConversationId = async () => {
-  if (!selectedConversationId) return;
+  if (!selectedConversationId || !selectedUserId) return;
 
   setLoadingMessages(true);
 
@@ -158,8 +157,9 @@ const fetchMessagesByConversationId = async () => {
 
 // Gọi trong useEffect
 useEffect(() => {
+  if (!selectedConversationId || conversations[selectedUserId]?.length) return;
   fetchMessagesByConversationId();
-}, [selectedConversationId, selectedUserId]);
+}, [selectedConversationId, selectedUserId, conversations]);
 
 
   const selectedUser = messagesRecent.find((u) => u.id === selectedUserId);
@@ -190,11 +190,12 @@ useEffect(() => {
   setNewMsg("");
 
 axiosClient.post("/messages", newMessage).then((res) => {
-  const savedMessage = res.data.data;
-
+  const savedMessage = res.data;
+  console.log(savedMessage);
+  
   setConversations((prev) => {
     const updatedMessages = (prev[selectedUserId] || []).map((msg) =>
-      msg.id === tempId ? { ...savedMessage, sending: false } : msg
+      msg.id == tempId ? { ...savedMessage, sending: false } : msg
     );
 
     return {
@@ -205,7 +206,6 @@ axiosClient.post("/messages", newMessage).then((res) => {
 });
 
 };
-
   // const userRole = localStorage.getItem('role')
 
   // realtime pusher
@@ -213,7 +213,8 @@ axiosClient.post("/messages", newMessage).then((res) => {
     const channel = echo.channel(`chat.${currentUser.id}`);
     channel.listen("NewMessage", (e) => {
       const msg = e.message;
-      if (msg.conversation_id === Number(selectedConversationId)) {
+      if (msg.conversation_id === Number(selectedConversationId) &&
+  msg.from_id !== currentUser.id) {
         setConversations((prev) => ({
           ...prev,
           [selectedUserId]: [...(prev[selectedUserId] || []), msg],
@@ -263,6 +264,9 @@ const handleDelete = () => {
     }
   });
 };
+
+
+
 
   return (
     <>
@@ -441,8 +445,11 @@ const handleDelete = () => {
   className="flex-1 overflow-y-auto max-h-[700px] p-4" 
 >
   {messages.map((msg, i) => {
+ 
     const isMe =
       msg.from_id == currentUser.id && msg.from_role == currentUser.from_role;
+
+    
     if (!msg.content) return;
 
     const time = dayjs(msg.created_at).format("HH:mm");
@@ -495,7 +502,7 @@ const handleDelete = () => {
           )}
             </div>
              {msg.from_id === currentUser.id && msg.sending === true && (
-    <div className="text-xs text-right text-white rounded-full mt-1 px-2 py-1 bg-gray-400">
+    <div className="text-xs text-right">
       Đang gửi...
     </div>
   )}
