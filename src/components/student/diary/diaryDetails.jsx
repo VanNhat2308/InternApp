@@ -327,18 +327,18 @@ const weekDays = Array.from({ length: 7 }, (_, i) => {
           <p className="text-gray-500 mb-4">  {diary?.ngayTao ? getWeekRange(diary.ngayTao) : ""}</p>
 
           {/* Calendar header */}
-   <div className="max-w-[680px] overflow-x-auto">
-  <div className="flex gap-2 min-w-[600px]">
+   <div className="max-w-[880px] overflow-x-auto">
+  <div className="flex gap-2 min-w-[700px]">
 
     {weekDays.map((day) => (
       <div
         key={day.full}
         onClick={() => setSelectedDay(day.full)}
-        className={`cursor-pointer text-center py-2 px-4 rounded-lg border border-gray-300 transition
-          ${day.isSelected ? "bg-blue-600 text-white" :
-           day.isToday ? "bg-green-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}
+        className={`cursor-pointer text-center py-2 px-4 rounded-lg border border-gray-300 transition lg:min-w-[97px]
+          ${day.isSelected ? "bg-blue-600 text-white" :""
+          }`}
       >
-        <div className="text-sm font-medium">{day.label}</div>
+        <div className="text-sm font-medium">{day.label=="Thứ 8"?"Chủ nhật":day.label}</div>
         <div className="text-lg font-semibold">{day.date.split('/')[0]}</div>
       </div>
     ))}
@@ -427,10 +427,13 @@ const weekDays = Array.from({ length: 7 }, (_, i) => {
                   </>
                 ) : (
                   <>
-                    <div className="col-span-3 font-medium text-gray-700">
-                      {task.tenCongViec ?? ""}
-                    </div>
-                    <div className="col-span-5 text-gray-600">{task.ketQua ?? ""}</div>
+                   <div className="col-span-3 font-medium text-gray-700 break-words whitespace-normal">
+  {task.tenCongViec ?? ""}
+</div>
+<div className="col-span-5 text-gray-600 break-words whitespace-normal">
+  {task.ketQua ?? ""}
+</div>
+
                     <div
                       className={`col-span-2 font-semibold ${statusColor(
                         task.tienDo

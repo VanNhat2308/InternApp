@@ -440,7 +440,7 @@ useEffect(() => {
                 {btnStatus}
               </button>
             </div>
-            <button
+            {/* <button
               onClick={handleShowDialog}
               className="flex cursor-pointer items-center gap-2 w-full bg-white rounded-xl shadow p-4 border border-[#ECECEE] mb-5"
             >
@@ -448,7 +448,7 @@ useEffect(() => {
                 <TbCalendarPlus className="text-green-400 text-xl" />
               </div>
               <span>Tạo báo cáo tự động</span>
-            </button>
+            </button> */}
             <div className="flex flex-col gap-3 ">
               <WeeklyAttendanceChart  chartData={chartData}/>
             </div>

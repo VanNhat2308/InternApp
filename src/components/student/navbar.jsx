@@ -51,22 +51,8 @@ const navItems = [
 const Navbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { isSidebarOpen, setSidebarOpen } = useSidebar();
-  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
-  const user_role = localStorage.getItem('role')
-  const user_id = user_role =='Admin' ? localStorage.getItem('maAdmin'):localStorage.getItem('maSV')
-  const location = useLocation()
-useEffect(() => {
-  axiosClient.get('/messages/has-unread', {
-    params: {
-      user_id: user_id,
-      user_role: user_role=="Admin"?'admin':'sinhvien',
-    },
-  }).then(res => {
-    setHasUnreadMessages(res.data.has_unread);
-  });
-}, [user_id, user_role, location.pathname]);
-
-  const navRef = useRef();
+ 
+ const navRef = useRef();
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (navRef.current && !navRef.current.contains(e.target)) {
@@ -87,13 +73,7 @@ useEffect(() => {
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
   };
-  const handleActive = (clickedItem) => {
-    const updatedNavItems = navItemsState.map((item) => ({
-      ...item,
-      active: item.label === clickedItem.label,
-    }));
-    setNavItemsState(updatedNavItems);
-  };
+
 
   return (
     <div
@@ -146,11 +126,7 @@ useEffect(() => {
     ${isCollapsed ? "justify-center" : ""}
   `}
 >
-  <span className={`text-lg relative ${
-  item.label=='feedback' &&  hasUnreadMessages 
-      ? "before:content-[''] before:bg-red-500 before:w-2 before:h-2 before:rounded-full before:absolute before:right-[-4px] before:top-[-2px]"
-      : ""
-  }`}>
+  <span className={`text-lg relative`}>
     {item.icon}
   </span>
   {!isCollapsed && <span className="text-lg ml-3">{item.label}</span>}
