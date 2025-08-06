@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import Pagination from "./Pagination";
 import Avatar from "react-avatar";
+import Swal from "sweetalert2";
 
 function ReportPanel() {
       const {toggleFilter} = useFilter()
@@ -55,8 +56,7 @@ function ReportPanel() {
              const handleDelete = (id) => {
               axiosClient.delete(`/bao-cao/${id}`)
                 .then(res => {
-                  alert("Xóa thành công!");
-                  fetchStudents(); //
+                  fetchStudents();// 
                 })
                 .catch(err => {
                   alert("Xóa thất bại: " + (err?.response?.data?.message || err.message));
@@ -91,17 +91,28 @@ useEffect(() => {
   return () => clearTimeout(delayDebounce);
 }, [searchTerm, currentPage, filters]);
 
+const handleOpenDialog = async (id) => {
+  const result = await Swal.fire({
+    title: 'Xác nhận xóa báo cáo',
+    text: 'Hãy kiểm tra kỹ.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Có',
+    cancelButtonText: 'Không',
+    reverseButtons: true,
+  });
 
-        const handleOpenDialog = (id) => {
-          showDialog({
-            title: "Xác nhận xóa thông tin",
-            content: "Sau khi bạn xóa thông tin, thông tin của sinh viên thực tập sẽ được xóa khỏi danh sách sinh viên. Hãy kiểm tra kỹ.",
-            icon: <BsFillPeopleFill />,
-            confirmText: "Có, xóa sinh viên",
-            cancelText: "Không, tôi muốn kiểm tra lại",
-            onConfirm: () => handleDelete(id),
-          });
-        };
+  if (result.isConfirmed) {
+    try {
+      await handleDelete(id); // Chờ xóa xong mới thông báo
+      await Swal.fire('Đã xóa!', 'Báo cáo đã được xóa khỏi danh sách.', 'success');
+    } catch (error) {
+      console.error("Lỗi khi xóa báo cáo:", error);
+      Swal.fire('Lỗi!', 'Xóa báo cáo thất bại.', 'error');
+    }
+  }
+};
+
           const handleView = (id) => {
   navigate(`/admin/report/report-details/${id}`);
 };
@@ -111,7 +122,7 @@ useEffect(() => {
 
     return ( 
 
-            <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow border border-[#ECECEE]">
+            <div className="flex-1 p-4 w-full max-w-screen mt-5 rounded-md border border-gray-100">
               {/* filter bar */}
               <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
                 {/* search */}
@@ -120,14 +131,14 @@ useEffect(() => {
                     type="text"
                     placeholder="Tìm kiếm"
                     onChange={(e)=>setSearchTerm(e.target.value)}
-                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-3 lg:py-4 rounded-md lg:rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+                    className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-3 lg:py-4 rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
                   />
         
                   <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
                 </div>
                
                 {/* filter btn */}
-                <button onClick={toggleFilter} className="rounded-md lg:rounded-xl p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
+                <button onClick={toggleFilter} className="rounded-md p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
                   <FaSlidersH/>
                   Lọc
                 </button>

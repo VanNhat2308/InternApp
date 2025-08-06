@@ -1,10 +1,10 @@
 import { FiSearch } from "react-icons/fi";
-import { FaSlidersH } from "react-icons/fa";
+import { FaPlus, FaSlidersH } from "react-icons/fa";
 import { RiCalendarScheduleLine, RiEyeLine } from "react-icons/ri";
 
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../context/filteContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../context/dialogContext";
 import { BsFillPeopleFill } from "react-icons/bs";
 import axiosClient from "../service/axiosClient";
@@ -12,9 +12,11 @@ import { IoSwapHorizontal } from "react-icons/io5";
 import Pagination from "./Pagination";
 import Avatar from "react-avatar";
 import SwapSchedule from "./SwapSchedule";
+import Swal from 'sweetalert2';
+import ScheduleFormMultiStudent from "./ScheduleFormMultiStudent";
 function SchedulePanel() {
       const navigate = useNavigate()
-      const { showDialog } = useDialog();
+      const { showDialog,hideDialog } = useDialog();
       const[students,setStudent] = useState([]);
       const [currentPage, setCurrentPage] = useState(1);
       const [totalPages, setTotalPages] = useState(1); 
@@ -123,6 +125,42 @@ useEffect(() => {
          useEffect(() => {
   setDate(false)
 }, []);
+
+const [studentList,setStudents] = useState([])
+const [errors, setErrors] = useState({});
+const [selectedStudent, setSelectedStudent] = useState([]);
+const formRef = useRef();
+// them lich cho nhieu
+const handleAddScheduleForMany = async() => {
+  let selectedDate = new Date().toISOString().split("T")[0];
+  let selectedCa = "8:00-12:00";
+
+
+  showDialog({
+    title: "Thêm lịch cho nhiều sinh viên",
+    customContent: 
+    (
+      <ScheduleFormMultiStudent ref={formRef}/>
+    ),
+    confirmText: "Áp dụng cho tất cả",
+    cancelText: "Đặt lại",
+    onValidatedConfirm: async () => {
+         const success = await formRef.current?.submitSchedule();
+         if (success) {
+           hideDialog();
+             await Swal.fire({
+       icon: 'success',
+       title: 'Tạo Lịch thành công',
+       text: 'Lịch mới đã được thêm cho các sinh viên.',
+       confirmButtonText: 'OK',
+     });
+           fetchStudents();
+         }
+         return false
+       },
+  });
+};
+
   return (
     <>
      <div className="mt-5">
@@ -164,7 +202,7 @@ useEffect(() => {
       {/* Nội dung tương ứng tab */}
       <div className="mt-6">
         {activeTab === "lich" && (
-          <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow-md border border-[#ECECEE]">
+          <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md border border-gray-100">
       {/* filter bar */}
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:h-12">
         {/* search */}
@@ -174,15 +212,20 @@ useEffect(() => {
             onChange={(e) => setSearchTerm(e.target.value)}
             type="text"
             placeholder="Tìm kiếm"
-            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-2 lg:py-1 rounded-md lg:rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+            className="w-full border h-full border-gray-300 pl-8 pr-4 px-4 py-2 lg:py-1 rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
           />
 
           <FiSearch className="absolute top-1/2 left-2 transform -translate-y-1/2" />
         </div>
         {/* filter btn */}
-        <button onClick={toggleFilter} className="rounded-md lg:rounded-xl p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
+        <button onClick={toggleFilter} className="rounded-md p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
           <FaSlidersH />
           Lọc
+        </button>
+        {/* add btn */}
+        <button onClick={handleAddScheduleForMany} className="rounded-md bg-green-600 text-white p-2 lg:p-5 flex items-center gap-2 border border-gray-200 cursor-pointer">
+          <FaPlus />
+          Thêm
         </button>
       </div>
       {/* table */}

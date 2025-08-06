@@ -104,11 +104,6 @@ function FeedbackPanel() {
   }
 };
  
-messages.forEach(e => {
-  console.log(e.unread);
-  
-});
-
 
   return (
     <>
