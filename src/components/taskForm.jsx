@@ -62,6 +62,7 @@ useImperativeHandle(ref, () => ({
     }
 
     const payload = {
+      maAdmin: localStorage.getItem('maAdmin'),
       tieuDe: taskName,
       noiDung: description,
       maSV: selectedStudent.map((s) => s.value),

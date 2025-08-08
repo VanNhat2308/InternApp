@@ -3,9 +3,12 @@ import { FiSearch } from "react-icons/fi";
 import { FaChevronDown } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import FeatureSearch from './FeatureSearch';
+import NotificationIcon from './NotificationIcon';
+import echo from '../service/echo';
+import { NotificationContext } from '../context/NotificationProvider';
 function Header({children}) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -45,6 +48,9 @@ localStorage.removeItem("viTri");
   };
 const nameUser = localStorage.getItem('user')
 const userRole = localStorage.getItem('role')
+ const { unreadCount } = useContext(NotificationContext);
+const adminId = localStorage.getItem('maAdmin')
+
    
     return (   
       <div className="w-full flex h-12 justify-between items-center">
@@ -55,9 +61,13 @@ const userRole = localStorage.getItem('role')
             {/* input search */}
          <FeatureSearch/>
           {/* notify */}
-          <div onClick={handleNotify} className={` cursor-pointer aspect-square flex items-center justify-center rounded-md h-full text-2xl ${isNotifyActive?'bg-green-100':'bg-gray-200'}`}>
-<IoNotificationsOutline className={`${isNotifyActive?'text-green-500':''}`} />
-          </div>
+   <NotificationIcon
+  unreadCount={unreadCount || 0}
+  isNotifyActive={isNotifyActive}
+  handleNotify={handleNotify}
+/>
+
+
           {/* avatar */}
          <div className="relative" ref={dropdownRef}>
       {/* Khu vực avatar */}

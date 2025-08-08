@@ -3,10 +3,15 @@ import ResponNav from "./responsiveNav";
 import Header from "./header";
 import avatar from "../assets/images/avatar.png"
 import NotificationItem from "./notifyItem";
-
+import Pusher from "pusher-js";
+import echo from "../service/echo";
+import axiosClient from "../service/axiosClient";
 function Notify() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
-        useEffect(() => {
+    const [notifications, setNotifications] = useState([]); 
+    const adminId = localStorage.getItem('maAdmin')  
+    
+    useEffect(() => {
           const handleResize = () => {
             setIsMobile(window.innerWidth < 1025);
           };
@@ -14,39 +19,22 @@ function Notify() {
           window.addEventListener('resize', handleResize);
           return () => window.removeEventListener('resize', handleResize);
         }, []);
-        // data
-        const notifications = [
-  {
-    avatar: avatar,
-    title: 'Phản Hồi Từ Phạm Văn A',
-    message: 'Phạm Văn A đã gửi cho bạn một phản hồi',
-    time: 'Mới gửi',
-  },
-  {
-    avatar: avatar,
-    title: 'Phản Hồi Từ Lê Thị B',
-    message: 'Lê Thị B đã gửi cho bạn một phản hồi',
-    time: '11:16 AM',
-  },
-  {
-    avatar: avatar,
-    title: 'Task Mới Đã Được Thêm Vào',
-    message: 'Task mới đã được thêm vào và sinh viên đã có thể thấy',
-    time: '09:00 AM',
-  },
-  {
-    avatar: avatar,
-    title: 'Trần Văn D Đã Gửi Báo Cáo',
-    message: 'Trần Văn D đã gửi cho bạn báo cáo thực tập',
-    time: 'Hôm qua',
-  },
-  {
-    avatar: avatar,
-    title: 'Phạm Văn A Đề Xuất Dời Lịch',
-    message: 'Phạm Văn A có đề xuất muốn dời lịch bấm vào để kiểm tra',
-    time: 'Hôm qua',
-  },
-];
+    
+      useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await axiosClient.get(`/notifications?user_id=${adminId}&type=admin`);
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("Lỗi khi tải thông báo:", err);
+      }
+    };
+    fetchNotifications();
+  }, [adminId]);
+
+ 
+
+
     
     return ( 
     <div className="flex-1">
@@ -55,7 +43,12 @@ function Notify() {
           <p className="flex gap-2 items-center">Tất Cả Thông Báo</p>
       </Header>}
 
-       <div className="border border-gray-300 rounded-md p-3 shadow mt-10">
+       
+       {notifications.length===0?(
+        <div className="text-center text-2xl font-medium mt-10">
+          Chưa có thông báo nào !!!
+        </div>
+       ):(<div className="border border-gray-300 rounded-md p-3 shadow mt-10">
       {notifications.map((n, index) => (
         <NotificationItem
           key={index}
@@ -65,7 +58,7 @@ function Notify() {
           time={n.time}
         />
       ))}
-    </div>
+    </div>)}
 
     
     </div> );

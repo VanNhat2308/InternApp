@@ -8,6 +8,6 @@ export const useDanhSachViTri = () => {
       const res = await axiosClient.get("/vi-tris");
       return res.data || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 };

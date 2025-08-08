@@ -8,6 +8,6 @@ export const useDanhSachTruong = () => {
       const res = await axiosClient.get("/truongs");
       return res.data || [];
     },
-    staleTime: 5 * 60 * 1000, // cache 5 phút
+    staleTime: 0, // cache 5 phút
   });
 };

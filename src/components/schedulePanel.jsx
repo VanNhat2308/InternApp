@@ -25,6 +25,8 @@ function SchedulePanel() {
       const { filterValues, setDate } = useFilter();
       const [activeTab, setActiveTab] = useState("lich");
       // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
+      console.log(filterValues);
+      
       const [filters,setFilters] = useState({
         viTri:'',
         Truong:'',
@@ -97,6 +99,8 @@ useEffect(() => {
     Truong: selectedUniversities.join(','),
     date: date
   });
+
+  
 }, [filterValues]);
 
 useEffect(() => {
@@ -126,16 +130,10 @@ useEffect(() => {
   setDate(false)
 }, []);
 
-const [studentList,setStudents] = useState([])
-const [errors, setErrors] = useState({});
-const [selectedStudent, setSelectedStudent] = useState([]);
+
 const formRef = useRef();
 // them lich cho nhieu
 const handleAddScheduleForMany = async() => {
-  let selectedDate = new Date().toISOString().split("T")[0];
-  let selectedCa = "8:00-12:00";
-
-
   showDialog({
     title: "Thêm lịch cho nhiều sinh viên",
     customContent: 

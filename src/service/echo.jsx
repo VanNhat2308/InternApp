@@ -11,6 +11,13 @@ const echo = new Echo({
   wsPort: import.meta.env.VITE_PUSHER_PORT || 443,
   forceTLS: true,
   enabledTransports: ["ws", "wss"],
+
+ authEndpoint: `${import.meta.env.VITE_API_URL}/broadcasting/auth`,
+  auth: {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // JWT lưu ở localStorage
+    },
+  },
 });
 
 export default echo;
