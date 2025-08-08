@@ -46,10 +46,28 @@ localStorage.removeItem("viTri");
   const handleNotify = () => {
     navigate('/admin/notify');
   };
+const [unreadCount, setUnreadCount] = useState(0);
 const nameUser = localStorage.getItem('user')
 const userRole = localStorage.getItem('role')
- const { unreadCount } = useContext(NotificationContext);
+// const { unreadCount } = useContext(NotificationContext);
+console.log("Unread Count in Header:", unreadCount);
 const adminId = localStorage.getItem('maAdmin')
+useEffect(() => {
+  if (!adminId) return;
+
+  console.log("Subscribing to channel: ", `private-admin.${adminId}`);
+
+  const channel = echo.private(`admin.${adminId}`)
+    .listen(".notification.received", (data) => {
+      console.log("📩 Event received: ", data);
+      setUnreadCount(data.unreadCount);
+    });
+
+  return () => {
+    echo.leave(`private-admin.${adminId}`);
+  };
+}, [adminId]);
+
 
    
     return (   
@@ -62,7 +80,7 @@ const adminId = localStorage.getItem('maAdmin')
          <FeatureSearch/>
           {/* notify */}
    <NotificationIcon
-  unreadCount={unreadCount || 0}
+  unreadCount={unreadCount}
   isNotifyActive={isNotifyActive}
   handleNotify={handleNotify}
 />

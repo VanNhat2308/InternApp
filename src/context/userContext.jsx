@@ -8,7 +8,6 @@ export const UserProvider = ({ children }) => {
       // Tải user từ localStorage nếu có
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    console.log(savedUser);
     if (savedUser) {
       setUser(savedUser);
     }

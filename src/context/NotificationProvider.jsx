@@ -7,7 +7,9 @@ export const NotificationContext = createContext();
 export default function NotificationProvider({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
-  const adminId = localStorage.getItem("adminId");
+  const adminId = localStorage.getItem("maAdmin");
+  console.log(unreadCount);
+  
 
   useEffect(() => {
     if (!adminId) return;
@@ -21,7 +23,7 @@ export default function NotificationProvider({ children }) {
     });
 
     return () => {
-      echo.leave(`private-admin.${adminId}`);
+      echo.leave(`admin.${adminId}`);
     };
   }, [adminId]);
 
