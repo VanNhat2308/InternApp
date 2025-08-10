@@ -210,11 +210,21 @@ axiosClient.post("/messages", newMessage).then((res) => {
 
   // realtime pusher
   useEffect(() => {
+    // echo.channel(`chat.${currentUser.id}`)
+    // .listen("App\\Events\\NewMessage", (e) => {
+    //     console.log("Nhận được:", e);
+    // });
+
     const channel = echo.channel(`chat.${currentUser.id}`);
-    channel.listen("NewMessage", (e) => {
+    channel.listen(".NewMessage", (e) => {
+       console.log("Nhận được:", e);
       const msg = e.message;
-      if (msg.conversation_id === Number(selectedConversationId) &&
-  msg.from_id !== currentUser.id) {
+      console.log(
+   msg.conversation_id,
+
+);
+// &&msg.from_id !== currentUser.id
+      if (msg.conversation_id === Number(selectedConversationId) ) {
         setConversations((prev) => ({
           ...prev,
           [selectedUserId]: [...(prev[selectedUserId] || []), msg],

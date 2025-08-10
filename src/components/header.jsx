@@ -55,16 +55,14 @@ const adminId = localStorage.getItem('maAdmin')
 useEffect(() => {
   if (!adminId) return;
 
-  console.log("Subscribing to channel: ", `private-admin.${adminId}`);
-
-  const channel = echo.private(`admin.${adminId}`)
+  const channel = echo.channel(`admin.${adminId}`)
     .listen(".notification.received", (data) => {
       console.log("📩 Event received: ", data);
       setUnreadCount(data.unreadCount);
     });
 
   return () => {
-    echo.leave(`private-admin.${adminId}`);
+    echo.leave(`admin.${adminId}`);
   };
 }, [adminId]);
 

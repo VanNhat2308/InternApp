@@ -1,8 +1,7 @@
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
-
 window.Pusher = Pusher;
-Pusher.logToConsole = true;
+window.Pusher.logToConsole = true;
 const echo = new Echo({
   broadcaster: "pusher",
   key: import.meta.env.VITE_PUSHER_APP_KEY,
@@ -12,12 +11,13 @@ const echo = new Echo({
   forceTLS: true,
   enabledTransports: ["ws", "wss"],
 
- authEndpoint: `${import.meta.env.VITE_API_URL}/broadcasting/auth`,
-  auth: {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`, // JWT lưu ở localStorage
-    },
-  },
+
 });
 
 export default echo;
+//  authEndpoint: `${import.meta.env.VITE_API_URL}/broadcasting/auth`,
+//   auth: {
+//     headers: {
+//       Authorization: `Bearer ${localStorage.getItem("token")}`, // JWT lưu ở localStorage
+//     },
+//   },

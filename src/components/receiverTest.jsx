@@ -7,13 +7,13 @@ const ReceiverTest = () => {
 
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      const res = await axios.get("http://localhost:8000/api/conversations/1/messages");
-      setMessages(res.data);
-    };
-    fetchMessages();
-  }, []);
+  // useEffect(() => {
+  //   const fetchMessages = async () => {
+  //     const res = await axios.get("http://localhost:8000/api/conversations/1/messages");
+  //     setMessages(res.data);
+  //   };
+  //   fetchMessages();
+  // }, []);
 
   useEffect(() => {
     const channel = echo.channel(`chat.${currentUser.id}`);
