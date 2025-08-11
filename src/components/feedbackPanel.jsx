@@ -108,7 +108,7 @@ function FeedbackPanel() {
   return (
     <>
  
-    <div className="border border-gray-100 rounded-md mt-5 p-4 bg-white">
+    <div className="flex-1 border border-gray-100 rounded-md mt-5 p-4 bg-white">
       {/* Tabs */}
       <div className="flex mb-4">
         <button

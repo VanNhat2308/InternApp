@@ -111,11 +111,11 @@ const TaskTabContent = ({
   totalPages
 }) => {
   return (
-    <div className="w-full h-fit mt-5 rounded-md shadow border border-[#ECECEE] p-4">
+    <div className="w-full rounded-md border border-[#ECECEE] p-4">
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}
@@ -166,7 +166,7 @@ return (
     </div>
 
     {/* Task list */}
-    <div className="mt-6">
+    <div className="mt-4">
       <TaskTabContent
         tasks={tasks}
         loading={loading}

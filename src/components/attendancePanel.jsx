@@ -141,7 +141,7 @@ useEffect(() => {
           <p className="text-gray-500">{userRole==='Student'? 'Danh sách lịch sử điểm danh của sinh viên' :'Xem Thời Gian Điểm Danh Của Sinh Viên'}</p>
         </Header>
       )}
-   <div className="p-4 w-full max-w-screen h-fit mt-10 rounded-xl shadow border border-[#ECECEE]">
+   <div className="flex-1 p-4 w-full max-w-screen mt-5 rounded-md border border-[#ECECEE]">
   {/* Filter bar */}
   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-4">
     {/* Left: Title */}
@@ -155,7 +155,7 @@ useEffect(() => {
           onChange={(e)=>{setSearchTerm(e.target.value)}}
           type="text"
           placeholder="Tìm kiếm..."
-          className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
+          className="w-full border border-gray-300 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md transition"
         />
         <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
       </div>

@@ -53,7 +53,7 @@ useEffect(() => {
       <div className="flex justify-between items-center mb-4">
         <h1 className='font-bold text-lg'>Chuyên Cần</h1>
         <select
-          className="border rounded px-2 py-1 text-sm"
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
           value={selectedWeek}
           onChange={(e) => setSelectedWeek(e.target.value)}
         >
@@ -62,7 +62,7 @@ useEffect(() => {
         </select>
       </div>
 
-      <div className="w-full h-fit bg-white rounded-xl shadow p-2 border border-[#ECECEE] ">
+      <div className="w-full h-fit bg-white rounded-md p-2 border border-[#ECECEE] ">
         <div className='mb-5'>
             <h1 className='text-lg font-semibold'>Biểu đồ thể hiện mức đồ chuyên cần của sinh viên</h1>
             <h5 className='text-sm'>Mức độ chuyên cần của sinh viên trong tuần này</h5>

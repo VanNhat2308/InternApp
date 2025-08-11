@@ -49,9 +49,9 @@ export default function AttendanceChart() {
         </select>
       </div>
 
-      <div className="w-full h-[400px]">
+      <div className="w-full h-[450px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart barSize={15} data={data} stackOffset="expand" barGap={2}>
+          <BarChart barSize={20} data={data} stackOffset="expand" barGap={2}>
             <YAxis
               tickFormatter={(val) => `${(val * 100).toFixed(0)}%`}
               axisLine={false}
@@ -60,9 +60,9 @@ export default function AttendanceChart() {
             <XAxis dataKey="day" axisLine={false} tickLine={false} />
             <Tooltip formatter={(value) => `${(value * 100).toFixed(0)}%`} />
             <Legend />
-            <Bar dataKey="onTime" stackId="a" fill="#34A853" name="Đúng giờ" radius={[8, 8, 8, 8]} />
-            <Bar dataKey="late" stackId="a" fill="#FBBC05" name="Trễ giờ" radius={[8, 8, 8, 8]} />
-            <Bar dataKey="absent" stackId="a" fill="#EA4335" name="Nghỉ" radius={[8, 8, 8, 8]} />
+<Bar dataKey="onTime" stackId="a" fill="#4CAF50" name="Đúng giờ" />   {/* Xanh lá dịu */}
+<Bar dataKey="late" stackId="a" fill="#FFC107" name="Trễ giờ" />      {/* Vàng cam nhẹ */}
+<Bar dataKey="absent" stackId="a" fill="#F44336" name="Nghỉ" />  
           </BarChart>
         </ResponsiveContainer>
       </div>

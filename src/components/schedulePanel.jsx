@@ -161,7 +161,7 @@ const handleAddScheduleForMany = async() => {
     <>
      <div className="mt-5 flex-1 flex flex-col">
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div>
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           <li className="me-2">
             <button
@@ -196,7 +196,7 @@ const handleAddScheduleForMany = async() => {
       </div>
 
       {/* Nội dung tương ứng tab */}
-      <div className="mt-5">
+      <div className="flex flex-col flex-1">
         {activeTab === "lich" && (
           <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md border border-gray-100">
       {/* filter bar */}

@@ -132,7 +132,7 @@ function ApprovalPanel() {
 
   const TableView = ()=>{
     return <>
-      <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-xl shadow border border-[#ECECEE]">
+      <div className="p-4 w-full max-w-screen mt-5 rounded-md border border-[#ECECEE]">
         {/* filter bar */}
         {/* filter bar */}
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -143,7 +143,7 @@ function ApprovalPanel() {
         onChange={(e) => setSearchTerm(e.target.value)}
         type="text"
         placeholder="Tìm kiếm"
-        className="w-full border border-gray-300 pl-10 pr-4 py-3 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
+        className="w-full border border-gray-300 pl-10 pr-4 py-3 rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-200 focus:shadow-md"
       />
       <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
         </div>
@@ -251,9 +251,9 @@ function ApprovalPanel() {
  
   return (
     <>
-  <div className="mt-5">
+  <div className="mt-4">
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="">
       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
   <li className="me-2">
     <button
@@ -298,7 +298,7 @@ function ApprovalPanel() {
       </div>
 
       {/* Nội dung tương ứng tab */}
-      <div className="mt-6">
+      <div className="mt-3">
         {activeTab === "pending" && (
         <TableView/>
         )}

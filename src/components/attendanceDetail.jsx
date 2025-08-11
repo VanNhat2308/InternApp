@@ -166,7 +166,7 @@ const email = localStorage.getItem('email') ? localStorage.getItem('email') : di
           <h2 className="text-xl font-semibold">Quản Lý Điểm Danh</h2>
           <p className="text-gray-500">Xem Thời Gian Điểm Danh Của Sinh Viên</p>
 </Header>}
-<div className="border border-gray-300 p-4 mt-10 rounded-md shadow w-full max-w-screen">
+<div className="flex-1 border border-gray-200 p-4 mt-5 rounded-md w-full max-w-screen">
   {/* Header info */}
   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     {/* Avatar + Info */}

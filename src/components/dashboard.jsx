@@ -40,10 +40,18 @@ const Dashboard = () => {
     }
   }
 
-  const statusStyle = (status) =>
-    status === "on_time"
-      ? "text-green-600 bg-green-100"
-      : "text-red-600 bg-red-100";
+    const statusStyle = (status) =>{
+     switch (status) {
+      case "on_time":
+        return "text-green-600 bg-green-100";
+      case "late":
+        return "text-yellow-600 bg-yellow-100";
+      case "absent":
+        return "text-red-600 bg-red-100";
+    default:
+      return "" 
+    }
+  }
 
   const { User } = useUser();
   function getGreetingTime() {

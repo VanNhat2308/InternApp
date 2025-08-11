@@ -518,7 +518,7 @@ function ScheduleDetails() {
       ) : (
         ""
       )}
-      <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+      <div className="border border-gray-200 p-4 mt-5 rounded-md">
         <div className="flex flex-col items-center pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
           {/* avartar */}
           <div className="flex gap-2 ">

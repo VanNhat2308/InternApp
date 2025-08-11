@@ -83,9 +83,9 @@ const getStatusLabel = (status) => {
   }, [currentPage,searchTerm]);
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 mt-5 rounded-md border border-[#ECECEE]">
 
-       <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md lg:rounded-xl shadow-md border border-[#ECECEE]">
+       <div className="p-4 w-full max-w-screen ">
             
          {/* Search */}
          <div className="relative flex-1">
@@ -94,7 +94,7 @@ const getStatusLabel = (status) => {
              onChange={(e) => setSearchTerm(e.target.value)}
              type="text"
              placeholder="Tìm kiếm theo tên"
-             className="w-full border border-gray-200 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+             className="w-full border border-gray-200 pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-100 transition"
            />
            <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
          </div>
@@ -114,16 +114,16 @@ const getStatusLabel = (status) => {
          <>
            <div className="overflow-x-auto max-w-screen">
              <table className="min-w-[800px] w-full border border-gray-300 rounded-md text-sm mt-3">
-               <thead>
-                 <tr className="bg-gray-100 text-gray-700">
-                   <th className="border border-gray-300 px-3 py-2 text-left">Mã SV</th>
-                   <th className="border border-gray-300 px-3 py-2 text-left">Họ Tên</th>
-                   <th className="border border-gray-300 px-3 py-2 text-left">Ca hiện tại</th>
-                   <th className="border border-gray-300 px-3 py-2 text-left">Ca muốn đổi</th>
-                   <th className="border border-gray-300 px-3 py-2 text-left">Lý do</th>
-                   <th className="border border-gray-300 px-3 py-2 text-left">Hình thức</th>
-                   <th className="border border-gray-300 px-3 py-2 text-center">Trạng thái</th>
-                   <th className="border border-gray-300 px-3 py-2 text-center">Hành động</th>
+               <thead className="text-left bg-gray-100 text-gray-500 border-b border-b-gray-300">
+                 <tr className="bg-gray-100 text-gray-600">
+                   <th className="py-2 pl-3">Mã SV</th>
+                   <th className="">Họ Tên</th>
+                   <th className="">Ca hiện tại</th>
+                   <th className="">Ca muốn đổi</th>
+                   <th className="">Lý do</th>
+                   <th className="">Hình thức</th>
+                   <th className="text-center">Trạng thái</th>
+                   <th className="text-center">Hành động</th>
                  </tr>
                </thead>
                <tbody>

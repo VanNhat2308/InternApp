@@ -105,7 +105,7 @@ const getStatusColor = (status) => {
 };
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 flex flex-col">
       {isMobile ? (
         <ResponNav />
       ) : (
@@ -116,7 +116,7 @@ const getStatusColor = (status) => {
           </p>
         </Header>
       )}
-     <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+     <div className="flex-1 border border-gray-200 p-4 mt-5 rounded-md">
   <div className="flex flex-col items-center gap-4 pb-5 border-b border-gray-300 lg:flex-row lg:justify-between">
     {/* avatar + info */}
     <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-start">

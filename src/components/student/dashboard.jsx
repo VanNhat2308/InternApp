@@ -331,7 +331,7 @@ useEffect(() => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2 lg:p-0">
-          <div className="col-span-2">
+          <div className="col-span-2 flex flex-col">
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4 ">
               {[
@@ -358,7 +358,7 @@ useEffect(() => {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="bg-white rounded-xl shadow border border-[#ECECEE]"
+                  className="bg-white rounded-md border border-[#ECECEE]"
                 >
                   <div className="p-4 pb-2">
                     <div className="flex gap-2 items-center">
@@ -374,7 +374,7 @@ useEffect(() => {
               ))}
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto bg-white rounded-xl shadow p-4 mt-5 lg:mt-10 border border-[#ECECEE]">
+            <div className="flex-1 w-full overflow-x-auto bg-white rounded-md p-4 mt-5  border border-[#ECECEE]">
               <div className="flex justify-between mb-4">
                 <h4 className="font-semibold text-lg">Tổng quan điểm danh</h4>
                 <button className="text-blue-600 text-sm">Xem Tất Cả</button>
@@ -415,8 +415,8 @@ useEffect(() => {
             </div>
           </div>
           {/* Bar Chart placeholder */}
-          <div className=" col-span-2 lg:col-span-1">
-            <div className="flex flex-col gap-2 mb-5 bg-white rounded-xl shadow p-4 border border-[#ECECEE]">
+          <div className=" col-span-2  lg:col-span-1">
+            <div className="flex flex-col gap-2 mb-5 bg-white rounded-md p-4 border border-[#ECECEE]">
               <h3 className="text-xl font-bold">Thời gian làm việc</h3>
               <p className="text-gray-700 text-base">
                 Thời gian thực tập tháng 4 2025 - tháng 6 2025

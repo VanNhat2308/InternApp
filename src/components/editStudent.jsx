@@ -257,7 +257,7 @@ const validateForm = () => {
       
      
      
-          <div className="mt-10 p-5 bg-white rounded shadow">
+          <div className="mt-5 p-5 bg-white rounded-md border border-gray-100">
     {/* Avatar */}
   {/* Avatar */}
          <div className="flex justify-start mb-6">

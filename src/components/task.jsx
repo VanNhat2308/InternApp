@@ -14,7 +14,7 @@ function Task() {
                 return () => window.removeEventListener('resize', handleResize);
               }, []);
       return ( 
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
             {isMobile ? <ResponNav /> : <Header>
          <h2 className="text-xl font-semibold">Quản Lý Task</h2>
             <p className="flex gap-2 items-center text-base text-gray-500">Tất cả task</p>

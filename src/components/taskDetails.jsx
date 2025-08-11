@@ -198,7 +198,7 @@ const handleDel = () => {
     </div>
             </div>: (
                
-  <div className="mt-8 w-full rounded-md bg-white border border-gray-100  p-6 space-y-6">
+  <div className="mt-5 flex-1 w-full rounded-md bg-white border border-gray-200 p-6 space-y-6">
   {/* Header */}
   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 pb-4">
     <div className="flex items-start gap-4">

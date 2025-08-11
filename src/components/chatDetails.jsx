@@ -304,12 +304,12 @@ const handleDelete = () => {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col md:flex-row border border-gray-100 rounded-md overflow-hidden mt-5">
+        <div className="flex-1 flex flex-col md:flex-row border border-gray-200 rounded-md overflow-hidden mt-5">
           {/* Sidebar */}
           <div
             className={`md:w-1/3 w-full ${
               showSidebar ? "block" : "hidden"
-            } md:block md:border-r border-gray-100 p-4 overflow-y-auto`}
+            } md:block md:border-r border-gray-200 p-4 overflow-y-auto`}
           >
             <h2 className="text-2xl font-bold mb-3">Tin nhắn gần đây</h2>
             <div className="relative mb-3">
@@ -383,7 +383,7 @@ const handleDelete = () => {
           {/* Chat content */}
           <div className="flex-1 flex flex-col w-full h-full">
             {/* Header */}
-            <div className="p-4 border-b border-gray-100 flex flex-wrap gap-2 items-center justify-between bg-white">
+            <div className="p-4 border-b border-gray-200 flex flex-wrap gap-2 items-center justify-between bg-white">
               <div className="flex items-center gap-1">
                 <button
                   className="md:hidden px-2 py-1 rounded text-sm mr-2"
@@ -409,7 +409,7 @@ const handleDelete = () => {
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="cursor-pointer group relative py-2.5 px-5 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-full hover:bg-gray-100 hover:text-red-600 transition-all focus:outline-none focus:ring-4 focus:ring-gray-100 flex items-center gap-2"
+                  className="cursor-pointer group relative py-2.5 px-5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-full hover:bg-gray-100 hover:text-red-600 transition-all focus:outline-none focus:ring-4 focus:ring-gray-100 flex items-center gap-2"
                 >
                   <FaRegTrashCan className="text-base" />
                   <span className="hidden lg:inline">Xóa</span>
@@ -529,7 +529,7 @@ const handleDelete = () => {
             </div>
 
             {/* Input */}
-            <div className="p-4 flex items-center gap-2 border-t border-gray-200 bg-white">
+            <div className="p-4 flex items-center gap-2 border-t border-gray-300 bg-white">
               <div className="flex-1 h-[40px] relative">
                 <textarea
                   value={newMsg}

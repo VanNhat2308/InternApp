@@ -272,7 +272,7 @@ useEffect(() => {
     </div>
             </div>
               ) : (
-      <div className="mt-8 p-4 border border-gray-100 bg-white rounded-md w-full">
+      <div className="flex-1 mt-5 p-4 border border-gray-100 bg-white rounded-md w-full">
   {/* Header */}
   <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200">
     {/* Left */}
@@ -463,8 +463,8 @@ useEffect(() => {
   </div>
 
   {/* Nhận xét */}
-  <div>
-    <h3 className="font-bold text-lg my-1-3">Nhận Xét</h3>
+  <div className="mt-3">
+    <h3 className="font-bold text-lg mb-3">Nhận Xét</h3>
 
     {/* Nhận xét đã có */}
    {comments.map((comment) => (

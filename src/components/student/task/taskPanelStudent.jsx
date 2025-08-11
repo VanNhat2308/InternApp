@@ -38,9 +38,9 @@ useEffect(() => {
 }, [searchTerm, currentPage]);
                
     return ( 
-        <div>
+        <>
 
-   <div className="p-4 w-full h-fit mt-10 rounded-md border border-gray-200">
+   <div className="flex-1 p-4 w-full mt-5 rounded-md border border-gray-200">
   {/* filter bar */}
   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
     {/* Search box */}
@@ -77,7 +77,7 @@ useEffect(() => {
        
 
     </div>
-        </div>
+        </>
      );
 }
 
