@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 function List() {
 
     return ( 
-    <div className="flex-1">
+    <div className="flex flex-col flex-1">
 
       <Outlet/>
     </div>

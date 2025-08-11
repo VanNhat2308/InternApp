@@ -370,9 +370,9 @@ const handleDelete = (id) => {
 
 
     return ( 
-    <>
-<div className="border-b border-gray-200 dark:border-gray-700 mt-5 ml-2 mb-5 lg:my-7">
-  <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+    <div className="flex-1 flex flex-col">
+<div className=" mt-5 mb-5 lg:my-4">
+  <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
     <li className="me-2">
       <button
         onClick={() => setIsAddingSchool(true)}
@@ -429,7 +429,7 @@ const handleDelete = (id) => {
 
     {isAddingSchool ? (
   // FORM THÊM TRƯỜNG
-  <div className="lg:border border-gray-300 lg:p-4 rounded-md lg:shadow">
+  <div className="h-full lg:border border-gray-200 lg:p-4 rounded-md">
         {/* Search */}
           <div className="relative flex-1 mb-5 w-full">
             <input
@@ -670,7 +670,7 @@ const handleDelete = (id) => {
   </div>
 ) : (
   // FORM THÊM VỊ TRÍ
-  <div className="lg:border border-gray-300 lg:p-4 rounded-md lg:shadow">
+  <div className="flex-1 lg:border border-gray-200 lg:p-4 rounded-md">
      {/* Search */}
           <div className="relative flex-1 mb-5 w-full">
             <input
@@ -793,7 +793,7 @@ const handleDelete = (id) => {
   </div>
 )}
 
-    </> 
+    </div> 
     )
 }
 

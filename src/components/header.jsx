@@ -36,35 +36,46 @@ localStorage.removeItem("role");
 localStorage.removeItem("token");
 localStorage.removeItem("user");
 localStorage.removeItem("viTri");
-
-
-    navigate("/")
-  };
+navigate("/")};
 
   const isNotifyActive = location.pathname === '/admin/notify';
+  const isNotifyActiveSV = location.pathname === '/student/notify';
 
   const handleNotify = () => {
+    if(userRole=="Admin")
     navigate('/admin/notify');
+  else if(userRole=="Student")
+    navigate('/student/notify')
   };
-const [unreadCount, setUnreadCount] = useState(0);
+const { unreadCount,setUnreadCount } = useContext(NotificationContext);
 const nameUser = localStorage.getItem('user')
 const userRole = localStorage.getItem('role')
-// const { unreadCount } = useContext(NotificationContext);
-console.log("Unread Count in Header:", unreadCount);
 const adminId = localStorage.getItem('maAdmin')
+const maSV = localStorage.getItem('maSV')
+  const SwapType = (t)=>{
+    switch (t) {
+      case "Admin":
+        return "admin"
+        case "Student"
+        :return "sinhvien"
+    
+      default:
+        break;
+    }
+  }
 useEffect(() => {
-  if (!adminId) return;
 
-  const channel = echo.channel(`admin.${adminId}`)
+  const channel = echo.channel(`${SwapType(userRole)}.${adminId||maSV}`)
     .listen(".notification.received", (data) => {
       console.log("📩 Event received: ", data);
       setUnreadCount(data.unreadCount);
     });
 
   return () => {
-    echo.leave(`admin.${adminId}`);
+    echo.leave(`${SwapType(userRole)}.${adminId || maSV}`);
   };
-}, [adminId]);
+}, [adminId, maSV]);
+
 
 
    
@@ -79,7 +90,7 @@ useEffect(() => {
           {/* notify */}
    <NotificationIcon
   unreadCount={unreadCount}
-  isNotifyActive={isNotifyActive}
+  isNotifyActive={isNotifyActive || isNotifyActiveSV}
   handleNotify={handleNotify}
 />
 

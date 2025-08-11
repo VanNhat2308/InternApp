@@ -208,7 +208,7 @@ const handleDeleteSelected = () => {
        <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
-    <div className="p-4 flex flex-col w-full max-w-screen lg:h-fit mt-5 rounded-md  border border-gray-100">
+    <div className="flex-1 p-4 flex flex-col w-full max-w-screen lg:h-fit mt-5 rounded-md  border border-gray-200">
       {/* filter bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
   {/* Search */}
@@ -218,7 +218,7 @@ const handleDeleteSelected = () => {
       onChange={(e) => setSearchTerm(e.target.value)}
       type="text"
       placeholder="Tìm kiếm theo tên, mã sinh viên,..."
-      className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-200 transition"
+      className="w-full border border-gray-300 pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 transition"
     />
     <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
   </div>

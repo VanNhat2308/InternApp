@@ -20,9 +20,9 @@ createRoot(document.getElementById('root')).render(
         <FilterProvider>
           <CustomDialog/>
           <UserProvider>
-            {/* <NotificationProvider> */}
+            <NotificationProvider>
               <App />
-            {/* </NotificationProvider> */}
+            </NotificationProvider>
           </UserProvider>
         </FilterProvider>
       </ToastProvider>

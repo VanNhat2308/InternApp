@@ -14,7 +14,7 @@ function Schedule() {
               return () => window.removeEventListener('resize', handleResize);
             }, []);
     return ( 
-    <div className="flex-1">
+    <div className="flex-1 flex flex-col">
           {isMobile ? <ResponNav /> : <Header>
        <h2 className="text-xl font-semibold">Quản Lý Lịch Thực Tập</h2>
           <p className="flex gap-2 items-center text-gray-500">Danh Sách Lịch Thực Tập Của Sinh Viên </p>

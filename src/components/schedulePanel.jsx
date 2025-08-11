@@ -25,8 +25,6 @@ function SchedulePanel() {
       const { filterValues, setDate } = useFilter();
       const [activeTab, setActiveTab] = useState("lich");
       // const apiBaseURL = import.meta.env.VITE_API_BASE_URL
-      console.log(filterValues);
-      
       const [filters,setFilters] = useState({
         viTri:'',
         Truong:'',
@@ -161,7 +159,7 @@ const handleAddScheduleForMany = async() => {
 
   return (
     <>
-     <div className="mt-5">
+     <div className="mt-5 flex-1 flex flex-col">
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
@@ -198,7 +196,7 @@ const handleAddScheduleForMany = async() => {
       </div>
 
       {/* Nội dung tương ứng tab */}
-      <div className="mt-6">
+      <div className="mt-5">
         {activeTab === "lich" && (
           <div className="p-4 w-full max-w-screen h-fit mt-5 rounded-md border border-gray-100">
       {/* filter bar */}

@@ -120,7 +120,7 @@ const Dashboard = () => {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="bg-white rounded-xl shadow border border-[#ECECEE]"
+                  className="bg-white rounded-md border border-[#ECECEE]"
                 >
                   <div className="p-4 pb-2">
                     <div className="flex gap-2 items-center">
@@ -136,7 +136,7 @@ const Dashboard = () => {
               ))}
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto bg-white rounded-xl shadow p-4 mt-5 lg:mt-10 border border-[#ECECEE]">
+            <div className="w-full overflow-x-auto bg-white rounded-md p-4 mt-5 lg:mt-10 border border-[#ECECEE]">
               <div className="flex justify-between mb-4">
                 <h4 className="font-semibold text-lg">Tổng quan điểm danh</h4>
                 <Link
@@ -187,7 +187,7 @@ const Dashboard = () => {
             </div>
           </div>
           {/* Bar Chart placeholder */}
-          <div className="bg-white rounded-xl shadow p-4 border border-[#ECECEE] col-span-2 lg:col-span-1">
+          <div className="bg-white rounded-md p-4 border border-[#ECECEE] col-span-2 lg:col-span-1">
             <div className="flex flex-col gap-3">
               <AttendanceChart />
             </div>

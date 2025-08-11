@@ -276,6 +276,10 @@ const protectedRoutes = [
             path:'dashboard'
             ,element:<DashboardStudent/>
           },
+            {
+            path: "notify",
+            element: <Notify />,
+          },
            {
             path: "diary",
             element: <Diary />,
