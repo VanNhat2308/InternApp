@@ -12,7 +12,7 @@ import axiosClient from "../service/axiosClient";
 import { FaFileAlt } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
 import { IoCamera } from "react-icons/io5";
-
+import Swal from "sweetalert2";
 
 function EditStudent() {
        const [isMobile, setIsMobile] = useState(window.innerWidth < 1025);
@@ -196,11 +196,21 @@ const validateForm = () => {
     setProgress(0);
   };
   // update student
-  const handleSubmitForm = async () => {
-        if (!validateForm()) {
-    return; 
-  }
+const handleSubmitForm = async () => {
+  if (!validateForm()) return;
+
   try {
+    // 1. Hiển thị loading
+    Swal.fire({
+      title: "Đang cập nhật sinh viên...",
+      text: "Vui lòng đợi trong giây lát",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // 2. Chuẩn bị dữ liệu gửi
     const formData = new FormData();
     formData.append("hoTen", studentData.hoTen);
     formData.append("email", studentData.email);
@@ -209,20 +219,41 @@ const validateForm = () => {
     formData.append("diaChi", studentData.diaChi);
     formData.append("soDienThoai", studentData.soDienThoai);
     formData.append("ngaySinh", studentData.ngaySinh);
-    formData.append("maTruong", studentData.truong); 
-    formData.append("thoiGianTT", studentData.thoiGianTT); 
-    formData.append("tenGiangVien", studentData.tenGiangVien); 
+    formData.append("maTruong", studentData.truong);
+    formData.append("thoiGianTT", studentData.thoiGianTT);
+    formData.append("tenGiangVien", studentData.tenGiangVien);
 
     if (avatarFile) formData.append("avatar", avatarFile);
     if (CVfile) formData.append("cv", CVfile);
 
+    // 3. Gửi API update
     await axiosClient.post(`/sinhviens/${idSlug}?_method=PUT`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    handleOpenDialog(); 
+    // 4. Thông báo thành công
+    Swal.fire({
+      icon: "success",
+      title: "Cập nhật thành công",
+      text: "Đang chuyển về trang chi tiết...",
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+
+    // 5. Chuyển trang sau 3 giây
+    setTimeout(() => {
+      navigate(`/admin/list/student-details/${idSlug}`);
+    }, 3000);
+
   } catch (err) {
     console.error("Lỗi cập nhật sinh viên:", err);
+
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi",
+      text: "Cập nhật sinh viên thất bại",
+    });
   }
 };
 
@@ -249,15 +280,13 @@ const validateForm = () => {
   <p className="flex flex-wrap gap-1 sm:gap-2 items-center text-sm sm:text-base text-gray-600">
     <span>Danh Sách</span>
     <MdChevronRight className="text-lg sm:text-xl" />
-    <span className="font-medium">{studentData.hoTen}</span>
-    <MdChevronRight className="text-lg sm:text-xl" />
-    <span className="text-black font-medium">Chỉnh sửa hồ sơ</span>
+    <span className="text-gray-600">Chỉnh sửa hồ sơ</span>
   </p>
         </Header>}
       
      
      
-          <div className="mt-5 p-5 bg-white rounded-md border border-gray-100">
+          <div className="flex-1 mt-5 p-5 bg-white rounded-md border border-gray-100">
     {/* Avatar */}
   {/* Avatar */}
          <div className="flex justify-start mb-6">
@@ -271,10 +300,10 @@ const validateForm = () => {
       : `${apiBaseURL}/${avatarFilePreview}` // ảnh cũ từ server
   }
                    alt="Avatar"
-                   className="w-24 h-24 rounded-xl object-cover border border-gray-300 shadow"
+                   className="w-24 h-24 rounded-md object-cover border border-gray-300"
                  />
                ) : (
-                 <div className="w-24 h-24 rounded-xl bg-green-100 border border-green-300 flex items-center justify-center">
+                 <div className="w-24 h-24 rounded-md bg-green-100 border border-green-300 flex items-center justify-center">
                    <IoCamera className="text-2xl" />
                  </div>
                )}
@@ -467,7 +496,7 @@ const validateForm = () => {
               </p>
             </label>
           ) : (
-            <div className="w-full lg:w-[60%] lg:mx-auto border border-green-400 rounded-lg p-4 relative bg-green-50">
+            <div className="w-full lg:w-[60%] lg:mx-auto border border-gray-300 rounded-md p-4 relative bg-gray-50">
               <div className="flex items-center space-x-4">
                 <FaFileAlt className="text-orange-400" />
                 <div className="flex-1">
@@ -484,7 +513,7 @@ const validateForm = () => {
                 </div>
                 <div className="flex gap-1 items-center">
                   <button
-                            className="cursor-pointer text-green-500"
+                            className="p-1 rounded-full bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700 transition"
                            onClick={() => {
             if (CVfile) {
          
@@ -497,10 +526,10 @@ const validateForm = () => {
             }
           }}
                           >
-                           <BsEyeFill className="text-2xl"/>
+                           <BsEyeFill className="text-base"/>
                           </button>
                   <button
-                    className="text-red-500 hover:text-red-700 cursor-pointer"
+                    className="p-1 rounded-full bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 transition"
                         onClick={() => {
             setCVFile(null);
             setProgress(0);
@@ -508,7 +537,7 @@ const validateForm = () => {
           }}
                     aria-label="Xóa file"
                   >
-                    <FaTrashCan className="w-5 h-5" />
+                    <FaTrashCan className="text-base" />
                   </button>
                 </div>
                    
@@ -527,8 +556,8 @@ const validateForm = () => {
         </div>
   
     {/* Buttons */}
-    <div className="flex justify-end gap-4 mt-6">
-      <button onClick={clearForm} className="px-4 py-2 border rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
+    <div className="flex justify-end gap-4 mt-10">
+      <button onClick={clearForm} className="px-4 py-2 border border-gray-400 rounded text-black hover:bg-gray-100 cursor-pointer">Hủy Bỏ</button>
       <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" onClick={handleSubmitForm}>Cập nhật</button>
     </div>
   </div>

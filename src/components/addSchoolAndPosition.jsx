@@ -429,7 +429,7 @@ const handleDelete = (id) => {
 
     {isAddingSchool ? (
   // FORM THÊM TRƯỜNG
-  <div className="h-full lg:border border-gray-200 lg:p-4 rounded-md">
+  <div className="h-full lg:border border-gray-100 lg:p-4 rounded-md">
         {/* Search */}
           <div className="relative flex-1 mb-5 w-full">
             <input
@@ -670,7 +670,7 @@ const handleDelete = (id) => {
   </div>
 ) : (
   // FORM THÊM VỊ TRÍ
-  <div className="flex-1 lg:border border-gray-200 lg:p-4 rounded-md">
+  <div className="flex-1 lg:border border-gray-100 lg:p-4 rounded-md">
      {/* Search */}
           <div className="relative flex-1 mb-5 w-full">
             <input

@@ -2,7 +2,7 @@ import { FiSearch } from "react-icons/fi";
 import { useFilter } from "../context/filteContext";
 import { FaSlidersH } from "react-icons/fa";
 import { RiDeleteBin6Line, RiEyeLine } from "react-icons/ri";
-import Pagination from "./pagination";
+import Pagination from "./Pagination";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { useDialog } from "../context/dialogContext";
 import { useNavigate } from "react-router-dom";

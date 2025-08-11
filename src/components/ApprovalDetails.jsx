@@ -219,7 +219,7 @@ onClick={async () => {
   )}
 
   {/* Main Card */}
-  <div className="border border-gray-300 p-4 mt-10 rounded-md shadow">
+  <div className="flex-1 border border-gray-200 p-4 mt-5 rounded-md">
     {/* Header: avatar + buttons */}
     <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-4 pb-5 border-b border-gray-300">
       <div className="flex items-start gap-4 w-full lg:w-auto">
@@ -297,7 +297,7 @@ onClick={async () => {
     <div className="mt-8">
       <h2 className="text-lg font-semibold mb-3">CV Của Ứng Viên</h2>
       {students.cV ? (
-        <div className="w-full lg:w-[60%] border border-green-400 rounded-lg p-4 bg-green-50">
+        <div className="w-full lg:w-[60%] border border-gray-300 rounded-md p-4 bg-gray-50">
           <div className="flex items-center gap-4">
             <FaFileAlt className="text-orange-400 text-2xl" />
             <span className="flex-1 text-sm font-medium truncate">

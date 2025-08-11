@@ -61,16 +61,41 @@ function ListStudentPanel() {
 
 
 
-       const handleDelete = (id) => {
-        axiosClient.delete(`/sinhviens/${id}`)
-          .then(res => {
-            alert("Xóa thành công!");
-            fetchStudents(); //
-          })
-          .catch(err => {
-            alert("Xóa thất bại: " + (err?.response?.data?.message || err.message));
+
+const handleDelete = (id) => {
+  Swal.fire({
+    title: "Bạn có chắc muốn xóa?",
+    text: "Hành động này không thể hoàn tác!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Xóa",
+    cancelButtonText: "Hủy"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axiosClient.delete(`/sinhviens/${id}`)
+        .then(res => {
+          Swal.fire({
+            icon: "success",
+            title: "Đã xóa!",
+            text: "Xóa thành công.",
+            timer: 1500,
+            showConfirmButton: false
           });
-      };
+          fetchStudents();
+        })
+        .catch(err => {
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi!",
+            text: err?.response?.data?.message || err.message
+          });
+        });
+    }
+  });
+};
+
       
  
 
@@ -208,7 +233,7 @@ const handleDeleteSelected = () => {
        <h2 className="text-xl font-semibold">Xin chào {nameUser||'UnKnow'} 👋</h2>
           <p className="text-gray-500">{getGreetingTime()}</p>
       </Header>}
-    <div className="flex-1 p-4 flex flex-col w-full max-w-screen lg:h-fit mt-5 rounded-md  border border-gray-200">
+    <div className="flex-1 p-4 flex flex-col w-full max-w-screen lg:h-fit mt-5 rounded-md  border border-gray-100">
       {/* filter bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
   {/* Search */}
@@ -338,7 +363,7 @@ const handleDeleteSelected = () => {
       <button onClick={() => handleEdit(s.maSV)} className="text-xl cursor-pointer">
         <CiEdit />
       </button>
-      <button onClick={() => handleOpenDialog(s.maSV)} className="text-xl cursor-pointer">
+      <button onClick={() => handleDelete(s.maSV)} className="text-xl cursor-pointer">
         <RiDeleteBin6Line />
       </button>
     </div>

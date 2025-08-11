@@ -8,7 +8,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { useDialog } from "../context/dialogContext";
 import { useNavigate, useParams } from "react-router-dom";
 import DateInput from "./datePicker";
-import Pagination from "./pagination";
+import Pagination from "./Pagination";
 import axiosClient from "../service/axiosClient";
 import { format } from "date-fns";
 function AttendanceDetails() {

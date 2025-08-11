@@ -185,7 +185,7 @@ Swal.fire({
 
       <form
         onSubmit={handleSubmit}
-        className="relative z-10 w-full lg:max-w-[60vw] mx-auto bg-white/60 rounded-3xl shadow-xl p-6 sm:p-10"
+        className="relative z-10 w-full lg:max-w-[65vw] mx-auto bg-white/30 rounded-3xl shadow-xl p-6 sm:p-10"
       >
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">Đăng ký thực tập</h2>
 
