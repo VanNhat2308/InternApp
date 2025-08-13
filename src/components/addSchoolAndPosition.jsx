@@ -102,8 +102,22 @@ const [positions, setPositions] = useState([]);
     setAvatarFilePreview(null);
     fetchSchools()
   } catch (error) {
-    Swal.fire("Thất bại!", "Lỗi khi thêm trường.", "error");
+ let message = "Lỗi khi thêm trường."; // mặc định
+
+  if (error.response && error.response.data) {
+    // Trường hợp Laravel validate
+    if (error.response.data.errors) {
+      // Lấy message của field đầu tiên
+      message = Object.values(error.response.data.errors)[0][0];
+    }
+    // Trường hợp Laravel trả về 'message' riêng
+    else if (error.response.data.message) {
+      message = error.response.data.message;
+    }
   }
+
+  Swal.fire("Thất bại!", message, "error");
+}
 };
 
     const handlePositionSubmit = async (e) => {
@@ -131,7 +145,21 @@ const [positions, setPositions] = useState([]);
           setPosition("");
           fetchPositions()
         } catch (error) {
-          Swal.fire("Thất bại!", "Lỗi khi thêm vị trí.", "error");
+          let message = "Lỗi khi thêm vị trí."; // mặc định
+
+  if (error.response && error.response.data) {
+    // Trường hợp Laravel validate
+    if (error.response.data.errors) {
+      // Lấy message của field đầu tiên
+      message = Object.values(error.response.data.errors)[0][0];
+    }
+    // Trường hợp Laravel trả về 'message' riêng
+    else if (error.response.data.message) {
+      message = error.response.data.message;
+    }
+  }
+
+  Swal.fire("Thất bại!", message, "error");
         }
       }
     };
@@ -342,8 +370,22 @@ const handleDelete = (id) => {
       Swal.fire("Cập nhật thành công!", "", "success");
       setEditingId(null);
       fetchPositions();
-    } catch (err) {
-      Swal.fire("Cập nhật thất bại", "", "error");
+    } catch (error) {
+      let message = "Lỗi khi thêm vị trí."; // mặc định
+
+  if (error.response && error.response.data) {
+    // Trường hợp Laravel validate
+    if (error.response.data.errors) {
+      // Lấy message của field đầu tiên
+      message = Object.values(error.response.data.errors)[0][0];
+    }
+    // Trường hợp Laravel trả về 'message' riêng
+    else if (error.response.data.message) {
+      message = error.response.data.message;
+    }
+  }
+
+  Swal.fire("Thất bại!", message, "error");
     }
   };
 

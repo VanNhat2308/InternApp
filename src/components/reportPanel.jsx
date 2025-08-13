@@ -184,7 +184,7 @@ const handleOpenDialog = async (id) => {
                   
                             <td>{a?.sinh_vien?.maSV}</td>
                             <td>{a?.sinh_vien.viTri}</td>
-                            <td>{a?.sinh_vien?.truong?.tenTruong}</td>
+                            <td>{a?.sinh_vien?.truong?.maTruong}</td>
                             <td>{new Date(a.ngayTao).toLocaleDateString("vi-VN")}</td>
                            
                             <td>

@@ -413,13 +413,13 @@ function ScheduleDetails() {
           type="date"
           value={oldDate}
           onChange={(e) => setOldDate(e.target.value)}
-          className="border p-2 rounded-md"
+          className="border border-gray-300 p-2 rounded-md"
           min={today}
         />
         <select
           value={oldCa}
           onChange={(e) => setOldCa(e.target.value)}
-          className="border p-2 rounded-md"
+          className="border border-gray-300 p-2 rounded-md"
         >
           <option value="8:00-12:00">Ca sáng</option>
           <option value="13:00-17:00">Ca chiều</option>
@@ -455,13 +455,13 @@ function ScheduleDetails() {
               type="date"
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
-              className="border p-2 rounded-md"
+              className="border border-gray-300 p-2 rounded-md"
               min={today}
             />
             <select
               value={newCa}
               onChange={(e) => setNewCa(e.target.value)}
-              className="border p-2 rounded-md"
+              className="border border-gray-300 p-2 rounded-md"
             >
               <option value="08:00-12:00">Ca sáng</option>
               <option value="13:00-17:00">Ca chiều</option>
@@ -484,7 +484,7 @@ function ScheduleDetails() {
             setReason(e.target.value);
             if (e.target.value.trim()) setErrorReason("");
           }}
-          className="border rounded-md p-2 mt-2"
+          className="border border-gray-300 rounded-md p-2 mt-2"
           placeholder="Lý do đổi ca..."
         />
         {errorReason && <p className="text-red-500 text-sm">{errorReason}</p>}

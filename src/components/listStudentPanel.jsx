@@ -341,7 +341,7 @@ const handleDeleteSelected = () => {
   <td className="px-2 align-middle">{s.viTri}</td>
 
   {/* Tên trường */}
-  <td className="px-2 align-middle">{s.truong.tenTruong}</td>
+  <td className="px-2 align-middle">{s.truong.maTruong}</td>
 
   {/* Trạng thái */}
   <td className="px-2 align-middle">
