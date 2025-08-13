@@ -99,15 +99,15 @@ useEffect(() => {
          <div className="relative" ref={dropdownRef}>
       {/* Khu vực avatar */}
       <div
-        className="flex h-full items-center p-1 gap-2 border border-gray-300 rounded-md cursor-pointer"
+        className="flex h-full items-center py-1 px-2 gap-2 border border-gray-300 rounded-md cursor-pointer"
         onClick={() => setOpen(!open)}
       >
         <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full" />
         <div>
-          <p className="text-sm font-semibold">{nameUser||'UnKnow'}</p>
-          <p className="text-xs text-gray-500">{userRole||'Unknow'}</p>
+          <p className="text-sm font-semibold">{nameUser||'UnKnown'}</p>
+          <p className="text-xs text-gray-500">{userRole||'Unknown'}</p>
         </div>
-        <FaChevronDown />
+        <FaChevronDown className='text-xs' />
       </div>
 
       {/* Dropdown */}

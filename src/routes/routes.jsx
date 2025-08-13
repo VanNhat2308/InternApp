@@ -46,6 +46,9 @@ import SwapSchedule from "../components/SwapSchedule";
 import SchoolAndPosition from "../components/schoolAndPosition";
 import AddSchoolAndPostion from "../components/addSchoolAndPosition";
 import SettingPanel from "../components/settingPanel";
+import ForgotPassword from "../components/forgotPassword";
+import ForgotAndResetPassword from "../components/forgotPassword";
+import ChangePassword from "../components/ChangePassword";
 const maSv = localStorage.getItem('maSV')
 const publicRoutes = [
   {
@@ -352,6 +355,17 @@ const protectedRoutes = [
           {
             path: "settings",
             element: <Settings />,
+            children:[
+              {
+                  index: true,
+                element: <Navigate to={`change-password`} replace />
+              }
+              ,
+               {
+                path: `change-password`,
+                element: <ChangePassword />,
+              }
+            ]
           },
             {
             path: "schedule",
@@ -373,6 +387,10 @@ const protectedRoutes = [
         ]
       }
 ]
+  },
+  {
+    path:'Forgot-password',
+    element: <ForgotAndResetPassword/>
   },
   {
             path:'register',

@@ -123,7 +123,7 @@ const getStatusColor = (status) => {
       <img
         src={students.duLieuKhuonMat ? `${apiBaseURL}/${students.duLieuKhuonMat}` : avatar}
         alt="avartar"
-        className="w-24 sm:w-20 aspect-square rounded-md border border-gray-300"
+        className="w-24 sm:w-20 aspect-square rounded-md border border-gray-300 object-cover"
       />
       <div className="text-center sm:text-left">
         <h1 className="text-xl font-bold">{students?.hoTen}</h1>

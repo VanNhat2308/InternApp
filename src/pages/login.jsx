@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import pizitechLogo from '../assets/images/pizitech.png'; 
 import manImage from '../assets/images/man.png';
 import axiosClient from '../service/axiosClient';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs';
-
+import Swal from "sweetalert2";
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,33 +18,57 @@ export default function Login() {
       navigate('/admin/dashboard', { replace: true });
     }
   }, [navigate]);
+const handleLogin = async (e) => {
+  e.preventDefault();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-
-    try {
-      const res = await axiosClient.post('/login/admin', { email, password });
-
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('role', 'Admin');
-        localStorage.setItem('user',res.data.user.hoTen)
-        localStorage.setItem('maAdmin',res.data.user.maAdmin)
-      
-
-        
-        alert('Đăng nhập thành công!');
-        navigate('/admin/dashboard');
-      } else {
-        throw new Error('Không nhận được token từ server');
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
-      setError(errorMessage);
-      alert(errorMessage);
+  // Hiển thị trạng thái pending
+  Swal.fire({
+    title: "Đang đăng nhập...",
+    text: "Vui lòng chờ giây lát",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
     }
-  };
+  });
+
+  try {
+    const res = await axiosClient.post('/login/admin', { email, password });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', 'Admin');
+      localStorage.setItem('user', res.data.user.hoTen);
+      localStorage.setItem('maAdmin', res.data.user.maAdmin);
+
+      // Thông báo thành công
+      Swal.fire({
+        icon: "success",
+        title: "Đăng nhập thành công!",
+        text: "Đang chuyển hướng...",
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // Chuyển hướng sau 2 giây
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 2000);
+    } else {
+      throw new Error("Không nhận được token từ server");
+    }
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message ||
+      "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.";
+
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi!",
+      text: errorMessage
+    });
+
+    setError(errorMessage);
+  }
+};
 const handleShowPw = () => {
   setIsShowPass((prev) => !prev);
 };
@@ -137,12 +161,12 @@ const handleShowPw = () => {
             </span>
           </div>)}
         </div>
-        {/* Quên mật khẩu */}
-        <div className="text-right text-sm mb-10">
-          <a href="#" className="text-black font-semibold">
-            Quên mật khẩu
-          </a>
-        </div>
+       {/* Quên mật khẩu */}
+           <div className="text-right text-sm mb-10">
+             <Link to={'/Forgot-password'} className="text-black font-semibold">
+               Quên mật khẩu
+             </Link>
+           </div>
         {/* Nút đăng nhập */}
         <button
           type="submit"

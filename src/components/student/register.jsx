@@ -120,8 +120,8 @@ const handleSubmit = async (e) => {
 
     const finalForm = {
       ...form,
-      duLieuKhuonMat: avatar,
-      cV: cv,
+      duLieuKhuonMat: avatar?.path || null,
+      cV: cv?.path || null,
     };
 
     // Đăng ký sinh viên

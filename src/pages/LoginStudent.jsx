@@ -5,6 +5,7 @@ import manImage from '../assets/images/man.png';
 import axiosClient from '../service/axiosClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs';
+import Swal from "sweetalert2";
 export default function LoginStudent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,32 +19,61 @@ export default function LoginStudent() {
     }
   }, [navigate]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+ const handleLogin = async (e) => {
+  e.preventDefault();
 
-
-    try {
-      const res = await axiosClient.post('/login/sinhvien', { tenDangNhap:email, password });
-
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('role', 'Student');
-        localStorage.setItem('user',res.data.user.hoTen)
-        localStorage.setItem('maSV',res.data.user.maSV)
-        localStorage.setItem('email',res.data.user.email)
-        localStorage.setItem('hoTen',res.data.user.hoTen)
-        localStorage.setItem('viTri',res.data.user.viTri)
-        alert('Đăng nhập thành công!');
-        navigate('/student/dashboard');
-      } else {
-        throw new Error('Không nhận được token từ server');
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
-      setError(errorMessage);
-      alert(errorMessage);
+  // Hiển thị trạng thái pending
+  Swal.fire({
+    title: "Đang đăng nhập...",
+    text: "Vui lòng chờ giây lát",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
     }
-  };
+  });
+
+  try {
+    const res = await axiosClient.post('/login/sinhvien', { email, password });
+
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', 'Student');
+      localStorage.setItem('user', res.data.user.hoTen);
+      localStorage.setItem('maSV', res.data.user.maSV);
+      localStorage.setItem('email', res.data.user.email);
+      localStorage.setItem('hoTen', res.data.user.hoTen);
+      localStorage.setItem('viTri', res.data.user.viTri);
+
+      // Thông báo thành công
+      Swal.fire({
+        icon: "success",
+        title: "Đăng nhập thành công!",
+        text: "Đang chuyển hướng...",
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // Chuyển hướng sau 2 giây
+      setTimeout(() => {
+        navigate('/student/dashboard');
+      }, 2000);
+    } else {
+      throw new Error("Không nhận được token từ server");
+    }
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message ||
+      "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.";
+
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi!",
+      text: errorMessage
+    });
+
+    setError(errorMessage);
+  }
+};
   const handleShowPw = () => {
   setIsShowPass((prev) => !prev);
 };
@@ -138,9 +168,9 @@ export default function LoginStudent() {
            </div>
            {/* Quên mật khẩu */}
            <div className="text-right text-sm mb-10">
-             <a href="#" className="text-black font-semibold">
+             <Link to={'/Forgot-password'} className="text-black font-semibold">
                Quên mật khẩu
-             </a>
+             </Link>
            </div>
            {/* Nút đăng nhập */}
            <button

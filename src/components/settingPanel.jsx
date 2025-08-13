@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../service/axiosClient";
 import Swal from "sweetalert2";
+import ChangePassword from "./ChangePassword";
 function SettingPanel() {
   const [tab, setTab] = useState("admin");
 
@@ -26,11 +27,20 @@ function SettingPanel() {
         >
           Lịch sử đăng nhập
         </button>
+        <button
+          onClick={() => setTab("reset")}
+          className={`cursor-pointer px-4 py-2 rounded-lg ${
+            tab === "reset" ? "bg-blue-600 text-white" : "bg-gray-100"
+          }`}
+        >
+          Thay đổi mật khẩu
+        </button>
       </div>
 
       {/* Nội dung */}
       {tab === "admin" && <AdminAccountForm />}
       {tab === "history" && <LoginHistory />}
+      {tab === "reset" && <ChangePassword />}
     </div>
   );
 }
@@ -114,7 +124,7 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white">
       <div>
         <label className="block text-sm font-medium mb-1">Họ tên</label>
         <input
